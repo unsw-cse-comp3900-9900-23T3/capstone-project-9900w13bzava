@@ -1,0 +1,9 @@
+Week1:
+    Group formed and named. Selected Scrum Master. Created the Jira
+Site. Decided on the topic with other group members.
+
+Week2:
+    We make github respority.
+
+Week3:
+    We have a meeting with client and write proposal.

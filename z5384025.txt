@@ -1,0 +1,11 @@
+Week1:
+Communicate with classmates to form teams and discuss the choice of the project.
+
+Week2:
+Complete some tasks required for team formation, such as creating and joining GitHub repositories. 
+Learn and review backend technologies that may be needed for the project.
+
+Week3:
+Have a meeting with the client to understand project requirements and scope. 
+Collaborate with teammates to complete the proposal.
+Attempted to connect to the server database following the client's method but encountered a failure.

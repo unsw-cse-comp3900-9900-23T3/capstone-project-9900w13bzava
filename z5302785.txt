@@ -1,0 +1,5 @@
+This week, we communicated with the client and learned the specific requirements for our project as well as the final implementation effects. 
+
+As the person responsible for writing frontend code, I understood the basic styles that need to be built for the web application and the functionalities that need to be implemented. 
+
+I also planned the next steps for code development. In my role as a Scrum Master, I actively organized the progress of activities, promoted team harmony, and communicated effectively with the client.

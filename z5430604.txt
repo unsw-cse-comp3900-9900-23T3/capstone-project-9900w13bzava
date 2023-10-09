@@ -7,3 +7,6 @@ Week2:
 
 Week3:
     We have a meeting with client and write proposal.
+
+Week4:
+    We have built simple frontend and backend files, the backend can receive data from the frontend and extract data. We still trying to connect the database.

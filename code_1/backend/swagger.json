@@ -1,0 +1,92 @@
+{
+  "definitions": {},
+  "info": {
+    "description": "powered by Flasgger",
+    "termsOfService": "/tos",
+    "title": "A swagger API",
+    "version": "0.0.1"
+  },
+  "paths": {
+    "/login": {
+      "post": {
+        "description": "Call this endpoint to login a existed user<br/>",
+        "parameters": [
+          {
+            "in": "formData",
+            "name": "username",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "formData",
+            "name": "password",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "formData",
+            "name": "location",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Login successful"
+          },
+          "400": {
+            "description": "Passwords do not match"
+          }
+        },
+        "summary": "This is the login endpoint",
+        "tags": [
+          "Login API"
+        ]
+      }
+    },
+    "/register": {
+      "post": {
+        "description": "Call this endpoint to register a new user<br/>",
+        "parameters": [
+          {
+            "in": "formData",
+            "name": "username",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "formData",
+            "name": "password",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "formData",
+            "name": "confirm password",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "formData",
+            "name": "location",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Registration successful"
+          },
+          "400": {
+            "description": "Passwords do not match"
+          }
+        },
+        "summary": "This is the registration endpoint",
+        "tags": [
+          "Registration API"
+        ]
+      }
+    }
+  },
+  "swagger": "2.0"
+}

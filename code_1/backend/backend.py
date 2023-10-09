@@ -1,21 +1,49 @@
 from flask import Flask, jsonify, request
 from flasgger import Swagger
+from flask_cors import CORS
 import csv
 import pyodbc
 
 app = Flask(__name__)
 swagger = Swagger(app)
+CORS(app)
 
 @app.route('/login', methods=['POST'])
 def login():
+    """
+    This is the login endpoint
+    Call this endpoint to login a existed user
+    ---
+    tags:
+      - Login API
+    parameters:
+      - name: username
+        in: formData
+        type: string
+        required: true
+      - name: password
+        in: formData
+        type: string
+        required: true
+      - name: location
+        in: formData
+        type: string
+        required: true
+    responses:
+      200:
+        description: Login successful
+      400:
+        description: Passwords do not match
+    """
+        
     data = request.get_json()
 
     username = data.get('username')
     password = data.get('password')
+    location = data.get('location')
 
     # search in database
-    
-    pass
+
 
 @app.route('/register', methods=['POST'])
 def register():
@@ -58,13 +86,21 @@ def register():
 
 
     if password != confirmPassword:
-        return jsonify({"message": "Passwords do not match!"}), 400
+        return jsonify({"message": "Passwords do not match!", "status": False}), 400
 
+    # Check if the username already exists
+    with open('users_data.csv', 'r', newline='') as file:
+        reader = csv.reader(file)
+        for row in reader:
+            if row and row[0] == username:
+                return jsonify({"message": "Username already exists!", "status": False}), 400
+
+    # If the username doesn't exist, save the new user
     with open('users_data.csv', 'a', newline='') as file:
         writer = csv.writer(file)
         writer.writerow([username, password, location])
 
-    return jsonify({"message": "Registration successful!"}), 200
+    return jsonify({"message": "Registration successful!", "status": True}), 200
 
 # # Connection parameters
 # server = '192.168.56.1\\BPSINSTANCE' # possibly you need to replace to localhost

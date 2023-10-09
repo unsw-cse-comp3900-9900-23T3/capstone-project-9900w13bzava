@@ -8,8 +8,7 @@ import {
 function App ({ onSuccess }) {
   const [username, setUsername] = React.useState('');
   const [password, setPassword] = React.useState('');
-  const [conpassword, setConpassword] = React.useState('');
-  const [location, setLocation] = React.useState('');
+  const [name, setName] = React.useState('');
   const navigate = useNavigate();
 
   function goLogin () {
@@ -25,23 +24,27 @@ function App ({ onSuccess }) {
     console.log('Failed:', errorInfo);
   };
 
-  async function fRegister () {
+  function fRegister () {
     console.log('begin');
-    const response = await fetch('http://localhost:5000/register', {
+    fetch('http://localhost:5000/register', {
       method: 'POST',
       headers: {
         'Content-type': 'application/json',
       },
       body: JSON.stringify({
-        "username": username,
-        "password": password,
-        "confirm password": conpassword,
-        "location": location,
+        "username": "zhenwei",
+        "password": "4321",
+        "confirm password": "4321",
+        "location": "unsw",
       })
+    })
+    .then(response => response.json())
+    .then(data =>{
+      console.log(data);
+    })
+    .catch(error => {
+      console.error('Error fetching data:', error);
     });
-    const data = await response.json();
-    console.log("backend: ", data);
-    navigate("/");
   }
 
   return (
@@ -74,7 +77,7 @@ function App ({ onSuccess }) {
             },
           ]}
         >
-          <Input value={username} onChange={(e) => setUsername(e.target.value)}/>
+          <Input />
         </Form.Item>
 
         <Form.Item
@@ -87,7 +90,7 @@ function App ({ onSuccess }) {
             },
           ]}
         >
-          <Input.Password value={password} onChange={(e) => setPassword(e.target.value)}/>
+          <Input.Password />
         </Form.Item>
 
         <Form.Item
@@ -100,7 +103,7 @@ function App ({ onSuccess }) {
             },
           ]}
         >
-          <Input.Password value={conpassword} onChange={(e) => setConpassword(e.target.value)}/>
+          <Input.Password />
         </Form.Item>
 
         <Form.Item
@@ -113,7 +116,7 @@ function App ({ onSuccess }) {
             },
           ]}
         >
-          <Input value={location} onChange={(e) => setLocation(e.target.value)}/>
+          <Input />
         </Form.Item>
 
         <Form.Item

@@ -9,3 +9,7 @@ Week3:
 Have a meeting with the client to understand project requirements and scope. 
 Collaborate with teammates to complete the proposal.
 Attempted to connect to the server database following the client's method but encountered a failure.
+
+Week4:
+Still working on the database connection problem, one problem solved, anothor pop out.
+Implemented the connection between the front-end and back-end, with the front-end calling the back-end's API.

@@ -2,7 +2,14 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 100vh;
+  height: 400vh;
+}
+
+.backgroundChild {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
 }
 
 /* 在小屏幕上（例如手机屏幕）调整样式 */

@@ -1,6 +1,6 @@
 import React from 'react';
 import "./index.css";
-import { Button, Checkbox, Form, Input, Space } from 'antd';
+import { Button, Form, Input, Space } from 'antd';
 import {
   useNavigate
 } from 'react-router-dom';
@@ -26,22 +26,25 @@ function App ({ onSuccess }) {
   };
 
   async function fRegister () {
-    console.log('begin');
-    const response = await fetch('http://localhost:5000/register', {
-      method: 'POST',
-      headers: {
-        'Content-type': 'application/json',
-      },
-      body: JSON.stringify({
-        "username": username,
-        "password": password,
-        "confirm password": conpassword,
-        "location": location,
-      })
-    });
-    const data = await response.json();
-    console.log("backend: ", data);
-    navigate("/");
+    if (conpassword === password && username.length !== 0 && password.length !== 0 && location.length !== 0) {
+      console.log('begin');
+      const response = await fetch('http://127.0.0.1:5000/register', {
+        method: 'POST',
+        headers: {
+          'Content-type': 'application/json',
+        },
+        body: JSON.stringify({
+          "username": username,
+          "password": password,
+          "confirm password": conpassword,
+          "location": location,
+        })
+      });
+      const data = await response.json();
+      console.log("backend: ", data);
+      navigate("/");
+    }
+    
   }
 
   return (
@@ -91,7 +94,7 @@ function App ({ onSuccess }) {
         </Form.Item>
 
         <Form.Item
-          label="ConfirmPassword"
+          label="Confirm"
           name="confirm password"
           rules={[
             {
@@ -114,17 +117,6 @@ function App ({ onSuccess }) {
           ]}
         >
           <Input value={location} onChange={(e) => setLocation(e.target.value)}/>
-        </Form.Item>
-
-        <Form.Item
-          name="remember"
-          valuePropName="checked"
-          wrapperCol={{
-            offset: 8,
-            span: 16,
-          }}
-        >
-          <Checkbox>Remember me</Checkbox>
         </Form.Item>
 
         <Form.Item

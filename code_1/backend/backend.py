@@ -8,6 +8,7 @@ app = Flask(__name__)
 swagger = Swagger(app)
 CORS(app)
 
+# Login
 @app.route('/login', methods=['POST'])
 def login():
     """
@@ -44,7 +45,7 @@ def login():
 
     # search in database
 
-
+# Register
 @app.route('/register', methods=['POST'])
 def register():
     """

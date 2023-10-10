@@ -3,6 +3,12 @@ from flasgger import Swagger
 from flask_cors import CORS
 import csv
 import pyodbc
+import subprocess
+
+# demo to get data from database, sql should be modified
+# sql = '''SELECT * FROM BPSSamples.dbo.APPOINTMENTS
+# where APPOINTMENTDATE<CURRENT_TIMESTAMP and INTERNALID=(36)'''
+# subprocess.run(["python","ConnectDatabase.py", sql])
 
 app = Flask(__name__)
 swagger = Swagger(app)

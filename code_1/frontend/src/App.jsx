@@ -10,6 +10,7 @@ import MainPage from './mainpage';
 import Delete from './delete';
 import Create from './create';
 import Edit from './edit';
+import Show from './show';
 
 function App() {
   return (
@@ -26,6 +27,7 @@ function App() {
               </MainPage>
             }
           >
+            <Route path="/mainpage/show" element={<Show />} />
             <Route path="/mainpage/create" element={<Create />} />
             <Route path="/mainpage/edit" element={<Edit />} />
             <Route path="/mainpage/delete" element={<Delete />} />

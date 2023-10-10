@@ -1,6 +1,6 @@
 import React from 'react';
 import "./index.css";
-import { Button, Checkbox, Form, Input, Space } from 'antd';
+import { Button, Form, Input, Space } from 'antd';
 import {
   useNavigate
 } from 'react-router-dom';
@@ -12,8 +12,9 @@ const onFinishFailed = (errorInfo) => {
 };
 
 function App ({ onSuccess }) {
-  // const [email, setEmail] = React.useState('');
-  // const [password, setPassword] = React.useState('');
+  const [username, setUsername] = React.useState('');
+  const [password, setPassword] = React.useState('');
+  const [location, setLocation] = React.useState('');
   const navigate = useNavigate();
 
   function goRegister () {
@@ -21,7 +22,9 @@ function App ({ onSuccess }) {
   }
 
   function goMainpage () {
-    navigate("/mainpage");
+    if (username.length !== 0 && password.length !== 0 && location.length !== 0) {
+      navigate("/mainpage");
+    }
   }
 
   return (
@@ -54,7 +57,7 @@ function App ({ onSuccess }) {
             },
           ]}
         >
-          <Input />
+          <Input  value={username} onChange={(e) => setUsername(e.target.value)}/>
         </Form.Item>
 
         <Form.Item
@@ -67,7 +70,7 @@ function App ({ onSuccess }) {
             },
           ]}
         >
-          <Input.Password />
+          <Input.Password  value={password} onChange={(e) => setPassword(e.target.value)}/>
         </Form.Item>
 
         <Form.Item
@@ -80,18 +83,7 @@ function App ({ onSuccess }) {
             },
           ]}
         >
-          <Input />
-        </Form.Item>
-
-        <Form.Item
-          name="remember"
-          valuePropName="checked"
-          wrapperCol={{
-            offset: 8,
-            span: 16,
-          }}
-        >
-          <Checkbox>Remember me</Checkbox>
+          <Input value={location} onChange={(e) => setLocation(e.target.value)}/>
         </Form.Item>
 
         <Form.Item

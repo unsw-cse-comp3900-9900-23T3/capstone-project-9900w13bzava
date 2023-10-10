@@ -6,28 +6,22 @@ import {
   DeleteOutlined,
   SnippetsOutlined,
   LogoutOutlined,
+  DatabaseOutlined,
 } from '@ant-design/icons';
 import {
   useNavigate
 } from 'react-router-dom';
-import { Layout, Menu, Button, theme, Space, Calendar } from 'antd';
+import { Layout, Menu, Button, theme, Space, DatePicker } from 'antd';
 const { Header, Sider, Content } = Layout;
-const onPanelChange = (value, mode) => {
-  console.log(value.format('YYYY-MM-DD'), mode);
-};
+const heightContent = 500
 
 function App ( props ) {
+  
   const [collapsed, setCollapsed] = useState(false);
   const {
     token: { colorBgContainer },
   } = theme.useToken();
   const navigate = useNavigate();
-  const { token } = theme.useToken();
-  const wrapperStyle = {
-    width: 300,
-    border: `1px solid ${token.colorBorderSecondary}`,
-    borderRadius: token.borderRadiusLG,
-  };
 
   function onMenuChange ({key, keyPath}) {
     console.log(key, keyPath);
@@ -37,6 +31,10 @@ function App ( props ) {
       navigate(`/`);
     }
   }
+
+  const onDateChange = (date, dateString) => {
+    console.log(date, dateString);
+  };
 
   return (
     <div className="background">
@@ -48,6 +46,11 @@ function App ( props ) {
             mode="inline"
             onClick={onMenuChange}
             items={[
+              {
+                key: 'show',
+                icon: <DatabaseOutlined />,
+                label: 'Show',
+              },
               {
                 key: 'create',
                 icon: <SnippetsOutlined />,
@@ -85,23 +88,22 @@ function App ( props ) {
                 onClick={() => setCollapsed(!collapsed)}
                 style={{
                   fontSize: '16px',
-                  width: 64,
-                  height: 64,
+                  width: 50,
+                  height: 50,
                 }}
               />
+              <DatePicker onChange={onDateChange} />
             </Space>
           </Header>
           <Content
             style={{
               margin: '24px 16px',
               padding: 24,
-              minHeight: 280,
+              height: heightContent,
               background: colorBgContainer,
             }}
+            className='backgroundChild'
           >
-            <div style={wrapperStyle}>
-              <Calendar fullscreen={false} onPanelChange={onPanelChange} />
-            </div>
             {props.children}
           </Content>
         </Layout>

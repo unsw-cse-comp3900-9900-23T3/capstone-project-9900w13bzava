@@ -1,5 +1,6 @@
 import pyodbc
 from sys import argv
+import json
 
 # query will be input
 sql = str(argv[1])
@@ -23,17 +24,18 @@ query = sql
 # ORDER BY surname, firstname
 # '''
 
-f = open('database.csv', 'w')
 try:
     # Execute the query
     cursor.execute(query)
-
+    columns = [column[0] for column in cursor.description]
+    data = [dict(zip(columns, row)) for row in cursor.fetchall()]
+    json_data = json.dumps(data, indent=4, sort_keys=True, default=str)
+    print(json_data)
     # Fetch and print the results
-    rows = cursor.fetchall()
-
-    for row in rows:
+    # rows = cursor.fetchall()
+    # for row in rows:
         # f.write(f'{row}')
-        print(row)
+        # print(row)
 
 except Exception as e:
     print(f"An error occurred: {e}")
@@ -41,4 +43,3 @@ except Exception as e:
 # Close the cursor and connection
 cursor.close()
 connection.close()
-

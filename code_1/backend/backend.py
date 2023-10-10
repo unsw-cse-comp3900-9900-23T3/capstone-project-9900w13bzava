@@ -8,7 +8,7 @@ import subprocess
 # demo to get data from database, sql should be modified
 # sql = '''SELECT * FROM BPSSamples.dbo.APPOINTMENTS
 # where APPOINTMENTDATE<CURRENT_TIMESTAMP and INTERNALID=(36)'''
-# result = subprocess.check_output(["python","samplesdatabase2_1320025814.py", sql]).decode('utf-8')
+# result = json.loads(subprocess.check_output(["python","samplesdatabase2_1320025814.py", sql]).decode('utf-8'))
 # print(result)
 
 app = Flask(__name__)

@@ -21,9 +21,26 @@ function App ({ onSuccess }) {
     navigate("/register");
   }
 
-  function goMainpage () {
+  async function fLogin () {
     if (username.length !== 0 && password.length !== 0 && location.length !== 0) {
-      navigate("/mainpage");
+      console.log('begin');
+      const response = await fetch('http://127.0.0.1:5000/login', {
+        method: 'POST',
+        headers: {
+          'Content-type': 'application/json',
+        },
+        body: JSON.stringify({
+          "username": username,
+          "password": password,
+          "location": location,
+        })
+      });
+      const data = await response.json();
+      console.log("backend: ", data.message);
+      if (data.message === 'Login successful!') {
+        navigate("/mainpage");
+      }
+      
     }
   }
 
@@ -93,7 +110,7 @@ function App ({ onSuccess }) {
           }}
         >
           <Space>
-            <Button type="primary" onClick={goMainpage}>
+            <Button type="primary" onClick={fLogin}>
               Log in
             </Button>
             <Button type="primary" onClick={goRegister}>

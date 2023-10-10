@@ -49,7 +49,20 @@ def login():
     password = data.get('password')
     location = data.get('location')
 
-    # search in database
+    # Search in the CSV database
+    with open('users_data.csv', 'r', newline='') as file:
+        reader = csv.reader(file)
+        for row in reader:
+            if row and row[0] == username:
+                # If username matches but password doesn't
+                if row[1] != password:
+                    return jsonify({"message": "Wrong password!", "status": False}), 400
+                # If both username and password match
+                else:
+                    return jsonify({"message": "Login successful!", "status": True}), 200
+
+    # If loop completes without returning, then username was not found in CSV
+    return jsonify({"message": "User does not exist!", "status": False}), 400
 
 # Register
 @app.route('/register', methods=['POST'])

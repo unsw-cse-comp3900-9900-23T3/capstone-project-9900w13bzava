@@ -1,8 +1,10 @@
 import React from 'react';
-import { Table, Space, Button } from 'antd';
+import { Table, Space, Button, Modal } from 'antd';
 import "./index.css"
+import { useState } from 'react';
 
 const widthButton = "100px"
+
 const columns = [
   {
     title: 'Time',
@@ -353,6 +355,20 @@ const data = [
 ];
 
 function App ({ onSuccess }) {
+  const [modalVisible, setModalVisible] = useState(false);
+  const [selectedRecord, setSelectedRecord] = useState(null);
+
+  const handleCellClick = (record) => {
+    // 设置选中的记录，打开对话框
+    setSelectedRecord(record);
+    setModalVisible(true);
+  };
+
+  const handleModalClose = () => {
+    // 清空选中的记录，关闭对话框
+    setSelectedRecord(null);
+    setModalVisible(false);
+  };
 
   return (
     <div>
@@ -370,8 +386,27 @@ function App ({ onSuccess }) {
           <Button style={{backgroundColor:'red', width:widthButton}}>Urgent</Button>
           <Button type="primary" style={{backgroundColor:'Black', width:widthButton}}>Elsewhere</Button>
         </Space>
-        <Table columns={columns} dataSource={data} pagination={false} bordered scroll={{y:300}} size="small"/>
+        <Table columns={columns} dataSource={data} pagination={false} bordered scroll={{y:300}} size="small"
+        onRow={(record) => ({
+          onClick: () => handleCellClick(record),
+        })} />
       </Space>
+      <Modal
+        title={'Edit this appointment'}
+        visible={modalVisible}
+        onCancel={handleModalClose}
+        footer={[
+          <Button key="close" onClick={handleModalClose}>
+            Close
+          </Button>
+        ]}
+      >
+        {selectedRecord && (
+          <div>
+            <p>{selectedRecord.before}{selectedRecord.date}{selectedRecord.after}</p>
+          </div>
+        )}
+      </Modal>
     </div> 
   );
 };

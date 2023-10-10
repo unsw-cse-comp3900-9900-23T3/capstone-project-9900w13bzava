@@ -10,6 +10,7 @@
   align-items: center;
   justify-content: center;
   height: 100%;
+  background-color: brown;
 }
 
 /* 在小屏幕上（例如手机屏幕）调整样式 */

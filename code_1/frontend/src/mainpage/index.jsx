@@ -3,10 +3,10 @@ import {
   MenuFoldOutlined,
   MenuUnfoldOutlined,
   EditOutlined,
-  DeleteOutlined,
   SnippetsOutlined,
   LogoutOutlined,
   DatabaseOutlined,
+  SolutionOutlined,
 } from '@ant-design/icons';
 import {
   useNavigate
@@ -62,9 +62,9 @@ function App ( props ) {
                 label: 'Edit',
               },
               {
-                key: 'delete',
-                icon: <DeleteOutlined />,
-                label: 'Delete',
+                key: 'record',
+                icon: <SolutionOutlined />,
+                label: 'Record',
               },
               {
                 key: 'logout',
@@ -101,6 +101,9 @@ function App ( props ) {
               padding: 24,
               height: heightContent,
               background: colorBgContainer,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
             }}
             className='backgroundChild'
           >

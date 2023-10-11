@@ -39,8 +39,10 @@ def login():
     responses:
       200:
         description: Login successful
-      400:
-        description: Passwords do not match
+      401:
+        description: Wrong password
+      404:
+        description: User does not exist
     """
         
     data = request.get_json()
@@ -56,13 +58,13 @@ def login():
             if row and row[0] == username:
                 # If username matches but password doesn't
                 if row[1] != password:
-                    return jsonify({"message": "Wrong password!", "status": False}), 400
+                    return jsonify({"message": "Wrong password!", "status": False}), 401
                 # If both username and password match
                 else:
                     return jsonify({"message": "Login successful!", "status": True}), 200
 
     # If loop completes without returning, then username was not found in CSV
-    return jsonify({"message": "User does not exist!", "status": False}), 400
+    return jsonify({"message": "User does not exist!", "status": False}), 404
 
 # Register
 @app.route('/register', methods=['POST'])

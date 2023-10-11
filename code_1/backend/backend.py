@@ -1,6 +1,7 @@
 from flask import Flask, jsonify, request
 from flasgger import Swagger
 from flask_cors import CORS
+import datetime
 import csv
 import pyodbc
 import subprocess
@@ -10,7 +11,7 @@ import re
 # demo to get data from database, sql should be modified
 # sql = '''SELECT * FROM BPSSamples.dbo.APPOINTMENTS
 # where APPOINTMENTDATE<CURRENT_TIMESTAMP and INTERNALID=(36)'''
-# result = json.loads(subprocess.check_output(["python","samplesdatabase2_1320025814.py", sql]).decode('utf-8'))
+# result = json.loads(subprocess.check_output(["python","ConnectDatabase.py", sql]).decode('utf-8'))
 # result = json.dumps(result, indent=4)
 # print(result)
 
@@ -57,7 +58,7 @@ def login():
 
     # get the users result from database
     query = '''SELECT SURNAME, FIRSTNAME, PASSWORD, USERID FROM BPSSamples.dbo.USERS'''
-    result = json.loads(subprocess.check_output(["python","samplesdatabase2_1320025814.py", query]).decode('utf-8'))
+    result = json.loads(subprocess.check_output(["python","ConnectDatabase.py", query]).decode('utf-8'))
 
     # check name and password
     for idx in result:
@@ -139,7 +140,23 @@ def ShowPanel():
     query = f'''SELECT APPOINTMENTDATE, APPOINTMENTLENGTH, APPOINTMENTTIME, APPOINTMENTTYPE, INTERNALID FROM BPSSamples.dbo.APPOINTMENTS
     where USERID={userid} and APPOINTMENTDATE=\'{date}\''''
 
-    result = json.loads(subprocess.check_output(["python","samplesdatabase2_1320025814.py", query]).decode('utf-8'))
+
+    result = json.loads(subprocess.check_output(["python","ConnectDatabase.py", query]).decode('utf-8'))
+    time = datetime.timedelta(seconds=result['APPOINTMENTTIME'])
+    return jsonify(result)
+
+# ShowPatient
+@app.route('/ShowPatient', methods=['POST'])
+def ShowPatient():
+    data = request.get_json()
+    name = str(data.get('patient')).ljust(30)
+
+    query = f'''SELECT BPSSamples.dbo.APPOINTMENTS.*
+    FROM BPSSamples.dbo.PATIENTS
+    JOIN BPSSamples.dbo.APPOINTMENTS ON BPSSamples.dbo.PATIENTS.INTERNALID = BPSSamples.dbo.APPOINTMENTS.INTERNALID
+    WHERE BPSSamples.dbo.PATIENTS.PREFERREDNAME = \'{name}\''''
+
+    result = json.loads(subprocess.check_output(["python","ConnectDatabase.py", query]).decode('utf-8'))
     return jsonify(result)
 
 

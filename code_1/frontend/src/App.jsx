@@ -7,10 +7,10 @@ import {
 import Login from './login';
 import Register from './register';
 import MainPage from './mainpage';
-import Delete from './delete';
 import Create from './create';
 import Edit from './edit';
 import Show from './show';
+import Record from './record';
 
 function App() {
   return (
@@ -30,7 +30,7 @@ function App() {
             <Route path="/mainpage/show" element={<Show />} />
             <Route path="/mainpage/create" element={<Create />} />
             <Route path="/mainpage/edit" element={<Edit />} />
-            <Route path="/mainpage/delete" element={<Delete />} />
+            <Route path="/mainpage/record" element={<Record />} />
           </Route>
           <Route path="*" element={<h2>404 page</h2>} />
         </Routes>

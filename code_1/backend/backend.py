@@ -149,33 +149,71 @@ def ShowPanel():
     # 13	Paid                
     # 99	Unavailable         
     # make query with id and date
-    query = f'''SELECT RECORDID,APPOINTMENTDATE, APPOINTMENTLENGTH, APPOINTMENTTIME, APPOINTMENTTYPE, INTERNALID, APPOINTMENTCODES FROM BPSSamples.dbo.APPOINTMENTS
+    query = f'''SELECT table1.RECORDID, table1.APPOINTMENTDATE, table1.APPOINTMENTLENGTH, table1.APPOINTMENTTIME, table4.DESCRIPTION, table5.DESCRIPTION as Status, table2.firstname, table2.SURNAME, table3.PREFERREDNAME, table3.INTERNALID,
+      CASE
+        WHEN table1.APPOINTMENTTYPE=30 THEN 1
+        ELSE 0
+      END AS IsPhone,
+      CASE
+        WHEN table3.MEDICARENO IS NULL THEN 0
+        ELSE 1
+      END AS HasMedicare
+    FROM BPSSamples.dbo.APPOINTMENTS as table1
+    inner join BPSSamples.dbo.USERS as table2
+    ON table1.USERID = table2.USERID
+    inner join BPSSamples.dbo.PATIENTS as table3
+    ON table3.INTERNALID = table1.INTERNALID
+    inner join BPSSamples.dbo.APPOINTMENTTYPES as table4
+    ON table4.APPOINTMENTCODE = table1.APPOINTMENTCODE
+    inner join BPSSamples.dbo.APPOINTMENTCODES as table5
+    ON table5.APPOINTMENTCODE = table1.APPOINTMENTCODE
     where USERID={userid} and APPOINTMENTDATE=\'{date}\''''
 
 
     result = json.loads(subprocess.check_output(["python","ConnectDatabase.py", query]).decode('utf-8'))
-    time = datetime.timedelta(seconds=result['APPOINTMENTTIME'])
-    return jsonify(result)
+    sum = 0
+    # convert second to readable time format
+    for idx in result:
+        sum += int(idx['APPOINTMENTLENGTH'])
+        sec = int(idx['APPOINTMENTTIME'])
+        time = datetime.timedelta(seconds=sec)
+        idx['APPOINTMENTTIME'] = str(time)
+    
+    stat = f'''On {date},
+    I have {len(result)} appointment(s) in total.
+    My expected workload duration is {sum/3600:.1f} hour(s).'''
+    return jsonify(result ,stat)
 
-@app.route('/record', methods=['POST'])
-def record():
-    query=f'''select PREFERREDNAME, INTERNALID from BPSSamples.dbo.PATIENTS'''
+@app.route('/ShowPatientList', methods=['POST'])
+def ShowPatientList():
+    data = request.get_json()
+    userid = str(data.get('userid'))
+
+    query=f'''SELECT DISTINCT BPSSamples.dbo.PATIENTS.PREFERREDNAME, BPSSamples.dbo.PATIENTS.INTERNALID FROM BPSSamples.dbo.APPOINTMENTS
+    join BPSSamples.dbo.PATIENTS on BPSSamples.dbo.PATIENTS.INTERNALID=BPSSamples.dbo.APPOINTMENTS.INTERNALID
+    where BPSSamples.dbo.APPOINTMENTS.USERID={userid}'''
+
     result = json.loads(subprocess.check_output(["python","ConnectDatabase.py", query]).decode('utf-8'))
     return jsonify(result)
     
 # ShowPatient
-@app.route('/ShowPatient', methods=['POST'])
-def ShowPatient():
+@app.route('/ShowPatientRecord', methods=['POST'])
+def ShowPatientRecord():
     data = request.get_json()
-    name = str(data.get('patient')).ljust(30)
+    userid = data.get('userid')
+    internalid = data.get('internalid')
 
-    query = f'''SELECT BPSSamples.dbo.APPOINTMENTS.*
-    FROM BPSSamples.dbo.PATIENTS
-    JOIN BPSSamples.dbo.APPOINTMENTS ON BPSSamples.dbo.PATIENTS.INTERNALID = BPSSamples.dbo.APPOINTMENTS.INTERNALID
-    WHERE BPSSamples.dbo.PATIENTS.PREFERREDNAME = \'{name}\''''
+    query1 = f'''select *
+    from BPSSamples.dbo.APPOINTMENTS
+    where INTERNALID = {internalid} and userid = {userid} and APPOINTMENTDATE<CURRENT_TIMESTAMP'''
 
-    result = json.loads(subprocess.check_output(["python","ConnectDatabase.py", query]).decode('utf-8'))
-    return jsonify(result)
+    query2 = f'''select *
+    from BPSSamples.dbo.APPOINTMENTS
+    where INTERNALID = {internalid} and userid = {userid} and APPOINTMENTDATE>=CURRENT_TIMESTAMP'''
+
+    history = json.loads(subprocess.check_output(["python","ConnectDatabase.py", query1]).decode('utf-8'))
+    future = json.loads(subprocess.check_output(["python","ConnectDatabase.py", query2]).decode('utf-8'))
+    return jsonify(history, future)
 
 
 if __name__ == '__main__':

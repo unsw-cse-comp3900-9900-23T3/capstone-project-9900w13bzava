@@ -136,8 +136,20 @@ def ShowPanel():
     userid = str(data.get('userid'))
     date = str(data.get('date'))
 
+    # 0	Unavailable         
+    # 1	Booked              
+    # 2	Waiting             
+    # 3	With doctor         
+    # 4	At billing          
+    # 5	Completed           
+    # 9	Unavailable         
+    # 10	DNA                 
+    # 11	Reserved            
+    # 12	Invoiced            
+    # 13	Paid                
+    # 99	Unavailable         
     # make query with id and date
-    query = f'''SELECT APPOINTMENTDATE, APPOINTMENTLENGTH, APPOINTMENTTIME, APPOINTMENTTYPE, INTERNALID FROM BPSSamples.dbo.APPOINTMENTS
+    query = f'''SELECT RECORDID,APPOINTMENTDATE, APPOINTMENTLENGTH, APPOINTMENTTIME, APPOINTMENTTYPE, INTERNALID, APPOINTMENTCODES FROM BPSSamples.dbo.APPOINTMENTS
     where USERID={userid} and APPOINTMENTDATE=\'{date}\''''
 
 
@@ -145,6 +157,12 @@ def ShowPanel():
     time = datetime.timedelta(seconds=result['APPOINTMENTTIME'])
     return jsonify(result)
 
+@app.route('/record', methods=['POST'])
+def record():
+    query=f'''select PREFERREDNAME, INTERNALID from BPSSamples.dbo.PATIENTS'''
+    result = json.loads(subprocess.check_output(["python","ConnectDatabase.py", query]).decode('utf-8'))
+    return jsonify(result)
+    
 # ShowPatient
 @app.route('/ShowPatient', methods=['POST'])
 def ShowPatient():

@@ -93,7 +93,7 @@ function App () {
           </Form.Item>
 
           <Form.Item
-            label="Appoint type"
+            label="Appointment type"
             name="appointType"
             rules={[
               {

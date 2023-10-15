@@ -4,6 +4,7 @@ import {
   Route,
   Routes,
 } from 'react-router-dom';
+import React from 'react';
 import Login from './login';
 import Register from './register';
 import MainPage from './mainpage';
@@ -13,11 +14,22 @@ import Show from './show';
 import Record from './record';
 
 function App() {
+  const [token, setToken] = React.useState(null);
+  function manageTokenSet (token) {
+    setToken(token);
+    localStorage.setItem('token', token)
+  }
+
+  React.useEffect(function () {
+    const tokens = localStorage.getItem('token')
+    setToken(tokens)
+  }, [])
+
   return (
     <>
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Login />}/>
+          <Route path="/" element={<Login onSuccess={manageTokenSet}/>}/>
           <Route path="/register" element={<Register />} />
           <Route
             path="/mainpage"
@@ -27,7 +39,7 @@ function App() {
               </MainPage>
             }
           >
-            <Route path="/mainpage/show" element={<Show />} />
+            <Route path="/mainpage/show" element={<Show token={token}/>} />
             <Route path="/mainpage/create" element={<Create />} />
             <Route path="/mainpage/edit" element={<Edit />} />
             <Route path="/mainpage/record" element={<Record />} />

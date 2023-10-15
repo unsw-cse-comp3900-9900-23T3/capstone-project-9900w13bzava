@@ -36,10 +36,12 @@ function App ({ onSuccess }) {
         })
       });
       const data = await response.json();
+      console.log("backend complete: ", data);
       console.log("backend: ", data.message);
       if (data.message === 'Login successful!') {
         navigate("/mainpage");
       }
+      onSuccess(data.userid)
       
     }
   }

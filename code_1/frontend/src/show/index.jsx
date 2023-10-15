@@ -354,10 +354,10 @@ const data = [
   },
 ];
 
-function App ({ onSuccess }) {
+function App ({ token }) {
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedRecord, setSelectedRecord] = useState(null);
-
+  console.log('transmit: ', token);
   const handleCellClick = (record) => {
     // 设置选中的记录，打开对话框
     setSelectedRecord(record);
@@ -370,8 +370,24 @@ function App ({ onSuccess }) {
     setModalVisible(false);
   };
 
+  async function onTest () {
+    const response = await fetch('http://127.0.0.1:5000/ShowPanel', {
+      method: 'POST',
+      headers: {
+        'Content-type': 'application/json',
+      },
+      body: JSON.stringify({
+        "userid": token,
+        "date": "2017-2-24",
+      })
+    });
+    const data = await response.json();
+    console.log("showPanel: ", data);
+  }
+
   return (
     <div>
+      <Button onClick={onTest}>测试showpanel</Button>
       <Space direction="vertical">
         <Space>
           <Button style={{backgroundColor:'gray', width:widthButton}}>Unavailable</Button>

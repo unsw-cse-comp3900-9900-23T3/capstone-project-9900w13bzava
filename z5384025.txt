@@ -13,3 +13,10 @@ Attempted to connect to the server database following the client's method but en
 Week4:
 Still working on the database connection problem, one problem solved, anothor pop out.
 Implemented the connection between the front-end and back-end, with the front-end calling the back-end's API.
+
+Week5:
+The database connection has been successfully established. 
+Several SQL queries have been executed to retrieve the required data from the database, 
+such as user account passwords, appointments for specific dates, and more. 
+Additionally, several backend APIs that are needed for the frontend have been implemented.
+

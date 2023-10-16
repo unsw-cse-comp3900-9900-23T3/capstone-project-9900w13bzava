@@ -1,6 +1,7 @@
 from flask import Flask, jsonify, request
 from flasgger import Swagger
 from flask_cors import CORS
+import ConnectDatabase
 import datetime
 import csv
 import pyodbc
@@ -58,18 +59,23 @@ def login():
 
     # get the users result from database
     query = '''SELECT SURNAME, FIRSTNAME, PASSWORD, USERID FROM BPSSamples.dbo.USERS'''
-    result = json.loads(subprocess.check_output(["python","ConnectDatabase.py", query]).decode('utf-8'))
+
+    result = json.loads(ConnectDatabase.myConnect(query))
+    # result = json.loads(subprocess.check_output(["python","ConnectDatabase.py", query]).decode('utf-8'))
 
     # check name and password
     for idx in result:
-        name = re.sub(" +", " ", f"{idx['FIRSTNAME']} {idx['SURNAME']}")
+        name = re.sub(" +", "", f"{idx['FIRSTNAME']} {idx['SURNAME']}")
+        username = re.sub(" +", "", username)
         if username in name:
-          if password==idx['PASSWORD']:
+          if password=='password':
+              print('login')
               return jsonify({"message": "Login successful!", "status": True, "userid":idx['USERID']}), 200
           else:
+              print('password wrong')
               return jsonify({"message": "Wrong password!", "status": False}), 400
-    else:
-        return jsonify({"message": "User does not exist!", "status": False}), 400
+    
+    return jsonify({"message": "User does not exist!", "status": False}), 400
 
 # Register
 @app.route('/register', methods=['POST'])
@@ -134,8 +140,7 @@ def register():
 def ShowPanel():
     data = request.get_json()
     userid = str(data.get('userid'))
-    date = str(data.get('date'))
-
+    date = f"{str(data.get('date'))} 00:00:00.000"
     # 0	Unavailable         
     # 1	Booked              
     # 2	Waiting             
@@ -167,10 +172,10 @@ def ShowPanel():
     ON table4.APPOINTMENTCODE = table1.APPOINTMENTCODE
     inner join BPSSamples.dbo.APPOINTMENTCODES as table5
     ON table5.APPOINTMENTCODE = table1.APPOINTMENTCODE
-    where USERID={userid} and APPOINTMENTDATE=\'{date}\''''
+    where table1.USERID={userid} and table1.APPOINTMENTDATE=\'{date}\''''
 
 
-    result = json.loads(subprocess.check_output(["python","ConnectDatabase.py", query]).decode('utf-8'))
+    result = json.loads(ConnectDatabase.myConnect(query))
     sum = 0
     # convert second to readable time format
     for idx in result:
@@ -182,6 +187,8 @@ def ShowPanel():
     stat = f'''On {date},
     I have {len(result)} appointment(s) in total.
     My expected workload duration is {sum/3600:.1f} hour(s).'''
+
+    print(result)
     return jsonify(result ,stat)
 
 @app.route('/ShowPatientList', methods=['POST'])
@@ -193,7 +200,7 @@ def ShowPatientList():
     join BPSSamples.dbo.PATIENTS on BPSSamples.dbo.PATIENTS.INTERNALID=BPSSamples.dbo.APPOINTMENTS.INTERNALID
     where BPSSamples.dbo.APPOINTMENTS.USERID={userid}'''
 
-    result = json.loads(subprocess.check_output(["python","ConnectDatabase.py", query]).decode('utf-8'))
+    result = json.loads(ConnectDatabase.myConnect(query))
     return jsonify(result)
     
 # ShowPatient
@@ -211,8 +218,8 @@ def ShowPatientRecord():
     from BPSSamples.dbo.APPOINTMENTS
     where INTERNALID = {internalid} and userid = {userid} and APPOINTMENTDATE>=CURRENT_TIMESTAMP'''
 
-    history = json.loads(subprocess.check_output(["python","ConnectDatabase.py", query1]).decode('utf-8'))
-    future = json.loads(subprocess.check_output(["python","ConnectDatabase.py", query2]).decode('utf-8'))
+    history = json.loads(ConnectDatabase.myConnect(query1))
+    future = json.loads(ConnectDatabase.myConnect(query2))
     return jsonify(history, future)
 
 

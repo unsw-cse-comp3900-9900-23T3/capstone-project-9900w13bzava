@@ -1,5 +1,5 @@
 import React from 'react';
-import { Table, Space, Button, Modal } from 'antd';
+import { Table, Space, Button, Modal, Input } from 'antd';
 import "./index.css"
 import { useState } from 'react';
 
@@ -357,6 +357,7 @@ const data = [
 function App ({ token }) {
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedRecord, setSelectedRecord] = useState(null);
+  const [test, setTest] = React.useState('');
   console.log('transmit: ', token);
   const handleCellClick = (record) => {
     // 设置选中的记录，打开对话框
@@ -378,16 +379,18 @@ function App ({ token }) {
       },
       body: JSON.stringify({
         "userid": token,
-        "date": "2017-2-24",
+        "date": test,
       })
     });
     const data = await response.json();
     console.log("showPanel: ", data);
   }
+  
 
   return (
     <div>
       <Button onClick={onTest}>测试showpanel</Button>
+      <Input value={test} onChange={(e) => setTest(e.target.value)}/>
       <Space direction="vertical">
         <Space>
           <Button style={{backgroundColor:'gray', width:widthButton}}>Unavailable</Button>

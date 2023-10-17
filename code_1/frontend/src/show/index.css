@@ -25,3 +25,9 @@
 .highlight-row {
   background-color: yellow; /* 设置背景颜色为黄色，你可以根据需要调整这个值 */
 }
+
+.cell {
+  margin: 0;
+  padding: 0;
+  background-color: yellow;
+}

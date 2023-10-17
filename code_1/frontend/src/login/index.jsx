@@ -36,8 +36,7 @@ function App ({ onSuccess }) {
         })
       });
       const data = await response.json();
-      console.log("backend complete: ", data);
-      console.log("backend: ", data.message);
+      console.log("登录成功后，后端返回的数据: ", data);
       if (data.message === 'Login successful!') {
         navigate("/mainpage");
       }

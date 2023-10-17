@@ -1,7 +1,5 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
-  MenuFoldOutlined,
-  MenuUnfoldOutlined,
   EditOutlined,
   SnippetsOutlined,
   LogoutOutlined,
@@ -11,13 +9,12 @@ import {
 import {
   useNavigate
 } from 'react-router-dom';
-import { Layout, Menu, Button, theme, Space, DatePicker } from 'antd';
-const { Header, Sider, Content } = Layout;
-const heightContent = 500
+import { Layout, Menu, theme } from 'antd';
+const { Sider, Content } = Layout;
+const heightContent = 600
 
 function App ( props ) {
   
-  const [collapsed, setCollapsed] = useState(false);
   const {
     token: { colorBgContainer },
   } = theme.useToken();
@@ -28,18 +25,15 @@ function App ( props ) {
     if (key !== "logout") {
       navigate(`/mainpage/${key}`);
     } else {
+      localStorage.clear();
       navigate(`/`);
     }
   }
 
-  const onDateChange = (date, dateString) => {
-    console.log(date, dateString);
-  };
-
   return (
     <div className="background">
       <Layout>
-        <Sider trigger={null} collapsible collapsed={collapsed}>
+        <Sider trigger={null} width={150}>
           <div className="demo-logo-vertical" />
           <Menu
             theme="dark"
@@ -75,26 +69,6 @@ function App ( props ) {
           />
         </Sider>
         <Layout>
-          <Header
-            style={{
-              padding: 0,
-              background: colorBgContainer,
-            }}
-          >
-            <Space>
-              <Button
-                type="text"
-                icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
-                onClick={() => setCollapsed(!collapsed)}
-                style={{
-                  fontSize: '16px',
-                  width: 50,
-                  height: 50,
-                }}
-              />
-              <DatePicker onChange={onDateChange} />
-            </Space>
-          </Header>
           <Content
             style={{
               margin: '24px 16px',

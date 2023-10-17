@@ -1,0 +1,33 @@
+.rowGrid {
+  height: 5px; /* 设置行高为50像素，你可以根据需要调整这个值 */
+  overflow: hidden;
+}
+
+/* table */
+.ant-table {
+  font-size: 9px;
+}
+
+/* row data */
+.ant-table-tbody > tr > td {
+  height: 5px;
+  padding: 4px;
+}
+/* row tags */
+.my-tag {
+  font-size: 12px;
+}
+.ant-table-thead > tr > th {
+  height: 5px;
+  padding: 4px;
+}
+
+.highlight-row {
+  background-color: yellow; /* 设置背景颜色为黄色，你可以根据需要调整这个值 */
+}
+
+.cell {
+  margin: 0;
+  padding: 0;
+  background-color: yellow;
+}

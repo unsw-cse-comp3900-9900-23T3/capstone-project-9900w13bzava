@@ -1,6 +1,6 @@
 import React from 'react';
 import "./index.css";
-import { Button, Form, Input, Space } from 'antd';
+import { Button, Form, Input, Space, notification } from 'antd';
 import {
   useNavigate
 } from 'react-router-dom';
@@ -36,12 +36,32 @@ function App ({ onSuccess }) {
         })
       });
       const data = await response.json();
-      console.log("登录成功后，后端返回的数据: ", data);
-      if (data.message === 'Login successful!') {
+      console.log("fLogin: ", data);
+      if (data.status) {
         navigate("/mainpage");
+        notification.open({
+          message: 'Success',
+          type: 'success',
+          description:
+          // error message
+              `${data.message}`,
+          onClick: () => {
+            console.log('Notification Clicked!');
+          },
+        });
+        onSuccess(data.userid)
+      } else {
+        notification.open({
+          message: 'Error',
+          type: 'error',
+          description:
+          // error message
+              `${data.message}`,
+          onClick: () => {
+            console.log('Notification Clicked!');
+          },
+        });
       }
-      onSuccess(data.userid)
-      
     }
   }
 

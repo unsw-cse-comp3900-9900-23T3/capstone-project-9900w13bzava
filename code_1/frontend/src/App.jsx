@@ -42,7 +42,7 @@ function App() {
             <Route path="/mainpage/show" element={<Show token={token}/>} />
             <Route path="/mainpage/create" element={<Create />} />
             <Route path="/mainpage/edit" element={<Edit />} />
-            <Route path="/mainpage/record" element={<Record />} />
+            <Route path="/mainpage/record" element={<Record token={token}/>} />
           </Route>
           <Route path="*" element={<h2>404 page</h2>} />
         </Routes>

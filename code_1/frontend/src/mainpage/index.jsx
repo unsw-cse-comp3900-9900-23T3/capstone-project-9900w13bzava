@@ -33,7 +33,7 @@ function App ( props ) {
   return (
     <div className="background">
       <Layout>
-        <Sider trigger={null} width={150}>
+        <Sider trigger={null} width={180}>
           <div className="demo-logo-vertical" />
           <Menu
             theme="dark"
@@ -41,9 +41,9 @@ function App ( props ) {
             onClick={onMenuChange}
             items={[
               {
-                key: 'show',
+                key: 'appointments',
                 icon: <DatabaseOutlined />,
-                label: 'Show',
+                label: 'Appointments',
               },
               {
                 key: 'create',

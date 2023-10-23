@@ -107,6 +107,7 @@ function App ({ token }) {
         },
         body: JSON.stringify({
           "patientID": value,
+          "userid": tokenRef,
         })
       });
       const data = await response.json();

@@ -44,7 +44,7 @@ function App ({ onSuccess }) {
           type: 'success',
           description:
           // error message
-              `${data.message}`,
+              `${data.message} Hello ${username}`,
           onClick: () => {
             console.log('Notification Clicked!');
           },

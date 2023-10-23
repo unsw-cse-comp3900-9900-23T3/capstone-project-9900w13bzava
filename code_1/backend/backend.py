@@ -135,28 +135,14 @@ def register():
 
     return jsonify({"message": "Registration successful!", "status": True}), 200
 
-# ShowAppt
-@app.route('/ShowPanel', methods=['POST'])
-def ShowPanel():
-    data = request.get_json()
-    userid = str(data.get('userid'))
-    date = f"{str(data.get('date'))} 00:00:00.000"
-    # 0	Unavailable         
-    # 1	Booked              
-    # 2	Waiting             
-    # 3	With doctor         
-    # 4	At billing          
-    # 5	Completed           
-    # 9	Unavailable         
-    # 10	DNA                 
-    # 11	Reserved            
-    # 12	Invoiced            
-    # 13	Paid                
-    # 99	Unavailable         
-    # make query with id and date
-    query = f'''SELECT table1.RECORDID, table1.APPOINTMENTDATE, table1.APPOINTMENTLENGTH, table1.APPOINTMENTTIME, table4.DESCRIPTION, table5.DESCRIPTION as Status, table2.firstname, table2.SURNAME, table3.PREFERREDNAME, table3.INTERNALID,
+# 根据输入的userid和date来获取query
+def get_query(userid, date):
+    return f'''SELECT table1.RECORDID, table1.APPOINTMENTDATE, table1.APPOINTMENTLENGTH, table1.APPOINTMENTTIME, table4.DESCRIPTION, table5.DESCRIPTION as Status, table2.firstname, table2.SURNAME, table3.PREFERREDNAME, table3.INTERNALID,
       CASE
-        WHEN table1.APPOINTMENTTYPE=30 THEN 1
+        WHEN table1.APPOINTMENTTYPE=30 and table3.INTERNALID in (
+			SELECT INTERNALID FROM BPSSamples.dbo.APPOINTMENTS
+			WHERE LOCATIONID=1 and DATEDIFF(DAY, GETDATE(), APPOINTMENTDATE)<= -365
+		) THEN 1
         ELSE 0
       END AS IsPhone,
       CASE
@@ -172,24 +158,65 @@ def ShowPanel():
     ON table4.APPOINTMENTCODE = table1.APPOINTMENTCODE
     inner join BPSSamples.dbo.APPOINTMENTCODES as table5
     ON table5.APPOINTMENTCODE = table1.APPOINTMENTCODE
-    where table1.USERID={userid} and table1.APPOINTMENTDATE=\'{date}\''''
+    where table1.USERID={userid} and table1.APPOINTMENTDATE=\'{date}\'
+  '''
 
 
-    result = json.loads(ConnectDatabase.myConnect(query))
+# ShowAppt
+@app.route('/ShowPanel', methods=['POST'])
+def ShowPanel():
+    data = request.get_json()
+    userid = str(data.get('userid'))
+    cur_date = str(data.get('date'))  # 当天的日期
+    # 将日期字符串转换为日期对象
+    date_obj = datetime.datetime.strptime(cur_date, "%Y-%m-%d")
+
+    # 计算前一天和后一天
+    pre_date = date_obj - datetime.timedelta(days=1)
+    next_date = date_obj + datetime.timedelta(days=1)
+
+    # 将结果格式化为字符串
+    pre_date = pre_date.strftime("%Y-%m-%d")
+    next_date = next_date.strftime("%Y-%m-%d")
+
+    # 0	Unavailable         
+    # 1	Booked              
+    # 2	Waiting             
+    # 3	With doctor         
+    # 4	At billing          
+    # 5	Completed           
+    # 9	Unavailable         
+    # 10	DNA                 
+    # 11	Reserved            
+    # 12	Invoiced            
+    # 13	Paid                
+    # 99	Unavailable         
+    # make query with id and date
+    date = f"{cur_date} 00:00:00.000"
+    query1 = get_query(userid, date)  # 当天
+    date = f"{pre_date} 00:00:00.000"
+    query2 = get_query(userid, date)  # 前一天
+    date = f"{next_date} 00:00:00.000"
+    query3 = get_query(userid, date)  # 后一天
+
+    result1 = json.loads(ConnectDatabase.myConnect(query1))
+    result2 = json.loads(ConnectDatabase.myConnect(query2))
+    result3 = json.loads(ConnectDatabase.myConnect(query3))
+
     sum = 0
     # convert second to readable time format
-    for idx in result:
+    for idx in result1:
         sum += int(idx['APPOINTMENTLENGTH'])
         sec = int(idx['APPOINTMENTTIME'])
         time = datetime.timedelta(seconds=sec)
         idx['APPOINTMENTTIME'] = str(time)
     
     stat = f'''On {date},
-    I have {len(result)} appointment(s) in total.
+    I have {len(result1)} appointment(s) in total.
     My expected workload duration is {sum/3600:.1f} hour(s).'''
 
-    print(result)
-    return jsonify(result ,stat)
+    print(result1)
+    return jsonify(result1, result2, result3, stat)
 
 @app.route('/ShowPatientList', methods=['POST'])
 def ShowPatientList():

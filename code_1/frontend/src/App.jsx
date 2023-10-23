@@ -10,7 +10,7 @@ import Register from './register';
 import MainPage from './mainpage';
 import Create from './create';
 import Edit from './edit';
-import Show from './show';
+import Appointments from './appointments';
 import Record from './record';
 
 function App() {
@@ -39,10 +39,10 @@ function App() {
               </MainPage>
             }
           >
-            <Route path="/mainpage/show" element={<Show token={token}/>} />
+            <Route path="/mainpage/appointments" element={<Appointments token={token}/>} />
             <Route path="/mainpage/create" element={<Create />} />
             <Route path="/mainpage/edit" element={<Edit />} />
-            <Route path="/mainpage/record" element={<Record />} />
+            <Route path="/mainpage/record" element={<Record token={token}/>} />
           </Route>
           <Route path="*" element={<h2>404 page</h2>} />
         </Routes>

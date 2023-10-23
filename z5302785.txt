@@ -1,5 +1,16 @@
+week 2
 This week, we communicated with the client and learned the specific requirements for our project as well as the final implementation effects. 
-
 As the person responsible for writing frontend code, I understood the basic styles that need to be built for the web application and the functionalities that need to be implemented. 
-
 I also planned the next steps for code development. In my role as a Scrum Master, I actively organized the progress of activities, promoted team harmony, and communicated effectively with the client.
+
+week 3
+This week, we communicated with the client. I write the function of logging in and register for the frontend.
+
+week 4
+This week, we communicated with the client. I write the function of mainPage for the frontend.
+
+week 5
+This week, we communicated with the client. I write the function of showing patients list for the frontend.
+
+week 6
+This week, we communicated with the client. I write the function of showing record for the frontend.

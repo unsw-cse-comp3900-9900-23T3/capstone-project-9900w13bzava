@@ -251,12 +251,12 @@ def ShowPatientList():
     data = request.get_json()
     userid = str(data.get('userid'))
 
-    query=f'''SELECT DISTINCT BPSSamples.dbo.PATIENTS.PREFERREDNAME, BPSSamples.dbo.PATIENTS.INTERNALID FROM BPSSamples.dbo.APPOINTMENTS
+    query=f'''SELECT DISTINCT BPSSamples.dbo.PATIENTS.PREFERREDNAME as patientName, BPSSamples.dbo.PATIENTS.INTERNALID as patientID FROM BPSSamples.dbo.APPOINTMENTS
     join BPSSamples.dbo.PATIENTS on BPSSamples.dbo.PATIENTS.INTERNALID=BPSSamples.dbo.APPOINTMENTS.INTERNALID
     where BPSSamples.dbo.APPOINTMENTS.USERID={userid}'''
 
     result = json.loads(ConnectDatabase.myConnect(query))
-    return jsonify(result)
+    return jsonify({'patients':result})
     
 # ShowPatient
 @app.route('/ShowPatientRecord', methods=['POST'])
@@ -275,7 +275,7 @@ def ShowPatientRecord():
 
     history = json.loads(ConnectDatabase.myConnect(query1))
     future = json.loads(ConnectDatabase.myConnect(query2))
-    return jsonify(history, future)
+    return jsonify({'history':history, 'future':future})
 
 
 if __name__ == '__main__':

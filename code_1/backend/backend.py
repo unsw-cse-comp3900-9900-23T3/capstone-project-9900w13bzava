@@ -224,25 +224,11 @@ def ShowPanel():
     result1, sum = proccess_result(result1, 1)  # 当天
     result2, _ = proccess_result(result2, 0)  # 前一天
     result3, _ = proccess_result(result3, 2)  # 后一天
-
-    # sum = 0
-    # # convert second to readable time format
-    # for idx in result1:
-    #     sum += int(idx['duration'])
-    #     sec = int(idx['startTime'])
-    #     time = datetime.timedelta(seconds=sec)
-    #     idx['startTime'] = str(time)
-    #     idx['patientName'] = str(idx['patientName']).strip()
-    #     idx['note'] = "nima si le"
-
-    #     idx['dayType'] = "1"
     
     stat = f'''On {cur_date},
     I have {len(result1)} appointment(s) in total.
     My expected workload duration is {sum/3600:.1f} hour(s).'''
 
-    # print(result1)
-    # print(type(result1), type(result1[0]))
     return jsonify({"appointments": result1 + result2 + result3, "description": stat})
 
 
@@ -263,14 +249,52 @@ def ShowPatientList():
 def ShowPatientRecord():
     data = request.get_json()
     userid = data.get('userid')
-    internalid = data.get('internalid')
+    internalid = data.get('patientID')
 
-    query1 = f'''select *
-    from BPSSamples.dbo.APPOINTMENTS
+    query1 = f'''SELECT table1.RECORDID, table1.APPOINTMENTDATE, table1.APPOINTMENTLENGTH as duration, table1.APPOINTMENTTIME as startTime, table4.DESCRIPTION as appointmentType, table5.DESCRIPTION as status, table2.firstname as firstName, table2.SURNAME as surname, table3.PREFERREDNAME as patientName, table3.INTERNALID as patientID,
+          CASE
+            WHEN table1.APPOINTMENTTYPE=30 and table3.INTERNALID in (
+          SELECT INTERNALID FROM BPSSamples.dbo.APPOINTMENTS
+          WHERE LOCATIONID=1 and DATEDIFF(DAY, GETDATE(), APPOINTMENTDATE)<= -365
+        ) THEN 1
+            ELSE 0
+          END AS isPhone,
+          CASE
+            WHEN table3.MEDICARENO IS NULL THEN 0
+            ELSE 1
+          END AS hasMedicare
+    FROM BPSSamples.dbo.APPOINTMENTS as table1
+    inner join BPSSamples.dbo.USERS as table2
+    ON table1.USERID = table2.USERID
+    inner join BPSSamples.dbo.PATIENTS as table3
+    ON table3.INTERNALID = table1.INTERNALID
+    inner join BPSSamples.dbo.APPOINTMENTTYPES as table4
+    ON table4.APPOINTMENTCODE = table1.APPOINTMENTCODE
+    inner join BPSSamples.dbo.APPOINTMENTCODES as table5
+    ON table5.APPOINTMENTCODE = table1.APPOINTMENTCODE
     where INTERNALID = {internalid} and userid = {userid} and APPOINTMENTDATE<CURRENT_TIMESTAMP'''
 
-    query2 = f'''select *
-    from BPSSamples.dbo.APPOINTMENTS
+    query2 = f'''SELECT table1.RECORDID, table1.APPOINTMENTDATE, table1.APPOINTMENTLENGTH as duration, table1.APPOINTMENTTIME as startTime, table4.DESCRIPTION as appointmentType, table5.DESCRIPTION as status, table2.firstname firstName, table2.SURNAME as surname, table3.PREFERREDNAME as patientName, table3.INTERNALID as patientID,
+          CASE
+            WHEN table1.APPOINTMENTTYPE=30 and table3.INTERNALID in (
+          SELECT INTERNALID FROM BPSSamples.dbo.APPOINTMENTS
+          WHERE LOCATIONID=1 and DATEDIFF(DAY, GETDATE(), APPOINTMENTDATE)<= -365
+        ) THEN 1
+            ELSE 0
+          END AS isPhone,
+          CASE
+            WHEN table3.MEDICARENO IS NULL THEN 0
+            ELSE 1
+          END AS hasMedicare
+    FROM BPSSamples.dbo.APPOINTMENTS as table1
+    inner join BPSSamples.dbo.USERS as table2
+    ON table1.USERID = table2.USERID
+    inner join BPSSamples.dbo.PATIENTS as table3
+    ON table3.INTERNALID = table1.INTERNALID
+    inner join BPSSamples.dbo.APPOINTMENTTYPES as table4
+    ON table4.APPOINTMENTCODE = table1.APPOINTMENTCODE
+    inner join BPSSamples.dbo.APPOINTMENTCODES as table5
+    ON table5.APPOINTMENTCODE = table1.APPOINTMENTCODE
     where INTERNALID = {internalid} and userid = {userid} and APPOINTMENTDATE>=CURRENT_TIMESTAMP'''
 
     history = json.loads(ConnectDatabase.myConnect(query1))

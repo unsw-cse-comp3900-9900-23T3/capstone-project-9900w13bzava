@@ -119,6 +119,7 @@ function App ({ token }) {
         hDoctor: `${item.firstName} ${item.surname}`,
         patientName: item.patientName,
         hasMedicare: item.hasMedicare,
+        isPhone: item.isPhone,
         duration: item.duration,
         status: item.status,
         appointmentType: item.appointmentType,
@@ -143,6 +144,7 @@ function App ({ token }) {
         fDoctor: `${item.firstName} ${item.surname}`,
         patientName: item.patientName,
         hasMedicare: item.hasMedicare,
+        isPhone: item.isPhone,
         duration: item.duration,
         status: item.status,
         appointmentType: item.appointmentType,
@@ -216,6 +218,11 @@ function App ({ token }) {
     }
     fPatientList();
   }, []);
+
+  useEffect(() => {
+    console.log("dataF dataH: ", dataF, dataH)
+    console.log("d : ", dataF.hTime, dataH)
+  }, [dataF, dataH])
   
   return (
     <div>
@@ -243,12 +250,36 @@ function App ({ token }) {
             onOk={handleCancel}
             // onCancel={handleCancel}
           >
+          
             <p>Patient name: {selectedRow.patientName}</p>
-            <p>Time: {selectedRow.hTime}</p>
-            <p>Doctor name: {selectedRow.hDoctor}</p>
+            { 'hTime' in selectedRow && (
+              <div>
+                <p>Time: {selectedRow.hTime}</p>
+                <p>Doctor name: {selectedRow.hDoctor}</p>
+              </div>
+            )}
+            { 'fTime' in selectedRow && (
+              <div>
+                <p>Time: {selectedRow.fTime}</p>
+                <p>Doctor name: {selectedRow.fDoctor}</p>
+              </div>
+            )}
             <p>Duration: {selectedRow.duration} minutes</p>
             <p>Status: {selectedRow.status}</p>
-            <p>Appointment type: {selectedRow.appointmentType}</p>
+            {
+              selectedRow.isPhone === 1 && (
+                <div>
+                  <p style={{backgroundColor: "orange"}}>Appointment type: {selectedRow.appointmentType}</p>
+                </div>
+              )
+            }
+            {
+              selectedRow.isPhone === 0 && (
+                <div>
+                  <p>Appointment type: {selectedRow.appointmentType}</p>
+                </div>
+              )
+            }
             <p>Note: {selectedRow.note}</p>
             
           </Modal>

@@ -11,7 +11,7 @@
 /* row data */
 .ant-table-tbody > tr > td {
   height: 5px;
-  padding: 4px;
+  padding: 0;
 }
 /* row tags */
 .my-tag {
@@ -30,4 +30,9 @@
   margin: 0;
   padding: 0;
   background-color: yellow;
+}
+
+.highlight-row {
+  background-color: red;
+  color: white;
 }

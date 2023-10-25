@@ -62,6 +62,17 @@ function App ({ onSuccess }) {
           },
         });
       }
+    } else {
+      notification.open({
+        message: 'Error',
+        type: 'error',
+        description:
+        // error message
+            `Please input all information`,
+        onClick: () => {
+          console.log('Notification Clicked!');
+        },
+      });
     }
   }
 

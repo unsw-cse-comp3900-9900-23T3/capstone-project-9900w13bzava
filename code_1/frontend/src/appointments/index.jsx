@@ -1,12 +1,13 @@
 import React, { useEffect } from 'react';
-import { Table, Space, Button, Modal, DatePicker } from 'antd';
+import { Table, Space, Button, Modal, DatePicker, Popover } from 'antd';
 import "./index.css"
 import { useState } from 'react';
 import dayjs from 'dayjs';
 // import moment from "moment"
 
-const widthButton = "100px"
+const widthButton = "80px"
 const allState = ['gray', 'pink', 'yellow', 'magenta', 'lightgreen', 'lightgray', 'lightblue', 'red', 'gold']
+const getIndex = ['Unavailable', 'On the day', 'Waiting', 'With doctor', 'At billing', 'Completed', 'Did not', 'Urgent', 'Elsewhere']
 const defaultDate = "2006-02-24"
 
 let dataA = [];
@@ -15,12 +16,11 @@ function formatTime(time) {
   const minutes = time % 100;
   const period = hours >= 12 ? 'pm' : 'am';
   // 处理小时和分钟的零填充
-  const formattedHours = String(hours % 12).padStart(2, '0');
   const formattedMinutes = String(minutes).padStart(2, '0');
 
-  return `${formattedHours}:${formattedMinutes} ${period}`;
+  return `${hours}:${formattedMinutes} ${period}`;
 }
-const time_ = [745, 800, 815, 830, 845, 900, 915, 930, 945, 1000, 1015, 1030, 1045, 1100, 1115, 1130, 1145, 1200,
+const time_ = [545, 600, 615, 630, 645, 700, 715, 730, 745, 800, 815, 830, 845, 900, 915, 930, 945, 1000, 1015, 1030, 1045, 1100, 1115, 1130, 1145, 1200,
 1215, 1230, 1245, 1300, 1315, 1330, 1345, 1400, 1415, 1430, 1445, 1500, 1515, 1530, 1545, 1600, 1615, 1630, 1645,
 1700, 1715, 1730, 1745, 1800]
 for (let i=0; i<time_.length; i++) {
@@ -69,29 +69,29 @@ function App ({ token }) {
       align: 'center',
     },
     {
-      title: 'The day Before',
+      title: 'The day before',
       dataIndex: 'before',
       key: 'before',
       align: 'center',
       render: (text, record) => {
         if (record.beforeState !== "") {
           return <div style={{position:"absolute",top:0,bottom:0,left:0,right:0,
-          backgroundColor: allState[parseInt(record.beforeState, 10)],display:"flex",justifyContent:"center",alignItems:"center"}}
-          onClick={() =>{ handleCellClick(record);setJModal('0') }}>{text}</div>;
+          backgroundColor: allState[getIndex.indexOf(record.beforeState)],display:"flex",justifyContent:"center",alignItems:"center"}}
+          onClick={() =>{ handleCellClick(record);setJModal('0') }}>{text} -{record.beforeNote}</div>;
         }
         return text;
       },
     },
     {
-      title: 'Chosen Date',
+      title: 'The chosen Date',
       dataIndex: 'date',
       key: 'date',
       align: 'center',
       render: (text, record) => {
         if (record.dateState !== "") {
           return <div style={{position:"absolute",top:0,bottom:0,left:0,right:0,
-          backgroundColor: allState[parseInt(record.dateState, 10)],display:"flex",justifyContent:"center",alignItems:"center"}}
-          onClick={() =>{ handleCellClick(record);setJModal('1') }}>{text}</div>;
+          backgroundColor: allState[getIndex.indexOf(record.dateState)],display:"flex",justifyContent:"center",alignItems:"center"}}
+          onClick={() =>{ handleCellClick(record);setJModal('1') }}>{text} -{record.dateNote}</div>;
         }
         return text;
       },
@@ -104,13 +104,24 @@ function App ({ token }) {
       render: (text, record) => {
         if (record.afterState !== "") {
           return <div style={{position:"absolute",top:0,bottom:0,left:0,right:0,
-          backgroundColor: allState[parseInt(record.afterState, 10)],display:"flex",justifyContent:"center",alignItems:"center"}}
-          onClick={() =>{ handleCellClick(record);setJModal('2') }}>{text}</div>;
+          backgroundColor: allState[getIndex.indexOf(record.afterState)],display:"flex",justifyContent:"center",alignItems:"center"}}
+          onClick={() =>{ handleCellClick(record);setJModal('2') }}>{text} -{record.afterNote}</div>;
         }
         return text;
       },
     },
   ];
+
+  const content1 = (
+    <div>
+      <p>There are nine types of appointments' state.</p>
+    </div>
+  );
+  const content2 = (
+    <div>
+      <p>Plan your work reasonably and enjoy a happy life!</p>
+    </div>
+  );
   
   const handleCellClick = (record) => {
     // 设置选中的记录，打开对话框
@@ -183,7 +194,7 @@ function App ({ token }) {
             temp[j].aIsPhone = appointments[i].isPhone
             temp[j].aHasMedicare = appointments[i].hasMedicare
           }
-          count_ = appointments[i].duration
+          count_ = appointments[i].duration/15
           judge_ = i;
         }
         if (count_ !== 0) {
@@ -255,34 +266,35 @@ function App ({ token }) {
     }
   }, [date, token, isInitialized]);
 
-  useEffect(() => {
-    console.log("jmodal: ", jModal)
-  }, [jModal])
-
   return (
     <div>
       <Space direction="vertical">
         <DatePicker onChange={onDateChange} defaultValue={dayjs(defaultDate)}/>
         <Space>
           <Space direction="vertical">
+          <Popover content={content1} title="Details">
+                <div style={{width: "80px", display:"flex", alignItems: "center", justifyContent: "center"}}>State: </div>
+              </Popover>
             <Space>
-              <Button style={{backgroundColor:'gray', width:widthButton}}>Unavailable</Button>
-              <Button style={{backgroundColor:'pink', width:widthButton}}>On the day</Button>
-              <Button style={{backgroundColor:'yellow', width:widthButton}}>Waiting</Button>
-              <Button style={{backgroundColor:'magenta', width:widthButton}}>With doctor</Button>
-            </Space>
-            <Space>
-              <Button style={{backgroundColor:'lightgreen', width:widthButton}}>At billing</Button>
-              <Button style={{backgroundColor:'lightgray', width:widthButton}}>Completed</Button>
-              <Button style={{backgroundColor:'lightblue', width:widthButton}}>Did not</Button>
-              <Button style={{backgroundColor:'red', width:widthButton}}>Urgent</Button>
-              <Button style={{backgroundColor:'gold', width:widthButton}}>Elsewhere</Button>
+              
+              <Button style={{backgroundColor:'gray', width:widthButton, padding:"0"}}>Unavailable</Button>
+              <Button style={{backgroundColor:'pink', width:widthButton, padding:"0"}}>On the day</Button>
+              <Button style={{backgroundColor:'yellow', width:widthButton, padding:"0"}}>Waiting</Button>
+              <Button style={{backgroundColor:'magenta', width:widthButton, padding:"0"}}>With doctor</Button>
+              <Button style={{backgroundColor:'lightgreen', width:widthButton, padding:"0"}}>At billing</Button>
+              <Button style={{backgroundColor:'lightgray', width:widthButton, padding:"0"}}>Completed</Button>
+              <Button style={{backgroundColor:'lightblue', width:widthButton, padding:"0"}}>Did not</Button>
+              <Button style={{backgroundColor:'red', width:widthButton, padding:"0"}}>Urgent</Button>
+              <Button style={{backgroundColor:'gold', width:widthButton, padding:"0"}}>Elsewhere</Button>
             </Space>
             
           </Space>
-          <div>{description}</div>
+          
         </Space>
-        <Table columns={columns} dataSource={dataQ} pagination={false} bordered scroll={{y:450}} size="small"
+        <Popover placement="topLeft" content={content2} title="Details">
+          <div style={{width: "800px"}}>{description}</div>
+        </Popover>
+        <Table columns={columns} dataSource={dataQ} pagination={false} bordered scroll={{y:400}} size="small"
          />
       </Space>
       <Modal

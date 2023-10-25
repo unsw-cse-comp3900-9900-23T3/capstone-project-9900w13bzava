@@ -41,4 +41,13 @@ def myConnect(query):
     # Close the cursor and connection
     cursor.close()
     connection.close()
+
+    json_data = json.loads(json_data)
+    for idx in json_data:
+      for key in idx.keys():
+          try:
+            idx[key] = idx[key].strip()
+          except:
+              continue
+          
     return json_data

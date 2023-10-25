@@ -47,6 +47,7 @@ const fColumns = [
             return <div style={{position:"absolute",top:0,bottom:0,left:0,right:0,
             backgroundColor: "orange",display:"flex",justifyContent:"center",alignItems:"center"}}>{text}</div>;
           }
+          return <div>{text}</div>
         }
       },
       {
@@ -111,10 +112,11 @@ function App ({ token }) {
         })
       });
       const data = await response.json();
+      console.log("showPatientRecord: ", data)
       const tempH = data.history.map((item, index) => ({
         key: index.toString(),
         hTime: `${item.day} ${item.startTime}`,
-        hDoctor: `${item.firstname} ${item.surname}`,
+        hDoctor: `${item.firstName} ${item.surname}`,
         patientName: item.patientName,
         hasMedicare: item.hasMedicare,
         duration: item.duration,
@@ -138,7 +140,7 @@ function App ({ token }) {
       const tempF = data.future.map((item, index) => ({
         key: index.toString(),
         fTime: `${item.day} ${item.startTime}`,
-        fDoctor: `${item.firstname} ${item.surname}`,
+        fDoctor: `${item.firstName} ${item.surname}`,
         patientName: item.patientName,
         hasMedicare: item.hasMedicare,
         duration: item.duration,
@@ -202,6 +204,7 @@ function App ({ token }) {
           })
         });
         const data = await response.json();
+        console.log("showPatientList: ", data)
         const temp = data.patients.map(item => ({
           label: item.patientName, // Specify label for Select option
           value: item.patientID,
@@ -238,7 +241,7 @@ function App ({ token }) {
             title="Details"
             open={isModalVisible}
             onOk={handleCancel}
-            onCancel={handleCancel}
+            // onCancel={handleCancel}
           >
             <p>Patient name: {selectedRow.patientName}</p>
             <p>Time: {selectedRow.hTime}</p>

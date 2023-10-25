@@ -12,14 +12,23 @@ import re
 # demo to get data from database, sql should be modified
 # sql = '''SELECT * FROM BPSSamples.dbo.APPOINTMENTS
 # where APPOINTMENTDATE<CURRENT_TIMESTAMP and INTERNALID=(36)'''
-# result = json.loads(subprocess.check_output(["python","ConnectDatabase.py", sql]).decode('utf-8'))
+# result = (subprocess.check_output(["python","ConnectDatabase.py", sql]).decode('utf-8'))
 # result = json.dumps(result, indent=4)
 # print(result)
+# Frederick Findacure
 
 app = Flask(__name__)
 swagger = Swagger(app)
 CORS(app)
 
+def RemoveSpace(result):
+    for idx in result:
+      for key in idx.keys():
+          try:
+            idx[key] = idx[key].strip()
+          except:
+              continue
+          
 # Login
 @app.route('/login', methods=['POST'])
 def login():
@@ -56,12 +65,12 @@ def login():
     username = data.get('username')
     password = data.get('password')
     location = data.get('location')
-
+    
     # get the users result from database
     query = '''SELECT SURNAME, FIRSTNAME, PASSWORD, USERID FROM BPSSamples.dbo.USERS'''
 
-    result = json.loads(ConnectDatabase.myConnect(query))
-    # result = json.loads(subprocess.check_output(["python","ConnectDatabase.py", query]).decode('utf-8'))
+    result = (ConnectDatabase.myConnect(query))
+    # result = (subprocess.check_output(["python","ConnectDatabase.py", query]).decode('utf-8'))
 
     # check name and password
     for idx in result:
@@ -178,6 +187,11 @@ def proccess_result(result, dayType):
         idx['dayType'] = f"{dayType}"
         idx['duration'] = str(int(idx['duration'])//60)
 
+        for key in idx.keys():
+            try:
+              idx[key] = idx[key].strip()
+            except:
+                continue
     return result, sum
 
 # ShowAppt
@@ -217,9 +231,9 @@ def ShowPanel():
     date = f"{next_date} 00:00:00.000"
     query3 = get_query(userid, date)  # 后一天
 
-    result1 = json.loads(ConnectDatabase.myConnect(query1))
-    result2 = json.loads(ConnectDatabase.myConnect(query2))
-    result3 = json.loads(ConnectDatabase.myConnect(query3))
+    result1 = (ConnectDatabase.myConnect(query1))
+    result2 = (ConnectDatabase.myConnect(query2))
+    result3 = (ConnectDatabase.myConnect(query3))
 
     result1, sum = proccess_result(result1, 1)  # 当天
     result2, _ = proccess_result(result2, 0)  # 前一天
@@ -235,23 +249,39 @@ def ShowPanel():
 @app.route('/ShowPatientList', methods=['POST'])
 def ShowPatientList():
     data = request.get_json()
-    userid = str(data.get('userid'))
-
+    userid = str(data.get('userid').get('current'))
     query=f'''SELECT DISTINCT BPSSamples.dbo.PATIENTS.PREFERREDNAME as patientName, BPSSamples.dbo.PATIENTS.INTERNALID as patientID FROM BPSSamples.dbo.APPOINTMENTS
     join BPSSamples.dbo.PATIENTS on BPSSamples.dbo.PATIENTS.INTERNALID=BPSSamples.dbo.APPOINTMENTS.INTERNALID
     where BPSSamples.dbo.APPOINTMENTS.USERID={userid}'''
 
-    result = json.loads(ConnectDatabase.myConnect(query))
-    return jsonify({'patients':result})
-    
+    result = (ConnectDatabase.myConnect(query))
+    # print(result)
+    return jsonify({'patients':result}), 200
+
+def proccess_result1(result):
+    # convert second to readable time format
+    for idx in result:
+        sec = int(idx['startTime']) 
+        time = datetime.timedelta(seconds=sec)
+        if int(str(time).split(':')[0]) >= 12:
+           idx['startTime'] = f'{str(time)[:-3]} pm'
+        else:
+           idx['startTime'] = f'{str(time)[:-3]} am'
+        idx['patientName'] = str(idx['patientName']).strip()
+        idx['note'] = "nima si "
+        idx['duration'] = str(int(idx['duration'])//60)
+        idx['day'] = idx['day'].split()[0]
+    return result
+
 # ShowPatient
 @app.route('/ShowPatientRecord', methods=['POST'])
 def ShowPatientRecord():
     data = request.get_json()
-    userid = data.get('userid')
-    internalid = data.get('patientID')
+    userid = str(data.get('userid').get('current'))
+    internalid = str(data.get('patientID'))
+    print(userid, internalid)
 
-    query1 = f'''SELECT table1.RECORDID, table1.APPOINTMENTDATE, table1.APPOINTMENTLENGTH as duration, table1.APPOINTMENTTIME as startTime, table4.DESCRIPTION as appointmentType, table5.DESCRIPTION as status, table2.firstname as firstName, table2.SURNAME as surname, table3.PREFERREDNAME as patientName, table3.INTERNALID as patientID,
+    query1 = f'''SELECT table1.RECORDID, table1.APPOINTMENTDATE as day, table1.APPOINTMENTLENGTH as duration, table1.APPOINTMENTTIME as startTime, table4.DESCRIPTION as appointmentType, table5.DESCRIPTION as status, table2.firstname as firstName, table2.SURNAME as surname, table3.PREFERREDNAME as patientName, table3.INTERNALID as patientID,
           CASE
             WHEN table1.APPOINTMENTTYPE=30 and table3.INTERNALID in (
           SELECT INTERNALID FROM BPSSamples.dbo.APPOINTMENTS
@@ -272,7 +302,7 @@ def ShowPatientRecord():
     ON table4.APPOINTMENTCODE = table1.APPOINTMENTCODE
     inner join BPSSamples.dbo.APPOINTMENTCODES as table5
     ON table5.APPOINTMENTCODE = table1.APPOINTMENTCODE
-    where INTERNALID = {internalid} and userid = {userid} and APPOINTMENTDATE<CURRENT_TIMESTAMP'''
+    where table1.INTERNALID = {internalid} and table1.userid = {userid} and APPOINTMENTDATE<CURRENT_TIMESTAMP'''
 
     query2 = f'''SELECT table1.RECORDID, table1.APPOINTMENTDATE, table1.APPOINTMENTLENGTH as duration, table1.APPOINTMENTTIME as startTime, table4.DESCRIPTION as appointmentType, table5.DESCRIPTION as status, table2.firstname firstName, table2.SURNAME as surname, table3.PREFERREDNAME as patientName, table3.INTERNALID as patientID,
           CASE
@@ -295,10 +325,11 @@ def ShowPatientRecord():
     ON table4.APPOINTMENTCODE = table1.APPOINTMENTCODE
     inner join BPSSamples.dbo.APPOINTMENTCODES as table5
     ON table5.APPOINTMENTCODE = table1.APPOINTMENTCODE
-    where INTERNALID = {internalid} and userid = {userid} and APPOINTMENTDATE>=CURRENT_TIMESTAMP'''
+    where table1.INTERNALID = {internalid} and table1.userid = {userid} and APPOINTMENTDATE>=CURRENT_TIMESTAMP'''
 
-    history = json.loads(ConnectDatabase.myConnect(query1))
-    future = json.loads(ConnectDatabase.myConnect(query2))
+    history = proccess_result1(ConnectDatabase.myConnect(query1))
+    future = proccess_result1(ConnectDatabase.myConnect(query2))
+    # print(result)
     return jsonify({'history':history, 'future':future})
 
 

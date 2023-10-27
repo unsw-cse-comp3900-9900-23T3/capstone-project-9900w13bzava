@@ -20,3 +20,13 @@ Several SQL queries have been executed to retrieve the required data from the da
 such as user account passwords, appointments for specific dates, and more. 
 Additionally, several backend APIs that are needed for the frontend have been implemented.
 
+Week6:
+Based on the API documentation provided by classmates, I understood the front-end requirements, 
+further improved and optimized the SQL statements, and added data processing for the returned data.
+
+Week7:
+Following the lecture's advice, I created a mock-up database using PostgreSQL, mimicking the table structure of the database provided by the user. 
+This database will be used for the development and testing of the website's functionality in the future.
+
+
+

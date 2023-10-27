@@ -30,7 +30,7 @@ def fetch_all_users(query):
 
 # 获取所有用户数据
 if __name__ == "__main__":
-    query = "SELECT * FROM users;"
-    all_users = fetch_all_users(query)
-    for user in all_users:
-        print(user)
+    query = "SELECT * FROM appointments;"
+    records = fetch_all_users(query)
+    for record in records:
+        print(record)

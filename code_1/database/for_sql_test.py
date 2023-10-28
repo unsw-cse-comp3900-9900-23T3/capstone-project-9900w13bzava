@@ -1,4 +1,6 @@
 import psycopg2
+import json
+
 
 # 连接参数
 DATABASE_HOST = 'localhost'
@@ -8,7 +10,7 @@ DATABASE_USER = 'postgres'
 DATABASE_PASSWORD = 'password'
 
 # 传入的query是查询语句
-def fetch_all_users(query):
+def get_data_from_database(query):
     """从数据库中获取所有用户，并返回"""
     try:
         # 使用with语句确保连接和游标都会被正确关闭
@@ -21,7 +23,12 @@ def fetch_all_users(query):
         ) as conn:
             with conn.cursor() as cursor:
                 cursor.execute(query)
-                records = cursor.fetchall()
+                # 获取列名
+                column_names = [desc[0] for desc in cursor.description]
+                # 将查询结果转化为包含列名的字典列表
+                records = [dict(zip(column_names, row)) for row in cursor.fetchall()]
+                # records = json.dumps(records, indent=4, sort_keys=True, default=str)
+
                 return records
 
     except psycopg2.Error as e:
@@ -30,7 +37,10 @@ def fetch_all_users(query):
 
 # 获取所有用户数据
 if __name__ == "__main__":
-    query = "SELECT * FROM appointments;"
-    records = fetch_all_users(query)
+    query = "SELECT * FROM patients;"
+    records = get_data_from_database(query)
+    print(type(records))
+    print(type(records[0]))
+
     for record in records:
         print(record)

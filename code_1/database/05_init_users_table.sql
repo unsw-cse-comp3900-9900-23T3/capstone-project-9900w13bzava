@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS users (
     password VARCHAR(15) NOT NULL,
     email VARCHAR(255),
     phoneNumber VARCHAR(15) NOT NULL,
-    sexCode INT NOT NULL REFERENCES sex(sexCode) CHECK (sexCode IN (1, 2)),  -- 1 表示male, 2表示female，不能出现其他数字
+    sexCode INT NOT NULL REFERENCES sex(sexCode) CHECK (sexCode IN (1, 2))  -- 1 表示male, 2表示female，不能出现其他数字
 );
 
 -- 插入合法示例记录

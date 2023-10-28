@@ -10,7 +10,7 @@ DATABASE_USER = 'postgres'
 DATABASE_PASSWORD = 'password'
 
 # 传入的query是查询语句
-def get_data_from_database(query):
+def operate_database(query):
     """从数据库中获取所有用户，并返回"""
     try:
         # 使用with语句确保连接和游标都会被正确关闭
@@ -38,7 +38,7 @@ def get_data_from_database(query):
 # 获取所有用户数据
 if __name__ == "__main__":
     query = "SELECT * FROM patients;"
-    records = fetch_all_users(query)
+    records = operate_database(query)
     print(type(records))
     print(type(records[0]))
 

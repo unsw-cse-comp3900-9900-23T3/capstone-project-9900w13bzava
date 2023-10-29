@@ -195,7 +195,7 @@ def ShowPatientList():
   userid = str(data.get('userid').get('current'))
   print(data)
 
-  query=f'''SELECT DISTINCT table2.surname as patientName, table1.patientID as patientID 
+  query=f'''SELECT DISTINCT table2.firstname as firstname, table2.surname as surname, table1.patientID as patientID 
   FROM appointments as table1
   inner join patients as table2 on table2.patientID = table1.patientID
   where table1.userID={userid}'''

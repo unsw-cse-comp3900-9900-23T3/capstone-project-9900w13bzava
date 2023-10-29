@@ -10,10 +10,7 @@ INSERT INTO appointmentStatus (appointmentStatusName) VALUES
 ('Unavailable'),
 ('Booked'),
 ('Waiting'),
+('Urgent'),
 ('With doctor'),
 ('At billing'),
-('Completed'),
-('DNA'),
-('Reserved'),
-('Invoiced'),
-('Paid');
+('Completed');

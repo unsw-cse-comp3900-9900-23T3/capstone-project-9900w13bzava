@@ -167,7 +167,7 @@ function App ({token}) {
           'Content-type': 'application/json',
         },
         body: JSON.stringify({
-          "userid": tokenRef,
+          "userid": tokenRef.current,
           "date": date,
           "starttime": startTime,
           "duration": duration,

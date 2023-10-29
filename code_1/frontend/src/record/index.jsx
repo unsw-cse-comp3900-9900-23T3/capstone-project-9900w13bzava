@@ -116,14 +116,14 @@ function App ({ token }) {
       console.log("tokenRef", tokenRef)
       const tempH = data.history.map((item, index) => ({
         key: index.toString(),
-        hTime: `${item.day} ${item.startTime}`,
-        hDoctor: `${item.firstName} ${item.surname}`,
-        patientName: item.patientName,
-        hasMedicare: item.hasMedicare,
-        isPhone: item.isPhone,
+        hTime: `${item.day} ${item.starttime}`,
+        hDoctor: `${item.userfirstname} ${item.usersurname}`,
+        patientName: `${item.patientfirstname} ${item.patientsurname}`,
+        hasMedicare: item.hasmedicare,
+        isPhone: item.isphone,
         duration: item.duration,
         status: item.status,
-        appointmentType: item.appointmentType,
+        appointmentType: item.appointmenttype,
         note: item.note,
       }));
       while (tempH.length < 10) {
@@ -209,7 +209,7 @@ function App ({ token }) {
         const data = await response.json();
         console.log("tokenRef", tokenRef)
         const temp = data.patients.map(item => ({
-          label: item.patientname, // Specify label for Select option
+          label: `${item.firstname} ${item.surname}`, // Specify label for Select option
           value: item.patientid,
         }));
         setOptionData(temp);

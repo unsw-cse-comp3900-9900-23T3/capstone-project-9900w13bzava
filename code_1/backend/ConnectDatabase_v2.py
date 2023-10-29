@@ -10,7 +10,8 @@ DATABASE_USER = 'postgres'
 DATABASE_PASSWORD = 'password'
 
 # 传入的query是查询语句
-def operate_database(query):
+# operation = 1 表示查询，2表示插入
+def operate_database(query, operation):
     """从数据库中获取所有用户，并返回"""
     try:
         # 使用with语句确保连接和游标都会被正确关闭
@@ -23,13 +24,12 @@ def operate_database(query):
         ) as conn:
             with conn.cursor() as cursor:
                 cursor.execute(query)
-                # 获取列名
-                column_names = [desc[0] for desc in cursor.description]
-                # 将查询结果转化为包含列名的字典列表
-                records = [dict(zip(column_names, row)) for row in cursor.fetchall()]
-                # records = json.dumps(records, indent=4, sort_keys=True, default=str)
-
-                return records
+                if operation == 1:
+                    # 获取列名
+                    column_names = [desc[0] for desc in cursor.description]
+                    # 将查询结果转化为包含列名的字典列表
+                    records = [dict(zip(column_names, row)) for row in cursor.fetchall()]
+                    return records
 
     except psycopg2.Error as e:
         print(f"数据库操作失败: {e}")

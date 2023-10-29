@@ -2,7 +2,7 @@ from flask import Flask, jsonify, request
 from flasgger import Swagger
 from flask_cors import CORS
 from ConnectDatabase_v2 import operate_database
-import datetime
+from datetime import datetime, timedelta
 import csv
 import pyodbc
 import subprocess
@@ -20,6 +20,9 @@ import re
 app = Flask(__name__)
 swagger = Swagger(app)
 CORS(app)
+
+QUERY = 1
+INSERT = 2
 
 # def RemoveSpace(result):
 #     for idx in result:
@@ -118,32 +121,25 @@ def login():
   """
       
   data = request.get_json()
-  username = data.get('username')
-  password = data.get('password')
+  firstname = str(data.get('firstname')).lower().strip()
+  surname = str(data.get('surname')).lower().strip()
+  password = str(data.get('password')).lower().strip()
   location = data.get('location')
   
   # get the users result from database
-  query = '''SELECT surname, firstName, password, userID FROM BPSSamples.dbo.USERS'''
+  query = '''SELECT surname, firstName, password, userID FROM users'''
 
-  result = operate_database(query)
-  # result = (subprocess.check_output(["python","ConnectDatabase.py", query]).decode('utf-8'))
-
+  records = operate_database(query, QUERY)
   # check name and password
-  for idx in result:
-      name = re.sub(" +", "", f"{idx['firstName']} {idx['surname']}")
-      username = re.sub(" +", "", username)
-      if username in name:
-        if password=='password':
-            print('login')
-            return jsonify({"message": "Login successful!", "status": True, "userid":idx['userID']}), 200
-        else:
-            print('password wrong')
-            return jsonify({"message": "Wrong password!", "status": False}), 400
+  for record in records:
+      if str(record['firstname']).lower() != firstname or str(record['surname']).lower() != surname:
+         continue
+      if password == record['password']:
+          return jsonify({"message": "Login successful!", "status": True, "userid":record['userid']}), 200
+      else:
+          return jsonify({"message": "Wrong password!", "status": False}), 400
   
   return jsonify({"message": "User does not exist!", "status": False}), 400
-
-
-
 
 
 # # Register
@@ -209,35 +205,36 @@ def login():
 @app.route('/register', methods=['POST'])
 def register():
   data = request.get_json()
-  firstName = data.get('firstName')
-  surname = data.get('surname')
-  password = data.get('password')
-  confirmPassword = data.get('confirmPassword')  
-  email = data.get('email')
-  phoneNumber = data.get('phoneNumber')
-  sexCode = data.get('sexCode')
+  print(data)
+  firstName = str(data.get('firstname')).lower().strip()
+  surname = str(data.get('surname')).lower().strip()
+  password = str(data.get('password'))
+  confirmPassword = str(data.get('confirmpassword'))
+  email = str(data.get('email'))
+  phoneNumber = str(data.get('phonenumber')).lower().strip()
+  sexCode = str(data.get('sexcode')).lower().strip()
+
+  print(password, confirmPassword)
 
   if password != confirmPassword:
       return jsonify({"message": "Passwords do not match!", "status": False}), 400
 
   query = f"SELECT firstName, surname from users where firstName = {firstName} and surname = {surname}"
-  records = operate_database(query)
+  records = operate_database(query, QUERY)
 
   if records:
     return jsonify({"message": "User already exists!", "status": False}), 400
 
   query = f'''INSERT INTO users (firstName, surname, password, email, phoneNumber, sexCode) VALUES 
-  ({firstName}, {surname}, {password}, {email}, {phoneNumber}, {sexCode});'''
+  ('{firstName}', '{surname}', '{password}', '{email}', '{phoneNumber}', {sexCode});'''
   
   try:
-        # 尝试插入新用户
-        operate_database(query)
+    # 尝试插入新用户
+    operate_database(query, INSERT)
   except Exception as e:
-      return jsonify({"message": f"Database error: {e.pgerror}, Wrong input", "status": False}), 400  # 不确定500状态码是什么
+    return jsonify({"message": f"Insert error, Wrong input", "status": False}), 400  # 不确定500状态码是什么
   
   return jsonify({"message": "Registration successful!", "status": True}), 200
-
-
 
 
 # # 根据输入的userid和date来获取query
@@ -327,15 +324,16 @@ def proccess_result_for_ShowPanel(result, dayType):
   # convert second to readable time format
   for idx in result:
       sum += int(idx['duration'])
-      startTime = idx['startTime']
+      startTime = idx['starttime']
       # 1. 从字符串中解析出datetime对象
-      startTime = datetime.strptime(startTime, '%Y-%m-%d %H:%M:%S')
+      # startTime = datetime.strptime(startTime, '%Y-%m-%d %H:%M:%S')
       # 2. 使用strftime方法格式化时间
       startTime = startTime.strftime('%I:%M %p')
       startTime = startTime.lower()  # 转换为小写，如am和pm
+      idx['starttime'] = startTime
 
       idx['note'] = "nima si "
-      idx['dayType'] = f"{dayType}"  # 表示前一天，当天，后一天
+      idx['daytype'] = f"{dayType}"  # 表示前一天，当天，后一天
   return result, sum
 
 
@@ -399,11 +397,11 @@ def ShowPanel():
   userid = str(data.get('userid'))
   cur_date = str(data.get('date'))  # 当天的日期
   # 将日期字符串转换为日期对象
-  date_obj = datetime.datetime.strptime(cur_date, "%Y-%m-%d")
+  date_obj = datetime.strptime(cur_date, "%Y-%m-%d")
 
   # 计算前一天和后一天
-  pre_date = date_obj - datetime.timedelta(days=1)
-  next_date = date_obj + datetime.timedelta(days=1)
+  pre_date = date_obj - timedelta(days=1)
+  next_date = date_obj + timedelta(days=1)
 
   # 将结果格式化为字符串
   pre_date = pre_date.strftime("%Y-%m-%d")
@@ -415,19 +413,21 @@ def ShowPanel():
   query2 = get_spec_appointments(userid, pre_date)  # 前一天
   query3 = get_spec_appointments(userid, next_date)  # 后一天
 
-  result1 = operate_database(query1)  # 当天
-  result2 = operate_database(query2)  # 前一天
-  result3 = operate_database(query3)  # 后一天
+  result1 = operate_database(query1, QUERY)  # 当天
+  result2 = operate_database(query2, QUERY)  # 前一天
+  result3 = operate_database(query3, QUERY)  # 后一天
 
-  result1, sum = proccess_result_for_ShowPanel(result1, 1)  # 当天
+  result1, sum = proccess_result_for_ShowPanel(result1, 1)  # 当天 xuegaone 
   result2, _ = proccess_result_for_ShowPanel(result2, 0)  # 前一天
   result3, _ = proccess_result_for_ShowPanel(result3, 2)  # 后一天
   
   stat = f'''On {cur_date},
   I have {len(result1)} appointment(s) in total.
   My expected workload duration is {sum/3600:.1f} hour(s).'''
-
-  return jsonify({"appointments": result1 + result2 + result3, "description": stat}), 200
+  
+  total_result = result1 + result2 + result3
+  print(total_result)
+  return jsonify({"appointments": total_result, "description": stat}), 200
 
 
 
@@ -452,7 +452,7 @@ def ShowPatientList():
   inner join patients as table2 on table2.patientID = table1.patientID
   where table1.userID={userid}'''
 
-  result = operate_database(query)
+  result = operate_database(query, QUERY)
   return jsonify({'patients':result}), 200
 
 
@@ -475,12 +475,14 @@ def ShowPatientList():
 def proccess_result_for_ShowPatientRecord(result):
   # convert second to readable time format
   for idx in result:
-      startTime = idx['startTime']
+      startTime = idx['starttime']
       # 1. 从字符串中解析出datetime对象
-      startTime = datetime.strptime(startTime, '%Y-%m-%d %H:%M:%S')
+      # startTime = datetime.strptime(startTime, '%Y-%m-%d %H:%M:%S')
       # 2. 使用strftime方法格式化时间
       startTime = startTime.strftime('%I:%M %p')
       startTime = startTime.lower()  # 转换为小写，如am和pm
+      idx['starttime'] = startTime
+
 
       idx['note'] = "nima si "
   return result
@@ -550,7 +552,7 @@ def proccess_result_for_ShowPatientRecord(result):
 def ShowPatientRecord():
   data = request.get_json()
   userid = str(data.get('userid').get('current'))
-  patientID = str(data.get('patientID'))
+  patientID = str(data.get('patientid'))
   # print(userid, patientID)
   base_query = '''
   SELECT table1.appointmentID, DATE(table1.appointmentDate) as day, table1.duration as duration, 
@@ -581,8 +583,8 @@ def ShowPatientRecord():
   query1 = base_query + f'''where table1.patientID = {patientID} and table1.userID = {userid} and table1.appointmentDate < CURRENT_TIMESTAMP'''
   query2 = base_query + f'''where table1.patientID = {patientID} and table1.userID = {userid} and table1.appointmentDate >= CURRENT_TIMESTAMP'''
 
-  history = proccess_result_for_ShowPatientRecord(operate_database(query1))
-  future = proccess_result_for_ShowPatientRecord(operate_database(query2))
+  history = proccess_result_for_ShowPatientRecord(operate_database(query1, QUERY))
+  future = proccess_result_for_ShowPatientRecord(operate_database(query2, QUERY))
   # print(result)
   return jsonify({'history':history, 'future':future}), 200
 
@@ -604,7 +606,7 @@ def getAllPatient():
   where table1.userID = {userid}
   '''
 
-  records = operate_database(query)
+  records = operate_database(query, QUERY)
   return jsonify({'patientDetail': records}), 200
 
 

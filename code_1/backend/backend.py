@@ -168,15 +168,15 @@ def ShowPanel():
   # make query with id and date
   query1 = get_spec_appointments(userid, cur_date)  # 当天
   query2 = get_spec_appointments(userid, pre_date)  # 前一天
-  query3 = get_spec_appointments(userid, next_date)  # 后一天
+  query3 = get_spec_appointments(userid, next_date)  # 后一天雪糕呢
 
   result1 = operate_database(query1, QUERY)  # 当天
-  result2 = operate_database(query2, QUERY)  # 前一天
+  result2 = operate_database(query2, QUERY)  # 前一天雪糕呢
   result3 = operate_database(query3, QUERY)  # 后一天
 
   result1, sum = proccess_result_for_ShowPanel(result1, 1)  # 当天 xuegaone 
   result2, _ = proccess_result_for_ShowPanel(result2, 0)  # 前一天
-  result3, _ = proccess_result_for_ShowPanel(result3, 2)  # 后一天
+  result3, _ = proccess_result_for_ShowPanel(result3, 2)  # 后一天雪糕呢
   
   hours = sum // 60
   mins = sum % 60
@@ -232,7 +232,7 @@ def ShowPatientRecord():
   SELECT table1.appointmentID, DATE(table1.appointmentDate) as day, table1.duration as duration, 
   table1.startTime as startTime, table4.appointmentTypeName as appointmentType, 
   table5.appointmentStatusName as status, table2.firstName as userFirstName, table2.surname as userSurname, 
-  table3.firstName as patientFisrtName, table3.surname as patientSurname table3.patientID as patientID,
+  table3.firstName as patientFisrtName, table3.surname as patientSurname, table3.patientID as patientID,
         CASE
           WHEN table1.appointmentTypeID=29 and table3.patientID in (
         SELECT patientID FROM appointments

@@ -68,7 +68,6 @@ def login():
 @app.route('/register', methods=['POST'])
 def register():
   data = request.get_json()
-  print(data)
   firstName = str(data.get('firstname')).lower().strip()
   surname = str(data.get('surname')).lower().strip()
   password = str(data.get('password'))
@@ -76,8 +75,6 @@ def register():
   email = str(data.get('email'))
   phoneNumber = str(data.get('phonenumber')).lower().strip()
   sexCode = str(data.get('sexcode')).lower().strip()
-
-  print(password, confirmPassword)
 
   if password != confirmPassword:
       return jsonify({"message": "Passwords do not match!", "status": False}), 400
@@ -185,7 +182,6 @@ def ShowPanel():
   My expected workload duration is {hours} hour(s) {mins} minute(s).'''
   
   total_result = result1 + result2 + result3
-  print(total_result)
   return jsonify({"appointments": total_result, "description": stat}), 200
 
 
@@ -193,7 +189,6 @@ def ShowPanel():
 def ShowPatientList():
   data = request.get_json()
   userid = str(data.get('userid').get('current'))
-  print(data)
 
   query=f'''SELECT DISTINCT table2.firstname as firstname, table2.surname as surname, table1.patientID as patientID 
   FROM appointments as table1
@@ -201,7 +196,6 @@ def ShowPatientList():
   where table1.userID={userid}'''
 
   result = operate_database(query, QUERY)
-  print(result)
   return jsonify({'patients':result}), 200
 
 
@@ -232,7 +226,7 @@ def ShowPatientRecord():
   SELECT table1.appointmentID, DATE(table1.appointmentDate) as day, table1.duration as duration, 
   table1.startTime as startTime, table4.appointmentTypeName as appointmentType, 
   table5.appointmentStatusName as status, table2.firstName as userFirstName, table2.surname as userSurname, 
-  table3.firstName as patientFisrtName, table3.surname as patientSurname, table3.patientID as patientID,
+  table3.firstName as patientFirstName, table3.surname as patientSurname, table3.patientID as patientID,
         CASE
           WHEN table1.appointmentTypeID=29 and table3.patientID in (
         SELECT patientID FROM appointments

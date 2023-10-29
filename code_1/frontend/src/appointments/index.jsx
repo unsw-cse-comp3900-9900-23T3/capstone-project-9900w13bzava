@@ -9,9 +9,9 @@ import {
 // import moment from "moment"
 
 const widthButton = "80px"
-const allState = ['gray', 'pink', 'yellow', 'magenta', 'lightgreen', 'lightgray', 'lightblue', 'red', 'gold']
-const getIndex = ['Unavailable', 'On the day', 'Waiting', 'With doctor', 'At billing', 'Completed', 'Did not', 'Urgent', 'Elsewhere']
-const defaultDate = "2006-02-24"
+const allState = ['gray', 'yellow', 'magenta', 'lightgreen', 'lightgray', 'lightblue', 'gold']
+const getIndex = ['Unavailable', 'Booked', 'Waiting', 'With doctor', 'At billing', 'Completed', 'Urgent']
+const defaultDate = "2023-11-01"
 
 let dataA = [];
 function formatTime(time) {
@@ -19,9 +19,10 @@ function formatTime(time) {
   const minutes = time % 100;
   const period = hours >= 12 ? 'pm' : 'am';
   // 处理小时和分钟的零填充
+  const formattedHours = String(hours).padStart(2, '0');
   const formattedMinutes = String(minutes).padStart(2, '0');
 
-  return `${hours}:${formattedMinutes} ${period}`;
+  return `${formattedHours}:${formattedMinutes} ${period}`;
 }
 const time_ = [545, 600, 615, 630, 645, 700, 715, 730, 745, 800, 815, 830, 845, 900, 915, 930, 945, 1000, 1015, 1030, 1045, 1100, 1115, 1130, 1145, 1200,
 1215, 1230, 1245, 1300, 1315, 1330, 1345, 1400, 1415, 1430, 1445, 1500, 1515, 1530, 1545, 1600, 1615, 1630, 1645,
@@ -298,7 +299,7 @@ function App ({ token, onRecord }) {
           hasMedicare: appointment.hasmedicare,
           surname: appointment.surname,
           firstName: appointment.firstname,
-          recordID: appointment.recordid,
+          recordID: appointment.appointmentid,
         };
       });
       setDescription(data.description);
@@ -322,16 +323,13 @@ function App ({ token, onRecord }) {
               </Popover>
             <Space>
               <Button style={{backgroundColor:'gray', width:widthButton, padding:"0"}}>Unavailable</Button>
-              <Button style={{backgroundColor:'pink', width:widthButton, padding:"0"}}>On the day</Button>
-              <Button style={{backgroundColor:'yellow', width:widthButton, padding:"0"}}>Waiting</Button>
-              <Button style={{backgroundColor:'magenta', width:widthButton, padding:"0"}}>With doctor</Button>
-              <Button style={{backgroundColor:'lightgreen', width:widthButton, padding:"0"}}>At billing</Button>
-              <Button style={{backgroundColor:'lightgray', width:widthButton, padding:"0"}}>Completed</Button>
-              <Button style={{backgroundColor:'lightblue', width:widthButton, padding:"0"}}>Did not</Button>
-              <Button style={{backgroundColor:'red', width:widthButton, padding:"0"}}>Urgent</Button>
-              <Button style={{backgroundColor:'gold', width:widthButton, padding:"0"}}>Elsewhere</Button>
+              <Button style={{backgroundColor:'yellow', width:widthButton, padding:"0"}}>Booked</Button>
+              <Button style={{backgroundColor:'magenta', width:widthButton, padding:"0"}}>Waiting</Button>
+              <Button style={{backgroundColor:'lightgreen', width:widthButton, padding:"0"}}>With doctor</Button>
+              <Button style={{backgroundColor:'lightgray', width:widthButton, padding:"0"}}>At billing</Button>
+              <Button style={{backgroundColor:'lightblue', width:widthButton, padding:"0"}}>Completed</Button>
+              <Button style={{backgroundColor:'gold', width:widthButton, padding:"0"}}>Urgent</Button>
             </Space>
-            
           </Space>
           
         </Space>

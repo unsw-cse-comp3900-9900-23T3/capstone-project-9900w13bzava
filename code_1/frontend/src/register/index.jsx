@@ -32,10 +32,42 @@ function App ({ onSuccess }) {
 
   async function fRegister () {
     var emailPattern = /^[a-zA-Z0-9]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    var phonePattern = /^[0-9]+/;
     if (!emailPattern.test(email)){
-      console.log("emailt: ", email)
-    } else if (firstName.length !== 0 && password.length !== 0 && location.length !== 0 && surname.length !== 0 && email.length !== 0
-      && phoneNumber.length !== 0 && conPassword.length !== 0 && sexCode !== 0 ) {
+      notification.open({
+        message: 'Error',
+        type: 'error',
+        description:
+        // error message
+          `The format of the email is incorrect!`,
+        onClick: () => {
+          console.log('Notification Clicked!');
+        },
+      });
+    } else if (!phonePattern.test(phoneNumber)) {
+      notification.open({
+        message: 'Error',
+        type: 'error',
+        description:
+        // error message
+          `The format of the telephone is incorrect!`,
+        onClick: () => {
+          console.log('Notification Clicked!');
+        },
+      });
+    } else if (firstName.length === 0 || password.length === 0 || location.length === 0 || surname.length === 0 || email.length === 0
+      || phoneNumber.length === 0 || conPassword.length === 0 || sexCode === 0 ) {
+      notification.open({
+        message: 'Error',
+        type: 'error',
+        description:
+        // error message
+            `Please input all information`,
+        onClick: () => {
+          console.log('Notification Clicked!');
+        },
+      });
+    } else {
       console.log('begin');
       const response = await fetch('http://127.0.0.1:5000/register', {
         method: 'POST',
@@ -56,7 +88,6 @@ function App ({ onSuccess }) {
       const data = await response.json();
       console.log("backend: ", data);
       if (data.status) {
-        navigate("/mainpage");
         notification.open({
           message: 'Success',
           type: 'success',
@@ -80,19 +111,7 @@ function App ({ onSuccess }) {
           },
         });
       }
-    } else {
-      notification.open({
-        message: 'Error',
-        type: 'error',
-        description:
-        // error message
-            `Please input all information`,
-        onClick: () => {
-          console.log('Notification Clicked!');
-        },
-      });
     }
-    
   }
 
   return (

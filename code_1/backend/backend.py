@@ -123,7 +123,7 @@ def get_spec_appointments(userid, date):
   ON table4.appointmentTypeID = table1.appointmentTypeID
   inner join appointmentStatus as table5
   ON table5.appointmentStatusID = table1.appointmentStatusID
-  where table1.userID={userid} and DATE(table1.appointmentDate)=\'{date}\'
+  where table1.userID={userid} and DATE(table1.startTime)=\'{date}\'
   '''
 
 def proccess_result_for_ShowPanel(result, dayType):
@@ -277,6 +277,12 @@ def getAllPatient():
   records = operate_database(query, QUERY)
   return jsonify({'patientDetail': records}), 200
 
+
+# getAllPatient
+@app.route('/GetAllPatient', methods=['POST'])
+def getAllPatient():
+   
+   return
 
 
 

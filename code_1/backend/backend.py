@@ -231,8 +231,8 @@ def ShowPatientRecord():
   base_query = '''
   SELECT table1.appointmentID, DATE(table1.appointmentDate) as day, table1.duration as duration, 
   table1.startTime as startTime, table4.appointmentTypeName as appointmentType, 
-  table5.appointmentStatusName as status, table2.firstName as firstName, table2.surname as surname, 
-  table3.firstName as patientName, table3.patientID as patientID,
+  table5.appointmentStatusName as status, table2.firstName as userFirstName, table2.surname as userSurname, 
+  table3.firstName as patientFisrtName, table3.surname as patientSurname table3.patientID as patientID,
         CASE
           WHEN table1.appointmentTypeID=29 and table3.patientID in (
         SELECT patientID FROM appointments

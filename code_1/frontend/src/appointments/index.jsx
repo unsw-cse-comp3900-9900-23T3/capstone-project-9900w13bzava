@@ -1,8 +1,11 @@
 import React, { useEffect } from 'react';
-import { Table, Space, Button, Modal, DatePicker, Popover } from 'antd';
+import { Table, Space, Button, Modal, DatePicker, Popover, notification } from 'antd';
 import "./index.css"
 import { useState } from 'react';
 import dayjs from 'dayjs';
+import {
+  useNavigate
+} from 'react-router-dom';
 // import moment from "moment"
 
 const widthButton = "80px"
@@ -33,24 +36,27 @@ for (let i=0; i<time_.length; i++) {
     beforeNote: '',
     bHasMedicare: 1,
     bIsPhone: 0,
+    bRecordID: 0,
     date: '',
     dateState: '',
     dateType: '',
     dateNote: '',
     dHasMedicare: 1,
     dIsPhone: 0,
+    dRecordID: 0,
     after: '',
     afterState: '',
     afterType: '',
     afterNote: '',
     aHasMedicare: 1,
     aIsPhone: 0,
+    aRecordID: 0,
   });
 }
 
 
 
-function App ({ token }) {
+function App ({ token, onRecord }) {
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedRecord, setSelectedRecord] = useState(null);
   const [date, setDate] = useState(defaultDate);
@@ -59,6 +65,7 @@ function App ({ token }) {
   const [dataQ, setDataQ] = useState(dataA);
   const [description, setDescription] = useState("");
   const [jModal, setJModal] = useState("");
+  const navigate = useNavigate();
 
   const columns = [
     {
@@ -140,16 +147,47 @@ function App ({ token }) {
       setDate(dateString);
     }
   };
-  
-  // function getCurrentDate () {
-  //   const currentDate = new Date(); // 创建一个Date对象，表示当前日期和时间
-  //   const year = currentDate.getFullYear(); // 获取当前年份（四位数）
-  //   const month = String(currentDate.getMonth() + 1).padStart(2, '0'); // 获取当前月份，并确保两位数表示
-  //   const day = String(currentDate.getDate()).padStart(2, '0'); // 获取当前日期，并确保两位数表示
-  //   const completeDate = `${year}-${month}-${day}`; // 格式化日期为"yyyy-mm-dd"
-  //   console.log("e: ", completeDate);
-  //   return completeDate
-  // }
+
+  function onEdit (e) {
+    navigate('/mainpage/edit');
+    console.log("fff: ", e);
+    onRecord(e)
+  }
+
+  async function fDelete (e) {
+    const response = await fetch('http://127.0.0.1:5000/Delete', {
+      method: 'POST',
+      headers: {
+        'Content-type': 'application/json',
+      },
+      body: JSON.stringify({
+        "recordID": e,
+      })
+    });
+    const data = await response.json();
+    if (data.status) {
+      notification.open({
+        message: 'Success',
+        type: 'success',
+        description:
+          `${data.message}`,
+        onClick: () => {
+          console.log('Notification Clicked!');
+        },
+      });
+    } else {
+      notification.open({
+        message: 'Error',
+        type: 'error',
+        description:
+        // error message
+            `${data.message}`,
+        onClick: () => {
+          console.log('Notification Clicked!');
+        },
+      });
+    }
+  }
 
   useEffect(() => {
     const temp = dataA.map(item => ({ ...item }));
@@ -171,7 +209,6 @@ function App ({ token }) {
     for (let i=0; i < appointments.length; i++ ) {
       for (let j=0; j < dataA.length; j++ ) {
         if (temp[j].time === appointments[i].startTime ) {
-          
           if (appointments[i].day === "1") {
             temp[j].date = appointments[i].patientName
             temp[j].dateState = appointments[i].state
@@ -179,6 +216,8 @@ function App ({ token }) {
             temp[j].dateNote = appointments[i].note
             temp[j].dIsPhone = appointments[i].isPhone
             temp[j].dHasMedicare = appointments[i].hasMedicare
+            temp[j].dRecordID = appointments[i].recordID
+            console.log("record: ", temp[j].dRecordID, appointments[i].recordID)
           } else if (appointments[i].day === "0") {
             temp[j].before = appointments[i].patientName
             temp[j].beforeState = appointments[i].state
@@ -186,6 +225,7 @@ function App ({ token }) {
             temp[j].beforeNote = appointments[i].note
             temp[j].bIsPhone = appointments[i].isPhone
             temp[j].bHasMedicare = appointments[i].hasMedicare
+            temp[j].bRecordID = appointments[i].recordID
           } else {
             temp[j].after = appointments[i].patientName
             temp[j].afterState = appointments[i].state
@@ -193,8 +233,9 @@ function App ({ token }) {
             temp[j].afterNote = appointments[i].note
             temp[j].aIsPhone = appointments[i].isPhone
             temp[j].aHasMedicare = appointments[i].hasMedicare
+            temp[j].aRecordID = appointments[i].recordID
           }
-          count_ = appointments[i].duration/15
+          count_ = Math.ceil(appointments[i].duration/15)
           judge_ = i;
         }
         if (count_ !== 0) {
@@ -205,6 +246,7 @@ function App ({ token }) {
             temp[j].dateNote = appointments[i].note
             temp[j].dIsPhone = appointments[i].isPhone
             temp[j].dHasMedicare = appointments[i].hasMedicare
+            temp[j].dRecordID = appointments[i].recordID
           } else if (appointments[i].day === "0") {
             temp[j].before = appointments[judge_].patientName
             temp[j].beforeState = appointments[judge_].state
@@ -212,6 +254,7 @@ function App ({ token }) {
             temp[j].beforeNote = appointments[i].note
             temp[j].bIsPhone = appointments[i].isPhone
             temp[j].bHasMedicare = appointments[i].hasMedicare
+            temp[j].bRecordID = appointments[i].recordID
           } else {
             temp[j].after = appointments[judge_].patientName
             temp[j].afterState = appointments[judge_].state
@@ -219,6 +262,7 @@ function App ({ token }) {
             temp[j].afterNote = appointments[i].note
             temp[j].aIsPhone = appointments[i].isPhone
             temp[j].aHasMedicare = appointments[i].hasMedicare
+            temp[j].aRecordID = appointments[i].recordID
           }
           count_--;
         }
@@ -229,17 +273,17 @@ function App ({ token }) {
 
   useEffect(() => {
     if (isInitialized) {
-    async function fDate () {
-      const response = await fetch('http://127.0.0.1:5000/ShowPanel', {
-        method: 'POST',
-        headers: {
-          'Content-type': 'application/json',
-        },
-        body: JSON.stringify({
-          "userid": token,
-          "date": date,
-        })
-      });
+      async function fDate () {
+        const response = await fetch('http://127.0.0.1:5000/ShowPanel', {
+          method: 'POST',
+          headers: {
+            'Content-type': 'application/json',
+          },
+          body: JSON.stringify({
+            "userid": token,
+            "date": date,
+          })
+        });
       const data = await response.json();
       const appointments_ = data.appointments.map(appointment => {
         return {
@@ -254,6 +298,7 @@ function App ({ token }) {
           hasMedicare: appointment.hasMedicare,
           surname: appointment.surname,
           firstName: appointment.firstName,
+          recordID: appointment.recordID,
         };
       });
       setDescription(data.description);
@@ -276,7 +321,6 @@ function App ({ token }) {
                 <div style={{width: "80px", display:"flex", alignItems: "center", justifyContent: "center"}}>State: </div>
               </Popover>
             <Space>
-              
               <Button style={{backgroundColor:'gray', width:widthButton, padding:"0"}}>Unavailable</Button>
               <Button style={{backgroundColor:'pink', width:widthButton, padding:"0"}}>On the day</Button>
               <Button style={{backgroundColor:'yellow', width:widthButton, padding:"0"}}>Waiting</Button>
@@ -302,9 +346,11 @@ function App ({ token }) {
         open={modalVisible}
         onCancel={handleModalClose}
         footer={[
-          <Button key="close" onClick={handleModalClose}>
-            Close
-          </Button>
+          <Space>
+            <Button key="close" onClick={handleModalClose}>
+              Close
+            </Button>
+          </Space>
         ]}
       >
         {selectedRecord && (
@@ -340,6 +386,9 @@ function App ({ token }) {
                   )
                 }
                 <p>Note: {selectedRecord.beforeNote}</p>
+                <Button onClick={() => onEdit(selectedRecord.bRecordID)}>
+                  Edit
+                </Button>
               </div>
             )}
             {jModal === '1' && (
@@ -373,6 +422,9 @@ function App ({ token }) {
                   )
                 }
                 <p>Note: {selectedRecord.dateNote}</p>
+                <Button onClick={() => onEdit(selectedRecord.dRecordID)}>
+                  Edit
+                </Button>
               </div>
             )}
             {jModal === '2' && (
@@ -406,6 +458,14 @@ function App ({ token }) {
                   )
                 }
                 <p>Note: {selectedRecord.afterNote}</p>
+                <Space>
+                  <Button onClick={() => onEdit(selectedRecord.aRecordID)}>
+                    Edit
+                  </Button>
+                  <Button onClick={() => fDelete(selectedRecord.aRecordID)}>
+                    Delete
+                  </Button>
+                </Space>
               </div>
             )}
           </div>

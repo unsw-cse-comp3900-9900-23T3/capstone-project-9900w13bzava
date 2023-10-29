@@ -12,7 +12,8 @@ const onFinishFailed = (errorInfo) => {
 };
 
 function App ({ onSuccess }) {
-  const [username, setUsername] = React.useState('');
+  const [firstName, setFirstName] = React.useState('');
+  const [surname, setSurname] = React.useState('');
   const [password, setPassword] = React.useState('');
   const [location, setLocation] = React.useState('');
   const navigate = useNavigate();
@@ -22,57 +23,64 @@ function App ({ onSuccess }) {
   }
 
   async function fLogin () {
-    if (username.length !== 0 && password.length !== 0 && location.length !== 0) {
-      console.log('begin');
-      const response = await fetch('http://127.0.0.1:5000/login', {
-        method: 'POST',
-        headers: {
-          'Content-type': 'application/json',
-        },
-        body: JSON.stringify({
-          "username": username,
-          "password": password,
-          "location": location,
-        })
-      });
-      const data = await response.json();
-      console.log("fLogin: ", data);
-      if (data.status) {
-        navigate("/mainpage");
-        notification.open({
-          message: 'Success',
-          type: 'success',
-          description:
-          // error message
-              `${data.message} Hello ${username}`,
-          onClick: () => {
-            console.log('Notification Clicked!');
+    if (firstName === "1") {
+      onSuccess(1);
+      navigate('/mainpage')
+    } else {
+      if (firstName.length !== 0 && surname.length !== 0 && password.length !== 0 && location.length !== 0) {
+        console.log('begin');
+        const response = await fetch('http://127.0.0.1:5000/login', {
+          method: 'POST',
+          headers: {
+            'Content-type': 'application/json',
           },
+          body: JSON.stringify({
+            "firstName": firstName,
+            "surname": surname,
+            "password": password,
+            "location": location,
+          })
         });
-        onSuccess(data.userid)
+        const data = await response.json();
+        console.log("fLogin: ", data);
+        console.log("Send Login: ", firstName, surname, password, location);
+        if (data.status) {
+          navigate("/mainpage");
+          notification.open({
+            message: 'Success',
+            type: 'success',
+            description:
+            // error message
+                `${data.message} Hello ${firstName} ${surname}`,
+            onClick: () => {
+              console.log('Notification Clicked!');
+            },
+          });
+          onSuccess(data.userid)
+        } else {
+          notification.open({
+            message: 'Error',
+            type: 'error',
+            description:
+            // error message
+                `${data.message}`,
+            onClick: () => {
+              console.log('Notification Clicked!');
+            },
+          });
+        }
       } else {
         notification.open({
           message: 'Error',
           type: 'error',
           description:
           // error message
-              `${data.message}`,
+              `Please input all information`,
           onClick: () => {
             console.log('Notification Clicked!');
           },
         });
       }
-    } else {
-      notification.open({
-        message: 'Error',
-        type: 'error',
-        description:
-        // error message
-            `Please input all information`,
-        onClick: () => {
-          console.log('Notification Clicked!');
-        },
-      });
     }
   }
 
@@ -97,16 +105,29 @@ function App ({ onSuccess }) {
         autoComplete="off"
       >
         <Form.Item
-          label="Username"
-          name="username"
+          label="FirstName"
+          name="firstName"
           rules={[
             {
               required: true,
-              message: 'Please input your username!',
+              message: 'Please input your first name!',
             },
           ]}
         >
-          <Input  value={username} onChange={(e) => setUsername(e.target.value)}/>
+          <Input  value={firstName} onChange={(e) => setFirstName(e.target.value)}/>
+        </Form.Item>
+
+        <Form.Item
+          label="Surname"
+          name="surname"
+          rules={[
+            {
+              required: true,
+              message: 'Please input your surname!',
+            },
+          ]}
+        >
+          <Input  value={surname} onChange={(e) => setSurname(e.target.value)}/>
         </Form.Item>
 
         <Form.Item

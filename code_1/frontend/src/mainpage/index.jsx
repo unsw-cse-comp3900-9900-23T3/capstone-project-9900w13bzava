@@ -71,7 +71,7 @@ function App ( props ) {
         <Layout>
           <Content
             style={{
-              margin: '24px 16px',
+              margin: 10,
               padding: 24,
               height: heightContent,
               background: colorBgContainer,

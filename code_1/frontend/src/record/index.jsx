@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { Table, Space, Select, Modal } from 'antd';
+import { Table, Space, Select, Modal, Button } from 'antd';
 import "./index.css"
 
 const hColumns = [
@@ -19,6 +19,7 @@ const hColumns = [
             return <div style={{position:"absolute",top:0,bottom:0,left:0,right:0,
             backgroundColor: "orange",display:"flex",justifyContent:"center",alignItems:"center"}}>{text}</div>;
           }
+          return <div>{text}</div>;
         }
       },
       {
@@ -47,7 +48,7 @@ const fColumns = [
             return <div style={{position:"absolute",top:0,bottom:0,left:0,right:0,
             backgroundColor: "orange",display:"flex",justifyContent:"center",alignItems:"center"}}>{text}</div>;
           }
-          return <div>{text}</div>
+          return <div>{text}</div>;
         }
       },
       {
@@ -60,7 +61,7 @@ const fColumns = [
   }
 ];
 const hData = []
-for (let i=0; i<5; i++) {
+for (let i=0; i<9; i++) {
   hData.push(
     {
       key: `${i}`,
@@ -71,7 +72,7 @@ for (let i=0; i<5; i++) {
   )
 }
 const fData = []
-for (let i=0; i<5; i++) {
+for (let i=0; i<9; i++) {
   fData.push(
     {
       key: `${i}`,
@@ -112,7 +113,7 @@ function App ({ token }) {
         })
       });
       const data = await response.json();
-      console.log("showPatientRecord: ", data)
+      console.log("tokenRef", tokenRef)
       const tempH = data.history.map((item, index) => ({
         key: index.toString(),
         hTime: `${item.day} ${item.startTime}`,
@@ -125,7 +126,7 @@ function App ({ token }) {
         appointmentType: item.appointmentType,
         note: item.note,
       }));
-      while (tempH.length < 5) {
+      while (tempH.length < 10) {
         tempH.push({
           key: tempH.length.toString(),
           hTime: '',
@@ -150,7 +151,7 @@ function App ({ token }) {
         appointmentType: item.appointmentType,
         note: item.note,
       }));
-      while (tempF.length < 5) {
+      while (tempF.length < 10) {
         tempF.push({
           key: tempF.length.toString(),
           fTime: '',
@@ -206,7 +207,7 @@ function App ({ token }) {
           })
         });
         const data = await response.json();
-        console.log("showPatientList: ", data)
+        console.log("tokenRef", tokenRef)
         const temp = data.patients.map(item => ({
           label: item.patientName, // Specify label for Select option
           value: item.patientID,
@@ -239,8 +240,8 @@ function App ({ token }) {
           style={selectStyle}
         />
         <Space>
-          <Table className="hTable" columns={hColumns} dataSource={dataH} pagination={false} bordered scroll={{y:500}} size="small" onRow={rowClickHandler}/>
-          <Table className='fTable' columns={fColumns} dataSource={dataF} pagination={false} bordered scroll={{y:500}} size="small" onRow={rowClickHandler}/>
+          <Table className="hTable" columns={hColumns} dataSource={dataH} pagination={false} bordered scroll={{y:450}} size="small" onRow={rowClickHandler}/>
+          <Table className='fTable' columns={fColumns} dataSource={dataF} pagination={false} bordered scroll={{y:450}} size="small" onRow={rowClickHandler}/>
         </Space>
 
         {selectedRow && (
@@ -248,10 +249,26 @@ function App ({ token }) {
             title="Details"
             open={isModalVisible}
             onOk={handleCancel}
-            // onCancel={handleCancel}
+            footer={[
+              <Button key="back" onClick={handleCancel}>
+                Close
+              </Button>
+            ]}
           >
-          
-            <p>Patient name: {selectedRow.patientName}</p>
+            {
+              selectedRow.hasMedicare === 0 && (
+                <div>
+                  <p style={{backgroundColor: "orange"}}>Patient name: {selectedRow.patientName}</p>
+                </div>
+              )
+            }
+            {
+              selectedRow.hasMedicare === 1 && (
+                <div>
+                  <p>Patient name: {selectedRow.patientName}</p>
+                </div>
+              )
+            }
             { 'hTime' in selectedRow && (
               <div>
                 <p>Time: {selectedRow.hTime}</p>

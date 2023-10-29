@@ -108,7 +108,7 @@ function App ({ token }) {
           'Content-type': 'application/json',
         },
         body: JSON.stringify({
-          "patientID": value,
+          "patientid": value,
           "userid": tokenRef,
         })
       });
@@ -209,8 +209,8 @@ function App ({ token }) {
         const data = await response.json();
         console.log("tokenRef", tokenRef)
         const temp = data.patients.map(item => ({
-          label: item.patientName, // Specify label for Select option
-          value: item.patientID,
+          label: item.patientname, // Specify label for Select option
+          value: item.patientid,
         }));
         setOptionData(temp);
       } catch (error) {

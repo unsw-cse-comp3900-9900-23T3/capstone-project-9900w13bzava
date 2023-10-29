@@ -170,12 +170,12 @@ function App ({token, recordID}) {
         body: JSON.stringify({
           "userid": tokenRef,
           "date": date,
-          "startTime": startTime,
+          "starttime": startTime,
           "duration": duration,
-          "patientID": patientID,
+          "patientid": patientID,
           "type": type,
           "note": note,
-          "recordID": cRecordID,
+          "recordid": cRecordID,
         })
       });
       const data = await response.json();
@@ -256,8 +256,8 @@ function App ({token, recordID}) {
       const data = await response.json();
       const temp = data.patientDetail.map(item => ({
         label: `${item.firstName} ${item.surname}`,
-        sexCode: item.sexCode,
-        value: item.patientID,
+        sexCode: item.sexcode,
+        value: item.patientid,
       }));
       temp.sort(function(a, b) {
         const valueA = a.label.toLowerCase();

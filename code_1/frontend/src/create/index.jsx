@@ -169,9 +169,9 @@ function App ({token}) {
         body: JSON.stringify({
           "userid": tokenRef,
           "date": date,
-          "startTime": startTime,
+          "starttime": startTime,
           "duration": duration,
-          "patientID": patientID,
+          "patientid": patientID,
           "type": type,
           "note": note,
         })
@@ -242,10 +242,10 @@ function App ({token}) {
       });
       const data = await response.json();
       const temp = data.patientDetail.map(item => ({
-        label: `${item.firstName} ${item.middleName} ${item.surname}`,
-        patientName: item.patientName,
-        sexCode: item.sexCode,
-        value: item.patientID,
+        label: `${item.firstname} ${item.surname}`,
+        patientName: item.patientname,
+        sexCode: item.sexcode,
+        value: item.patientid,
       }));
       setDataP(temp);
 

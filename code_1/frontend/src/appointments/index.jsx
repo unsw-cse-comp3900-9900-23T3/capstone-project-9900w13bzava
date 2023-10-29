@@ -287,18 +287,18 @@ function App ({ token, onRecord }) {
       const data = await response.json();
       const appointments_ = data.appointments.map(appointment => {
         return {
-          patientName: appointment.patientName,
-          startTime: appointment.startTime,
+          patientName: appointment.patientname,
+          startTime: appointment.starttime,
           duration: appointment.duration,
           state: appointment.status,
-          day: appointment.dayType,
-          type: appointment.appointmentType,
+          day: appointment.daytype,
+          type: appointment.appointmenttype,
           note: appointment.note,
-          isPhone: appointment.isPhone,
-          hasMedicare: appointment.hasMedicare,
+          isPhone: appointment.isphone,
+          hasMedicare: appointment.hasmedicare,
           surname: appointment.surname,
-          firstName: appointment.firstName,
-          recordID: appointment.recordID,
+          firstName: appointment.firstname,
+          recordID: appointment.recordid,
         };
       });
       setDescription(data.description);

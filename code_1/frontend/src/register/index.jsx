@@ -31,7 +31,10 @@ function App ({ onSuccess }) {
   };
 
   async function fRegister () {
-    if (firstName.length !== 0 && password.length !== 0 && location.length !== 0 && surname.length !== 0 && email.length !== 0
+    var emailPattern = /^[a-zA-Z0-9]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    if (!emailPattern.test(email)){
+      console.log("emailt: ", email)
+    } else if (firstName.length !== 0 && password.length !== 0 && location.length !== 0 && surname.length !== 0 && email.length !== 0
       && phoneNumber.length !== 0 && conPassword.length !== 0 && sexCode !== 0 ) {
       console.log('begin');
       const response = await fetch('http://127.0.0.1:5000/register', {

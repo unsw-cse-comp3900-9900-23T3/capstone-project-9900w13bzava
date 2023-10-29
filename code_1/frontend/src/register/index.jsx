@@ -40,13 +40,14 @@ function App ({ onSuccess }) {
           'Content-type': 'application/json',
         },
         body: JSON.stringify({
-          "firstName": firstName,
+          "firstname": firstName,
+          "surname": surname,
           "password": password,
-          "confirm password": conPassword,
+          "confirmpassword": conPassword,
           "location": location,
-          "phoneNumber": phoneNumber,
+          "phonenumber": phoneNumber,
           "email": email,
-          "sexCode": sexCode,
+          "sexcode": sexCode,
         })
       });
       const data = await response.json();

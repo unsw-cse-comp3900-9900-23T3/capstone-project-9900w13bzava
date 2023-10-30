@@ -16,7 +16,7 @@ import Record from './record';
 function App() {
   const [token, setToken] = React.useState(null);
   const [recordID, setRecordID] = React.useState(0);
-  const [defaultDate, setDefaultDate] = React.useState("2023-10-01");
+  const [defaultDate, setDefaultDate] = React.useState("2023-11-01");
   
   function manageTokenSet (token) {
     setToken(token);

@@ -213,7 +213,7 @@ def proccess_result_for_ShowPatientRecord(result):
   return result
 
 
-# ShowPatient
+# ShowPatientRecord
 @app.route('/ShowPatientRecord', methods=['POST'])
 def ShowPatientRecord():
   data = request.get_json()
@@ -487,8 +487,8 @@ def getAppointment():
   appointmentid = int(data.get('appointmentid'))  # 用来确认appointments
 
   query = f'''
-  SELECT table1.appointmentID, DATE(table1.appointmentDate) as day, table1.duration as duration, 
-  table1.startTime as startTime, table4.appointmentTypeName as appointmentType, 
+  SELECT table1.appointmentID, to_char(table1.appointmentdate, 'YYYY-MM-DD HH24:MI:SS') as appointmentdate, table1.duration as duration, 
+  to_char(table1.startTime, 'YYYY-MM-DD HH24:MI:SS') as startTime, table4.appointmentTypeName as appointmentType, 
   table5.appointmentStatusName as status, table2.firstName as userFirstName, table2.surname as userSurname, 
   table3.firstName as patientFirstName, table3.surname as patientSurname,
   table1.locationid as locationid, table1.note as note

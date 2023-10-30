@@ -38,7 +38,7 @@ def operate_database(query, operation):
 
 # 获取所有用户数据
 if __name__ == "__main__":
-    query = "select * from appointmentTypes;"
+    query = "select to_char(appointmentdate, 'YYYY-MM-DD HH24:MI:SS') as appointmentdate from appointments;"
     records = operate_database(query, 1)
     print(type(records))
     print(type(records[0]))
@@ -46,4 +46,4 @@ if __name__ == "__main__":
     for record in records:
         print(record)
     
-    print(datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+    print()

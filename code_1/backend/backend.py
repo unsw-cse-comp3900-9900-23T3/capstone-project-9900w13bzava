@@ -377,7 +377,18 @@ def editAppointment():
   duration  = int(data.get('duration'))
   appointmenttypeid = int(data.get('appointmenttypeid'))
   locationid = int(data.get('locationid'))
-  appointmenttatusid = int(data.get('appointmenttatusid'))
+  appointmenttatusname = str(data.get('appointmenttatusname')).strip()
+
+  query = f'''
+  SELECT appointmentstatusid FROM appointmentstatus
+  WHERE appointmentstatusname = '{appointmenttatusname}'
+  '''
+  try:
+    record = operate_database(query, SEARCH)
+  except Exception as _:
+    return jsonify({"message": f"Insert Error, No Such Appointment Status", "status": False}), 400 
+
+  appointmenttatusid = record[0]['appointmentstatusid']
 
   query = f'''
   UPDATE appointments

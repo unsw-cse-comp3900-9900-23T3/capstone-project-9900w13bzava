@@ -133,6 +133,7 @@ function App ({token, recordID, onDefaultDate}) {
           'Content-type': 'application/json',
         },
       });
+      
       const data = await response.json();
       const temp = data.appointmenttypes.map(item => ({
         label: item.name,

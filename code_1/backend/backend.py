@@ -99,7 +99,8 @@ def register():
 
 # 根据输入的userid和date来获取query
 def get_spec_appointments(userid, date):
-  return f'''SELECT table1.appointmentID, table1.appointmentDate, table1.duration as duration, 
+  return f'''
+  SELECT table1.appointmentID, table1.appointmentDate, table1.duration as duration, 
   table1.startTime as startTime, table4.appointmentTypeName as appointmentType, 
   table5.appointmentStatusName as status, table2.firstName as firstName, table2.surname as surname, 
   table3.firstName as patientName, table3.patientID as patientID,
@@ -113,7 +114,8 @@ def get_spec_appointments(userid, date):
     CASE
       WHEN table3.medicareNo IS NULL THEN 0
       ELSE 1
-    END AS hasMedicare
+    END AS hasMedicare,
+	table1.note AS note
   FROM appointments as table1
   inner join users as table2
   ON table1.userID = table2.userID
@@ -139,7 +141,6 @@ def proccess_result_for_ShowPanel(result, dayType):
       startTime = startTime.lower()  # 转换为小写，如am和pm
       idx['starttime'] = startTime
 
-      idx['note'] = "nima si "
       idx['daytype'] = f"{dayType}"  # 表示前一天，当天，后一天
   return result, sum
 
@@ -202,16 +203,13 @@ def ShowPatientList():
 def proccess_result_for_ShowPatientRecord(result):
   # convert second to readable time format
   for idx in result:
-      startTime = idx['starttime']
-      # 1. 从字符串中解析出datetime对象
-      # startTime = datetime.strptime(startTime, '%Y-%m-%d %H:%M:%S')
-      # 2. 使用strftime方法格式化时间
-      startTime = startTime.strftime('%I:%M %p')
-      startTime = startTime.lower()  # 转换为小写，如am和pm
-      idx['starttime'] = startTime
-
-
-      idx['note'] = "nima si "
+    startTime = idx['starttime']
+    # 1. 从字符串中解析出datetime对象
+    # startTime = datetime.strptime(startTime, '%Y-%m-%d %H:%M:%S')
+    # 2. 使用strftime方法格式化时间
+    startTime = startTime.strftime('%I:%M %p')
+    startTime = startTime.lower()  # 转换为小写，如am和pm
+    idx['starttime'] = startTime
   return result
 
 
@@ -227,26 +225,27 @@ def ShowPatientRecord():
   table1.startTime as startTime, table4.appointmentTypeName as appointmentType, 
   table5.appointmentStatusName as status, table2.firstName as userFirstName, table2.surname as userSurname, 
   table3.firstName as patientFirstName, table3.surname as patientSurname, table3.patientID as patientID,
-        CASE
-          WHEN table1.appointmentTypeID=29 and table3.patientID in (
-        SELECT patientID FROM appointments
-        WHERE locationID=1 and (CURRENT_DATE - appointmentDate) >= interval '365 days'
-      ) THEN 1
-          ELSE 0
-        END AS isPhone,
-        CASE
-          WHEN table3.medicareNo IS NULL THEN 0
-          ELSE 1
-        END AS hasMedicare
-      FROM appointments as table1
-      inner join users as table2
-      ON table1.userID = table2.userID
-      inner join patients as table3
-      ON table3.patientID = table1.patientID
-      inner join appointmentTypes as table4
-      ON table4.appointmentTypeID = table1.appointmentTypeID
-      inner join appointmentStatus as table5
-      ON table5.appointmentStatusID = table1.appointmentStatusID 
+    CASE
+      WHEN table1.appointmentTypeID=29 and table3.patientID in (
+    SELECT patientID FROM appointments
+    WHERE locationID=1 and (CURRENT_DATE - appointmentDate) >= interval '365 days'
+  ) THEN 1
+      ELSE 0
+    END AS isPhone,
+    CASE
+      WHEN table3.medicareNo IS NULL THEN 0
+      ELSE 1
+    END AS hasMedicare,
+  table1.note AS note
+  FROM appointments as table1
+  inner join users as table2
+  ON table1.userID = table2.userID
+  inner join patients as table3
+  ON table3.patientID = table1.patientID
+  inner join appointmentTypes as table4
+  ON table4.appointmentTypeID = table1.appointmentTypeID
+  inner join appointmentStatus as table5
+  ON table5.appointmentStatusID = table1.appointmentStatusID 
   '''
   query1 = base_query + f'''where table1.patientID = {patientID} and table1.userID = {userid} and table1.appointmentDate < CURRENT_TIMESTAMP'''
   query2 = base_query + f'''where table1.patientID = {patientID} and table1.userID = {userid} and table1.appointmentDate >= CURRENT_TIMESTAMP'''
@@ -491,7 +490,8 @@ def getAppointment():
   SELECT table1.appointmentID, DATE(table1.appointmentDate) as day, table1.duration as duration, 
   table1.startTime as startTime, table4.appointmentTypeName as appointmentType, 
   table5.appointmentStatusName as status, table2.firstName as userFirstName, table2.surname as userSurname, 
-  table3.firstName as patientFirstName, table3.surname as patientSurname
+  table3.firstName as patientFirstName, table3.surname as patientSurname,
+  table1.locationid as locationid, table1.note as note
   FROM appointments as table1
   inner join users as table2
   ON table1.userID = table2.userID
@@ -510,7 +510,6 @@ def getAppointment():
     return jsonify({"message": f"Search Error, No Such Appointment", "status": False}), 400 
   # 查询成功
   return jsonify({"appointment": records, "status": True}), 200
-
 
 
 if __name__ == '__main__':

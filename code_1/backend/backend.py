@@ -43,21 +43,23 @@ def login():
   """
       
   data = request.get_json()
-  firstname = str(data.get('firstname')).lower().strip()
-  surname = str(data.get('surname')).lower().strip()
-  password = str(data.get('password')).lower().strip()
+  firstname = str(data.get('firstname')).strip()
+  surname = str(data.get('surname')).strip()
+  password = str(data.get('password'))
   location = data.get('location')
-  
-  # get the users result from database
-  query = '''SELECT surname, firstName, password, userID FROM users'''
 
+  print(data)
+  # get the users result from database
+  query = f'''
+  SELECT surname, firstName, password, userID FROM users
+  WHERE firstname ILIKE '{firstname}' AND surname ILIKE '{surname}'
+  '''
   records = operate_database(query, SEARCH)
+  print(records)
   # check name and password
-  for record in records:
-      if str(record['firstname']).lower() != firstname or str(record['surname']).lower() != surname:
-         continue
-      if password == record['password']:
-          return jsonify({"message": "Login Successful!", "status": True, "userid":record['userid']}), 200
+  if records:
+      if password == records[0]['password']:
+          return jsonify({"message": "Login Successful!", "status": True, "userid":records[0]['userid']}), 200
       else:
           return jsonify({"message": "Wrong Password!", "status": False}), 400
   
@@ -281,8 +283,10 @@ def getAllPatient():
 # 返回所有appointmentTypes类型
 @app.route('/GetAllAppointmentTypes', methods=['POST'])
 def getAllAppointmentTypes():
+  data = request.get_json()
   query = '''SELECT * FROM appointmentTypes;'''
   records = operate_database(query, SEARCH)
+  print(records)
   return jsonify({'appointmenttypes': records}), 200
 
 

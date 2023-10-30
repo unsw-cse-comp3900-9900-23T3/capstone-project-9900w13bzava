@@ -86,8 +86,9 @@ function App ({ token, onRecord, defaultDate }) {
           return <div style={{position:"absolute",top:0,bottom:0,left:0,right:0,
           backgroundColor: allState[getIndex.indexOf(record.beforeState)],display:"flex",justifyContent:"center",alignItems:"center"}}
           onClick={() =>{ handleCellClick(record);setJModal('0') }}>{text} -{record.beforeNote}</div>;
+        } else {
+          return <div onClick={onCreate(`${date} ${record.time}`)}></div>;
         }
-        return text;
       },
     },
     {
@@ -100,8 +101,9 @@ function App ({ token, onRecord, defaultDate }) {
           return <div style={{position:"absolute",top:0,bottom:0,left:0,right:0,
           backgroundColor: allState[getIndex.indexOf(record.dateState)],display:"flex",justifyContent:"center",alignItems:"center"}}
           onClick={() =>{ handleCellClick(record);setJModal('1') }}>{text} -{record.dateNote}</div>;
+        } else {
+          return <div onClick={onCreate(`${date} ${record.time}`)}></div>;
         }
-        return text;
       },
     },
     {
@@ -114,8 +116,9 @@ function App ({ token, onRecord, defaultDate }) {
           return <div style={{position:"absolute",top:0,bottom:0,left:0,right:0,
           backgroundColor: allState[getIndex.indexOf(record.afterState)],display:"flex",justifyContent:"center",alignItems:"center"}}
           onClick={() =>{ handleCellClick(record);setJModal('2') }}>{text} -{record.afterNote}</div>;
+        } else {
+          return <div onClick={onCreate(`${date} ${record.time}`)}></div>;
         }
-        return text;
       },
     },
   ];

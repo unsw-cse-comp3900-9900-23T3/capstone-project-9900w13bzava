@@ -168,7 +168,7 @@ function App ({ token, onRecord, defaultDate }) {
         'Content-type': 'application/json',
       },
       body: JSON.stringify({
-        "recordID": e,
+        "appointmentID": e,
       })
     });
     const data = await response.json();

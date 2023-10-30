@@ -140,6 +140,9 @@ function App ({token, recordID, onDefaultDate}) {
         headers: {
           'Content-type': 'application/json',
         },
+        body: JSON.stringify({
+          "userid": tokenRef.current
+        })
       });
       const data = await response.json();
       const temp = data.appointmenttypes.map(item => ({

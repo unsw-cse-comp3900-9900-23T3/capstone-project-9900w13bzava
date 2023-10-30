@@ -42,7 +42,7 @@ function App ({ onSuccess }) {
         body: JSON.stringify({
           "firstname": firstName,
           "password": password,
-          "confirm password": conPassword,
+          "confirmpassword": conPassword,
           "location": location,
           "phonenumber": phoneNumber,
           "email": email,

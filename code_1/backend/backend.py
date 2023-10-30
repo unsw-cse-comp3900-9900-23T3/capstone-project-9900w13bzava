@@ -480,6 +480,39 @@ def deleteUser():
   return jsonify({"message": f"User Deleted!", "status": True}), 200
 
 
+# GetAppointment
+# 往appointment表中查找一个数据
+@app.route('/GetAppointment', methods=['POST'])
+def getAppointment():
+  data = request.get_json()
+  appointmentid = int(data.get('appointmentid'))  # 用来确认appointments
+
+  query = f'''
+  SELECT table1.appointmentID, DATE(table1.appointmentDate) as day, table1.duration as duration, 
+  table1.startTime as startTime, table4.appointmentTypeName as appointmentType, 
+  table5.appointmentStatusName as status, table2.firstName as userFirstName, table2.surname as userSurname, 
+  table3.firstName as patientFirstName, table3.surname as patientSurname
+  FROM appointments as table1
+  inner join users as table2
+  ON table1.userID = table2.userID
+  inner join patients as table3
+  ON table3.patientID = table1.patientID
+  inner join appointmentTypes as table4
+  ON table4.appointmentTypeID = table1.appointmentTypeID
+  inner join appointmentStatus as table5
+  ON table5.appointmentStatusID = table1.appointmentStatusID 
+  where table1.appointmentid = {appointmentid}
+  '''
+  try:
+    # 尝试查询
+    records = operate_database(query, SEARCH)
+  except Exception as _:
+    return jsonify({"message": f"Search Error, No Such Appointment", "status": False}), 400 
+  # 查询成功
+  return jsonify({"appointment": records, "status": True}), 200
+
+
+
 if __name__ == '__main__':
     app.run(debug=True)
 

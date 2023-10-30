@@ -108,22 +108,22 @@ function App ({ token }) {
           'Content-type': 'application/json',
         },
         body: JSON.stringify({
-          "patientid": value,
+          "patientID": value,
           "userid": tokenRef,
         })
       });
       const data = await response.json();
-      console.log("showpatientreocrd: ", data)
+      console.log("tokenRef", tokenRef)
       const tempH = data.history.map((item, index) => ({
         key: index.toString(),
-        hTime: `${item.day} ${item.starttime}`,
-        hDoctor: `${item.userfirstname} ${item.usersurname}`,
-        patientName: `${item.patientfirstname} ${item.patientsurname}`,
-        hasMedicare: item.hasmedicare,
-        isPhone: item.isphone,
+        hTime: `${item.day} ${item.startTime}`,
+        hDoctor: `${item.firstName} ${item.surname}`,
+        patientName: item.patientName,
+        hasMedicare: item.hasMedicare,
+        isPhone: item.isPhone,
         duration: item.duration,
         status: item.status,
-        appointmentType: item.appointmenttype,
+        appointmentType: item.appointmentType,
         note: item.note,
       }));
       while (tempH.length < 10) {
@@ -141,14 +141,14 @@ function App ({ token }) {
       }
       const tempF = data.future.map((item, index) => ({
         key: index.toString(),
-        hTime: `${item.day} ${item.starttime}`,
-        hDoctor: `${item.userfirstname} ${item.usersurname}`,
-        patientName: `${item.patientfirstname} ${item.patientsurname}`,
-        hasMedicare: item.hasmedicare,
-        isPhone: item.isphone,
+        fTime: `${item.day} ${item.startTime}`,
+        fDoctor: `${item.firstName} ${item.surname}`,
+        patientName: item.patientName,
+        hasMedicare: item.hasMedicare,
+        isPhone: item.isPhone,
         duration: item.duration,
         status: item.status,
-        appointmentType: item.appointmenttype,
+        appointmentType: item.appointmentType,
         note: item.note,
       }));
       while (tempF.length < 10) {
@@ -207,12 +207,12 @@ function App ({ token }) {
           })
         });
         const data = await response.json();
+        console.log("tokenRef", tokenRef)
         const temp = data.patients.map(item => ({
-          label: `${item.firstname} ${item.surname}`, // Specify label for Select option
-          value: item.patientid,
+          label: item.patientName, // Specify label for Select option
+          value: item.patientID,
         }));
         setOptionData(temp);
-        console.log("showpanel: ", data)
       } catch (error) {
         console.error("Error fetching data: ", error);
       }

@@ -35,7 +35,7 @@ function App ({ onSuccess }) {
             'Content-type': 'application/json',
           },
           body: JSON.stringify({
-            "firstname": firstName,
+            "firstName": firstName,
             "surname": surname,
             "password": password,
             "location": location,

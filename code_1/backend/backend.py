@@ -81,7 +81,7 @@ def register():
   if password != confirmPassword:
       return jsonify({"message": "Passwords Do Not Match!", "status": False}), 400
 
-  query = f"SELECT firstName, surname from users where firstName = {firstName} and surname = {surname}"
+  query = f"SELECT firstName, surname from users where LOWER(firstName) = '{firstName}' and LOWER(surname) = '{surname}'"
   records = operate_database(query, SEARCH)
 
   if records:

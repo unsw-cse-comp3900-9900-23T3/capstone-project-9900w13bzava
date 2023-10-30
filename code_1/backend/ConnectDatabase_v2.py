@@ -1,5 +1,6 @@
 import psycopg2
 import json
+from datetime import datetime
 
 
 # 连接参数
@@ -37,10 +38,12 @@ def operate_database(query, operation):
 
 # 获取所有用户数据
 if __name__ == "__main__":
-    query = "SELECT * FROM patients;"
-    records = operate_database(query)
+    query = "select * from appointmentTypes;"
+    records = operate_database(query, 1)
     print(type(records))
     print(type(records[0]))
 
     for record in records:
         print(record)
+    
+    print(datetime.now().strftime('%Y-%m-%d %H:%M:%S'))

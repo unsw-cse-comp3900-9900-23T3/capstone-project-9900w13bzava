@@ -8,8 +8,8 @@ app = Flask(__name__)
 swagger = Swagger(app)
 CORS(app)
 
-QUERY = 1
-INSERT = 2
+SEARCH = 1
+ADD_DELETE_UPDATE = 2
 
 # Login
 @app.route('/login', methods=['POST'])
@@ -51,17 +51,17 @@ def login():
   # get the users result from database
   query = '''SELECT surname, firstName, password, userID FROM users'''
 
-  records = operate_database(query, QUERY)
+  records = operate_database(query, SEARCH)
   # check name and password
   for record in records:
       if str(record['firstname']).lower() != firstname or str(record['surname']).lower() != surname:
          continue
       if password == record['password']:
-          return jsonify({"message": "Login successful!", "status": True, "userid":record['userid']}), 200
+          return jsonify({"message": "Login Successful!", "status": True, "userid":record['userid']}), 200
       else:
-          return jsonify({"message": "Wrong password!", "status": False}), 400
+          return jsonify({"message": "Wrong Password!", "status": False}), 400
   
-  return jsonify({"message": "User does not exist!", "status": False}), 400
+  return jsonify({"message": "User Does Not Exist!", "status": False}), 400
 
 
 # Register
@@ -77,22 +77,22 @@ def register():
   sexCode = str(data.get('sexcode')).lower().strip()
 
   if password != confirmPassword:
-      return jsonify({"message": "Passwords do not match!", "status": False}), 400
+      return jsonify({"message": "Passwords Do Not Match!", "status": False}), 400
 
   query = f"SELECT firstName, surname from users where firstName = {firstName} and surname = {surname}"
-  records = operate_database(query, QUERY)
+  records = operate_database(query, SEARCH)
 
   if records:
-    return jsonify({"message": "User already exists!", "status": False}), 400
+    return jsonify({"message": "User Already Exists!", "status": False}), 400
 
   query = f'''INSERT INTO users (firstName, surname, password, email, phoneNumber, sexCode) VALUES 
   ('{firstName}', '{surname}', '{password}', '{email}', '{phoneNumber}', {sexCode});'''
   
   try:
     # 尝试插入新用户
-    operate_database(query, INSERT)
-  except Exception as e:
-    return jsonify({"message": f"Insert error, Wrong input", "status": False}), 400  # 不确定500状态码是什么
+    operate_database(query, ADD_DELETE_UPDATE)
+  except Exception as _:
+    return jsonify({"message": f"Insert Error, Wrong Input", "status": False}), 400  # 不确定500状态码是什么
   
   return jsonify({"message": "Registration successful!", "status": True}), 200
 
@@ -167,9 +167,9 @@ def ShowPanel():
   query2 = get_spec_appointments(userid, pre_date)  # 前一天
   query3 = get_spec_appointments(userid, next_date)  # 后一天雪糕呢
 
-  result1 = operate_database(query1, QUERY)  # 当天
-  result2 = operate_database(query2, QUERY)  # 前一天雪糕呢
-  result3 = operate_database(query3, QUERY)  # 后一天
+  result1 = operate_database(query1, SEARCH)  # 当天
+  result2 = operate_database(query2, SEARCH)  # 前一天雪糕呢
+  result3 = operate_database(query3, SEARCH)  # 后一天
 
   result1, sum = proccess_result_for_ShowPanel(result1, 1)  # 当天 xuegaone 
   result2, _ = proccess_result_for_ShowPanel(result2, 0)  # 前一天
@@ -195,7 +195,7 @@ def ShowPatientList():
   inner join patients as table2 on table2.patientID = table1.patientID
   where table1.userID={userid}'''
 
-  result = operate_database(query, QUERY)
+  result = operate_database(query, SEARCH)
   return jsonify({'patients':result}), 200
 
 
@@ -251,8 +251,8 @@ def ShowPatientRecord():
   query1 = base_query + f'''where table1.patientID = {patientID} and table1.userID = {userid} and table1.appointmentDate < CURRENT_TIMESTAMP'''
   query2 = base_query + f'''where table1.patientID = {patientID} and table1.userID = {userid} and table1.appointmentDate >= CURRENT_TIMESTAMP'''
 
-  history = proccess_result_for_ShowPatientRecord(operate_database(query1, QUERY))
-  future = proccess_result_for_ShowPatientRecord(operate_database(query2, QUERY))
+  history = proccess_result_for_ShowPatientRecord(operate_database(query1, SEARCH))
+  future = proccess_result_for_ShowPatientRecord(operate_database(query2, SEARCH))
   # print(result)
   return jsonify({'history':history, 'future':future}), 200
 
@@ -274,16 +274,210 @@ def getAllPatient():
   where table1.userID = {userid}
   '''
 
-  records = operate_database(query, QUERY)
+  records = operate_database(query, SEARCH)
   return jsonify({'patientDetail': records}), 200
 
 
-# getAllPatient
-@app.route('/GetAllPatient', methods=['POST'])
-def getAllPatient():
-   
-   return
+# GetAllAppointmentTypes
+# 返回所有appointmentTypes类型
+@app.route('/GetAllAppointmentTypes', methods=['POST'])
+def getAllAppointmentTypes():
+  query = '''SELECT * FROM appointmentTypes;'''
+  records = operate_database(query, SEARCH)
+  return jsonify({'appointmenttypes': records}), 200
 
+
+# CreatePatient
+# 往patients表中增加数据
+@app.route('/CreatePatient', methods=['POST'])
+def createPatient():
+  data = request.get_json()
+  firstname = str(data.get('firstname')).strip()
+  surname = str(data.get('surname')).strip()
+  medicareno = str(data.get('medicareno')).strip()
+  email  = str(data.get('email')).strip()
+  phonenumber = str(data.get('phonenumber')).strip()
+  sexcode = data.get('sexcode')
+
+  query = f'''
+  SELECT patientid FROM patients
+  WHERE LOWER(firstname) = LOWER('{firstname}') AND LOWER(surname) = LOWER('{surname}');
+  '''
+  records = operate_database(query, SEARCH)
+
+  # 判断病人是否已经存在。
+  if records:
+    # 说明账户已经存在，报错
+    return jsonify({"message": "Patient Already Exist!", "status": False}), 400
+
+  # 将病人插入到数据库中
+  query = f'''
+  INSERT INTO patients (firstName, surname, medicareNo, email, phoneNumber, sexCode) VALUES
+  ('{firstname}', '{surname}', '{medicareno}', '{email}', '{phonenumber}', {sexcode}),
+  '''
+  try:
+    # 尝试插入新用户
+    operate_database(query, ADD_DELETE_UPDATE)
+  except Exception as _:
+    return jsonify({"message": f"Insert Error, Wrong Input", "status": False}), 400 
+  # 插入成功
+  return jsonify({"message": f"New Patient {firstname} {surname} Added!", "status": True}), 200
+
+
+# CreateAppointment
+# 往appointments表中增加数据
+@app.route('/CreateAppointment', methods=['POST'])
+def createAppointment():
+  data = request.get_json()
+  appointmentdate = datetime.now().strftime('%Y-%m-%d %H:%M:%S')  # 获得当前的时间
+  duration  = int(data.get('duration'))
+  starttime = str(data.get('starttime'))
+  userid = str(data.get('userid'))
+  # 根据病人的firstname和surname来获取patientid
+  patientfirstname = str(data.get('patientfirstname')).strip().lower()
+  patientsurname = str(data.get('patientsurname')).strip().lower()
+  appointmenttypeid = int(data.get('appointmenttypeid'))
+  locationid = int(data.get('locationid'))
+  appointmenttatusid = 2 # 默认应该是booked，其id为2
+
+  # 查询病人是否存在
+  query = f'''
+  SELECT patientid FROM patients
+  WHERE LOWER(firstname) = LOWER('{patientfirstname}') AND LOWER(surname) = LOWER('{patientsurname}');
+  '''
+  records = operate_database(query, SEARCH)
+  # 判断病人是否已经存在。
+  if not records:
+    # 说明账户不存在，报错
+    return jsonify({"message": "Patient Does Not Exist, Please Create One!", "status": False}), 400
+
+  patientid = int(records[0]['patientid'])  # 获取病人ID
+  
+  # 插入到 appointments中
+  query = f'''
+  INSERT INTO appointments (appointmentDate, duration, startTime, userID, patientID, appointmentTypeID, locationID, appointmentStatusID) VALUES
+  ('{appointmentdate}', {duration}, '{starttime}', {userid}, {patientid}, {appointmenttypeid}, {locationid}, {appointmenttatusid});
+  '''
+
+  try:
+    # 尝试插入新appointments
+    operate_database(query, ADD_DELETE_UPDATE)
+  except Exception as _:
+    return jsonify({"message": f"Insert Error, Wrong Input", "status": False}), 400 
+  # 插入成功
+  return jsonify({"message": f"New Appointment Created!", "status": True}), 200
+
+
+# EditAppointment
+# 往appointment表中修改数据
+@app.route('/EditAppointment', methods=['POST'])
+def editAppointment():
+  data = request.get_json()
+  appointmentid = int(data.get('appointmentid'))  # 用来确认appointments
+  # 可变的数据
+  duration  = int(data.get('duration'))
+  appointmenttypeid = int(data.get('appointmenttypeid'))
+  locationid = int(data.get('locationid'))
+  appointmenttatusid = int(data.get('appointmenttatusid'))
+
+  query = f'''
+  UPDATE appointments
+  SET
+    duration = {duration},
+    appointmentTypeID = {appointmenttypeid},
+    locationID = {locationid},
+    appointmentStatusID = {appointmenttatusid}
+  WHERE
+    appointmentID = {appointmentid};
+  '''
+
+  try:
+    # 尝试修改appointments
+    operate_database(query, ADD_DELETE_UPDATE)
+  except Exception as _:
+    return jsonify({"message": f"Insert Error, Wrong Input", "status": False}), 400 
+  # 修改成功
+  return jsonify({"message": f"Appointment Updated!", "status": True}), 200
+
+
+# DeleteAppointment
+# 往appointment表中删除数据
+@app.route('/DeleteAppointment', methods=['POST'])
+def deleteAppointment():
+  data = request.get_json()
+  appointmentid = int(data.get('appointmentid'))  # 用来确认appointments
+
+  query = f'''
+  DELETE FROM appointments
+  WHERE appointmentID = {appointmentid};
+  '''
+
+  try:
+    # 尝试删除appointments
+    operate_database(query, ADD_DELETE_UPDATE)
+  except Exception as _:
+    return jsonify({"message": f"Delete Error, No Such Apointment", "status": False}), 400 
+  # 删除成功
+  return jsonify({"message": f"Appointment Deleted!", "status": True}), 200
+
+
+# DeletePatient
+# 往patient表中删除数据
+@app.route('/DeletePatient', methods=['POST'])
+def deletePatient():
+  data = request.get_json()
+  # patientid  = int(data.get('patientid '))
+  patientfirstname = str(data.get('patientfirstname'))
+  patientsurname = str(data.get('patientsurname'))
+
+  # 查询病人是否存在
+  query = f'''
+  SELECT patientid FROM patients
+  WHERE LOWER(firstname) = LOWER('{patientfirstname}') AND LOWER(surname) = LOWER('{patientsurname}');
+  '''
+  records = operate_database(query, SEARCH)
+  # 判断病人是否已经存在。
+  if not records:
+    # 说明账户不存在，报错
+    return jsonify({"message": "Patient Does Not Exist!", "status": False}), 400
+
+  patientid = int(records[0]['patientid'])  # 获取病人ID
+
+  # 删除改病人
+  query = f'''
+  DELETE FROM patients
+  WHERE patientid = {patientid};
+  '''
+
+  try:
+    # 尝试删除
+    operate_database(query, ADD_DELETE_UPDATE)
+  except Exception as _:
+    return jsonify({"message": f"Delete Error, No Such Patient", "status": False}), 400 
+  # 删除成功
+  return jsonify({"message": f"Patient Deleted!", "status": True}), 200
+
+
+# DeleteUser
+# 往user表中删除数据
+@app.route('/DeleteUser', methods=['POST'])
+def deleteUser():
+  data = request.get_json()
+  userid  = int(data.get('userid '))
+
+  # 删除改病人
+  query = f'''
+  DELETE FROM users
+  WHERE userid = {userid};
+  '''
+
+  try:
+    # 尝试删除
+    operate_database(query, ADD_DELETE_UPDATE)
+  except Exception as _:
+    return jsonify({"message": f"Delete Error, No Such User", "status": False}), 400 
+  # 删除成功
+  return jsonify({"message": f"User Deleted!", "status": True}), 200
 
 
 if __name__ == '__main__':

@@ -108,7 +108,7 @@ function App ({ token }) {
           'Content-type': 'application/json',
         },
         body: JSON.stringify({
-          "patientID": value,
+          "patientid": value,
           "userid": tokenRef,
         })
       });

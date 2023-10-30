@@ -9,9 +9,9 @@ import {
 // import moment from "moment"
 
 const widthButton = "80px"
-const allState = ['gray', 'pink', 'yellow', 'magenta', 'lightgreen', 'lightgray', 'lightblue', 'red', 'gold']
-const getIndex = ['Unavailable', 'On the day', 'Waiting', 'With doctor', 'At billing', 'Completed', 'Did not', 'Urgent', 'Elsewhere']
-const defaultDate = "2006-02-24"
+const allState = ['gray', 'yellow', 'magenta', 'gold', 'lightgreen', 'lightgray', 'lightblue']
+const getIndex = ['Unavailable', 'Booked', 'Waiting', 'Urgent', 'With doctor', 'At billing', 'Completed']
+// const defaultDate = "2023-11-01"
 
 let dataA = [];
 function formatTime(time) {
@@ -19,9 +19,10 @@ function formatTime(time) {
   const minutes = time % 100;
   const period = hours >= 12 ? 'pm' : 'am';
   // 处理小时和分钟的零填充
+  const formattedHours = String(hours).padStart(2, '0');
   const formattedMinutes = String(minutes).padStart(2, '0');
 
-  return `${hours}:${formattedMinutes} ${period}`;
+  return `${formattedHours}:${formattedMinutes} ${period}`;
 }
 const time_ = [545, 600, 615, 630, 645, 700, 715, 730, 745, 800, 815, 830, 845, 900, 915, 930, 945, 1000, 1015, 1030, 1045, 1100, 1115, 1130, 1145, 1200,
 1215, 1230, 1245, 1300, 1315, 1330, 1345, 1400, 1415, 1430, 1445, 1500, 1515, 1530, 1545, 1600, 1615, 1630, 1645,
@@ -56,7 +57,7 @@ for (let i=0; i<time_.length; i++) {
 
 
 
-function App ({ token, onRecord }) {
+function App ({ token, onRecord, defaultDate }) {
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedRecord, setSelectedRecord] = useState(null);
   const [date, setDate] = useState(defaultDate);
@@ -150,7 +151,13 @@ function App ({ token, onRecord }) {
 
   function onEdit (e) {
     navigate('/mainpage/edit');
-    console.log("fff: ", e);
+    console.log("edit route: ", e);
+    onRecord(e)
+  }
+
+  function onCreate (e) {
+    navigate('/mainpage/create');
+    console.log("create route: ", e);
     onRecord(e)
   }
 
@@ -217,7 +224,6 @@ function App ({ token, onRecord }) {
             temp[j].dIsPhone = appointments[i].isPhone
             temp[j].dHasMedicare = appointments[i].hasMedicare
             temp[j].dRecordID = appointments[i].recordID
-            console.log("record: ", temp[j].dRecordID, appointments[i].recordID)
           } else if (appointments[i].day === "0") {
             temp[j].before = appointments[i].patientName
             temp[j].beforeState = appointments[i].state
@@ -287,18 +293,18 @@ function App ({ token, onRecord }) {
       const data = await response.json();
       const appointments_ = data.appointments.map(appointment => {
         return {
-          patientName: appointment.patientName,
-          startTime: appointment.startTime,
+          patientName: appointment.patientname,
+          startTime: appointment.starttime,
           duration: appointment.duration,
           state: appointment.status,
-          day: appointment.dayType,
-          type: appointment.appointmentType,
+          day: appointment.daytype,
+          type: appointment.appointmenttype,
           note: appointment.note,
-          isPhone: appointment.isPhone,
-          hasMedicare: appointment.hasMedicare,
+          isPhone: appointment.isphone,
+          hasMedicare: appointment.hasmedicare,
           surname: appointment.surname,
-          firstName: appointment.firstName,
-          recordID: appointment.recordID,
+          firstName: appointment.firstname,
+          recordID: appointment.appointmentid,
         };
       });
       setDescription(data.description);
@@ -322,16 +328,14 @@ function App ({ token, onRecord }) {
               </Popover>
             <Space>
               <Button style={{backgroundColor:'gray', width:widthButton, padding:"0"}}>Unavailable</Button>
-              <Button style={{backgroundColor:'pink', width:widthButton, padding:"0"}}>On the day</Button>
-              <Button style={{backgroundColor:'yellow', width:widthButton, padding:"0"}}>Waiting</Button>
-              <Button style={{backgroundColor:'magenta', width:widthButton, padding:"0"}}>With doctor</Button>
-              <Button style={{backgroundColor:'lightgreen', width:widthButton, padding:"0"}}>At billing</Button>
-              <Button style={{backgroundColor:'lightgray', width:widthButton, padding:"0"}}>Completed</Button>
-              <Button style={{backgroundColor:'lightblue', width:widthButton, padding:"0"}}>Did not</Button>
-              <Button style={{backgroundColor:'red', width:widthButton, padding:"0"}}>Urgent</Button>
-              <Button style={{backgroundColor:'gold', width:widthButton, padding:"0"}}>Elsewhere</Button>
+              <Button style={{backgroundColor:'yellow', width:widthButton, padding:"0"}}>Booked</Button>
+              <Button style={{backgroundColor:'magenta', width:widthButton, padding:"0"}}>Waiting</Button>
+              <Button style={{backgroundColor:'gold', width:widthButton, padding:"0"}}>Urgent</Button>
+              <Button style={{backgroundColor:'lightgreen', width:widthButton, padding:"0"}}>With doctor</Button>
+              <Button style={{backgroundColor:'lightgray', width:widthButton, padding:"0"}}>At billing</Button>
+              <Button style={{backgroundColor:'lightblue', width:widthButton, padding:"0"}}>Completed</Button>
+              
             </Space>
-            
           </Space>
           
         </Space>
@@ -386,9 +390,17 @@ function App ({ token, onRecord }) {
                   )
                 }
                 <p>Note: {selectedRecord.beforeNote}</p>
-                <Button onClick={() => onEdit(selectedRecord.bRecordID)}>
-                  Edit
-                </Button>
+                <Space>
+                  <Button onClick={() => onEdit(selectedRecord.bRecordID)}>
+                    Edit
+                  </Button>
+                  <Button onClick={() => onCreate(selectedRecord.aRecordID)}>
+                      Create
+                  </Button>
+                  <Button onClick={() => fDelete(selectedRecord.aRecordID)}>
+                    Delete
+                  </Button>
+                </Space>
               </div>
             )}
             {jModal === '1' && (
@@ -422,9 +434,18 @@ function App ({ token, onRecord }) {
                   )
                 }
                 <p>Note: {selectedRecord.dateNote}</p>
-                <Button onClick={() => onEdit(selectedRecord.dRecordID)}>
-                  Edit
-                </Button>
+                <Space>
+                  <Button onClick={() => onEdit(selectedRecord.dRecordID)}>
+                    Edit
+                  </Button>
+                  <Button onClick={() => onCreate(selectedRecord.aRecordID)}>
+                    Create
+                  </Button>
+                  <Button onClick={() => fDelete(selectedRecord.aRecordID)}>
+                    Delete
+                  </Button>
+                </Space>
+                
               </div>
             )}
             {jModal === '2' && (
@@ -461,6 +482,9 @@ function App ({ token, onRecord }) {
                 <Space>
                   <Button onClick={() => onEdit(selectedRecord.aRecordID)}>
                     Edit
+                  </Button>
+                  <Button onClick={() => onCreate(selectedRecord.aRecordID)}>
+                    Create
                   </Button>
                   <Button onClick={() => fDelete(selectedRecord.aRecordID)}>
                     Delete

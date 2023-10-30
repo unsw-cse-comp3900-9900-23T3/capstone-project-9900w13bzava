@@ -16,6 +16,7 @@ import Record from './record';
 function App() {
   const [token, setToken] = React.useState(null);
   const [recordID, setRecordID] = React.useState(0);
+  const [defaultDate, setDefaultDate] = React.useState("2023-10-01");
   
   function manageTokenSet (token) {
     setToken(token);
@@ -25,6 +26,12 @@ function App() {
   function manageRecordSet (recordID) {
     setRecordID(recordID);
     localStorage.setItem('recordID', recordID)
+
+  }
+
+  function manageDefaultDateSet (defaultDate) {
+    setDefaultDate(defaultDate);
+    localStorage.setItem('defaultDate', defaultDate)
 
   }
 
@@ -49,9 +56,9 @@ function App() {
               </MainPage>
             }
           >
-            <Route path="/mainpage/appointments" element={<Appointments token={token} onRecord={manageRecordSet}/>} />
-            <Route path="/mainpage/create" element={<Create token={token}/>} />
-            <Route path="/mainpage/edit" element={<Edit  token={token} recordID={recordID}/>}/>
+            <Route path="/mainpage/appointments" element={<Appointments token={token} onRecord={manageRecordSet} defaultDate={defaultDate}/>} />
+            <Route path="/mainpage/create" element={<Create token={token} recordID={recordID} onDefaultDate={manageDefaultDateSet}/>} />
+            <Route path="/mainpage/edit" element={<Edit  token={token} recordID={recordID} onDefaultDate={manageDefaultDateSet}/>}/>
             <Route path="/mainpage/record" element={<Record token={token}/>} />
           </Route>
           <Route path="*" element={<h2>404 page</h2>} />

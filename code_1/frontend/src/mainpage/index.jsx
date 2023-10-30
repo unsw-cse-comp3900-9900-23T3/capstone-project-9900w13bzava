@@ -1,7 +1,5 @@
 import React from 'react';
 import {
-  EditOutlined,
-  SnippetsOutlined,
   LogoutOutlined,
   DatabaseOutlined,
   SolutionOutlined,
@@ -44,16 +42,6 @@ function App ( props ) {
                 key: 'appointments',
                 icon: <DatabaseOutlined />,
                 label: 'Appointments',
-              },
-              {
-                key: 'create',
-                icon: <SnippetsOutlined />,
-                label: 'Create',
-              },
-              {
-                key: 'edit',
-                icon: <EditOutlined />,
-                label: 'Edit',
               },
               {
                 key: 'record',

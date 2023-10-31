@@ -27,6 +27,6 @@ further improved and optimized the SQL statements, and added data processing for
 Week7:
 Following the lecture's advice, I created a mock-up database using PostgreSQL, mimicking the table structure of the database provided by the user. 
 This database will be used for the development and testing of the website's functionality in the future.
-
+Several APIs created for add, delete, edit database.
 
 

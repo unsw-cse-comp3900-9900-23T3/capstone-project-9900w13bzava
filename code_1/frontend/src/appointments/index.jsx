@@ -159,9 +159,9 @@ function App ({ token, onRecord, defaultDate }) {
   }
 
   function onCreate (e) {
-    navigate('/mainpage/create');
-    console.log("create route: ", e);
-    onRecord(e)
+    // navigate('/mainpage/create');
+    // console.log("create route: ", e);
+    // onRecord(e)
   }
 
   async function fDelete (e) {

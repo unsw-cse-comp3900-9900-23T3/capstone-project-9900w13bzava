@@ -1,9 +1,11 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import "./index.css";
-import { Button, Form, Input, Space, notification } from 'antd';
+import { Button, Form, Input, Space, notification, Typography, Select } from 'antd';
 import {
   useNavigate
 } from 'react-router-dom';
+const sWidthComponent = 195
+
 const onFinish = (values) => {
   console.log('Success:', values);
 };
@@ -16,6 +18,8 @@ function App ({ onSuccess }) {
   const [surname, setSurname] = React.useState('');
   const [password, setPassword] = React.useState('');
   const [location, setLocation] = React.useState('');
+  const [allUsersName, setAllUsersName] = React.useState(null);
+  const [allLocation, setAllLocation] = React.useState(null);
   const navigate = useNavigate();
 
   function goRegister () {
@@ -28,7 +32,6 @@ function App ({ onSuccess }) {
       navigate('/mainpage')
     } else {
       if (firstName.length !== 0 && surname.length !== 0 && password.length !== 0 && location.length !== 0) {
-        console.log('begin');
         const response = await fetch('http://127.0.0.1:5000/login', {
           method: 'POST',
           headers: {
@@ -84,6 +87,53 @@ function App ({ onSuccess }) {
     }
   }
 
+  function splitName(e) {
+    const [selectedFirstName, selectedSurname] = e.split(' ');
+    setFirstName(selectedFirstName);
+    setSurname(selectedSurname)
+  }
+
+  useEffect(() => {
+    async function fGetAllUsers() {
+      const response = await fetch('http://127.0.0.1:5000/GetAllUsers', {
+        method: 'POST',
+        headers: {
+          'Content-type': 'application/json',
+        },
+      });
+      const data = await response.json();
+      const temp = data.allUsers.map(item => {
+        return {
+          value: `${item.firstname} ${item.surname}`,
+          label: `${item.firstname} ${item.surname}`,
+        }
+      })
+      console.log(temp)
+      setAllUsersName(temp)
+    }
+    fGetAllUsers()
+  }, [])
+
+  useEffect(() => {
+    async function fGetAllLocation() {
+      const response = await fetch('http://127.0.0.1:5000/GetAllLocation', {
+        method: 'POST',
+        headers: {
+          'Content-type': 'application/json',
+        },
+      });
+      const data = await response.json();
+      const temp = data.allLocation.slice(1).map(item => {
+        return {
+          value: item.locationid,
+          label: item.locationname,
+        }
+      })
+      setAllLocation(temp)
+    }
+    fGetAllLocation()
+  }, [])
+
   return (
     <div className="background">
       <Form
@@ -94,9 +144,7 @@ function App ({ onSuccess }) {
         wrapperCol={{
           span: 16,
         }}
-        style={{
-          maxWidth: 600,
-        }}
+        style={{maxWidth: 600}}
         initialValues={{
           remember: true,
         }}
@@ -105,29 +153,22 @@ function App ({ onSuccess }) {
         autoComplete="off"
       >
         <Form.Item
-          label="FirstName"
-          name="firstName"
+          label="User's name"
+          name="userName"
           rules={[
             {
               required: true,
-              message: 'Please input your first name!',
             },
           ]}
         >
-          <Input  value={firstName} onChange={(e) => setFirstName(e.target.value)}/>
-        </Form.Item>
-
-        <Form.Item
-          label="Surname"
-          name="surname"
-          rules={[
-            {
-              required: true,
-              message: 'Please input your surname!',
-            },
-          ]}
-        >
-          <Input  value={surname} onChange={(e) => setSurname(e.target.value)}/>
+          <Select
+            placeholder="Select user's name"
+            style={{
+              width: sWidthComponent,
+            }}
+            onChange={(e) => splitName(e)}
+            options={allUsersName}
+          />
         </Form.Item>
 
         <Form.Item
@@ -149,28 +190,28 @@ function App ({ onSuccess }) {
           rules={[
             {
               required: true,
-              message: 'Please input your location!',
             },
           ]}
         >
-          <Input value={location} onChange={(e) => setLocation(e.target.value)}/>
+          <Select
+            placeholder="Select location"
+            style={{
+              width: sWidthComponent,
+            }}
+            onChange={(e) => setLocation(e)}
+            options={allLocation}
+          />
         </Form.Item>
 
-        <Form.Item
-          wrapperCol={{
-            offset: 8,
-            span: 16,
-          }}
-        >
-          <Space>
-            <Button type="primary" onClick={fLogin}>
+        
+          <Space direction='vertical' style={{display:"flex", justifyContent: "center", alignItems: "center"}}>
+            <Button onClick={fLogin}>
               Log in
             </Button>
-            <Button type="primary" onClick={goRegister}>
-              Register
-            </Button>
+            <Typography className="hover-text" onClick={goRegister}>
+              Do not have a account? Register now!
+            </Typography>
           </Space>
-        </Form.Item>
       </Form>
     </div>
 );

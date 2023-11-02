@@ -25,10 +25,10 @@ const onFinishFailed = (errorInfo) => {
 };
 
 const dataDuration = []
-  for (let i=1;i<16;i+=1) {
+  for (let i=1;i<4;i+=1) {
     dataDuration.push({
-      "value": i,
-      "label": `${i} minutes`,
+      "value": i*15,
+      "label": `${i*15} minutes`,
     })
   }
 
@@ -45,21 +45,23 @@ function App ({token, recordID, onDefaultDate}) {
   const recordIDRef = useRef(recordID);
   const [appointmentType, setAppointmentType] = useState([]);
   const [date, setDate] = useState('');
-  const [stateID, setStateID] = useState(0);
+  const [stateID, setStateID] = useState(null);
   const [startTime, setStartTime] = useState('');
   const [duration, setDuration] = useState('');
-  const [type, setType] = useState('');
-  const [note, setNote] = useState('');
+  const [type, setType] = useState(''); // 这个是typeID
+  const [note, setNote] = useState(null);
   const [patientFirstName, setPatientFirstName] = useState('')
   const [patientSurname, setPatientSurname] = useState('')
-  const [location, setLocation] = useState(2)
+  const [location, setLocation] = useState(-1)
+  const [loaded, setLoaded] = useState(false)
+  const [allLocation, setAllLocation] = useState(null);
   const [form] = Form.useForm();
   const navigate = useNavigate();
 
 
   async function fEdit() {
     console.log("EditAppointment: ", duration, type, location, stateID)
-    if ( duration !== '' && type!== '' && location !== 2 && stateID !== 0) {
+    if ( duration !== '' && type!== '' && location !== -1 && stateID !== 0) {
       const response = await fetch('http://127.0.0.1:5000/EditAppointment', {
         method: 'POST',
         headers: {
@@ -119,11 +121,10 @@ function App ({token, recordID, onDefaultDate}) {
   function clearAll() {
     form.setFieldsValue({
       duration: null,
-      patientFirstName: '',
-      patientSurname: '',
       appointmentType: null,
-      note: '',
+      note: null,
       location: null,
+      stateID: null,
     });
   }
 
@@ -149,12 +150,37 @@ function App ({token, recordID, onDefaultDate}) {
         label: item.name,
         value: item.id,
       }));
+      console.log("temp", temp)
+      temp.sort(function(a, b) {
+        const valueA = a.label.toLowerCase();
+        const valueB = b.label.toLowerCase();
+        return valueA.localeCompare(valueB);
+      });
+
       setAppointmentType(temp);
     }
     fGetAllAppointmentTypes();
   }, [])
 
   useEffect(() => {
+    async function fGetAllLocation() {
+      const response = await fetch('http://127.0.0.1:5000/GetAllLocation', {
+        method: 'POST',
+        headers: {
+          'Content-type': 'application/json',
+        },
+      });
+      const data = await response.json();
+      const temp = data.allLocation.slice(1).map(item => {
+        return {
+          value: item.locationid,
+          label: item.locationname,
+        }
+      })
+      setAllLocation(temp)
+    }
+    fGetAllLocation()
+
     async function fGetAppointment() {
       const response = await fetch('http://127.0.0.1:5000/GetAppointment', {
         method: 'POST',
@@ -165,26 +191,31 @@ function App ({token, recordID, onDefaultDate}) {
           "appointmentid": recordIDRef.current,
         })
       });
-      console.log("getappointment: ", recordIDRef)
       const data = await response.json();
       if (data.status) {
         const temp = data.appointment.map(item => ({
           duration: item.duration,
           startTime: item.starttime, 
           appointmentType: item.appointmenttype, 
+          appointmentTypeID: item.appointmenttypeid,
           state: item.status, 
           patientFirstName: item.patientfirstname, 
           patientSurname: item.patientsurname, 
-          location: item.locationid === 0 ? 'Online' : 'Offline', 
+          location: item.locationid, 
           note: item.note
         }));
         const [datePart, timePart] = temp[0].startTime.split(' '); // 分割日期和时间
         setDate(datePart); // 设置日期
-        console.log("temp: ", temp, temp.patientFirstName)
         const [hours, minutes] = timePart.split(':').slice(0, 2); // 仅取小时和分钟
         setStartTime(`${hours}:${minutes}`); // 格式化时间为 "09:45"
         setPatientFirstName(temp[0].patientFirstName)
         setPatientSurname(temp[0].patientSurname)
+        setNote(temp[0].note)
+        setLoaded(true)
+        setDuration(temp[0].duration)
+        setType(temp[0].appointmentTypeID)
+        setLocation(temp[0].location)
+        setStateID(getIndex.indexOf(temp[0].state)+1)
       } else {
         notification.open({
           message: 'Error',
@@ -201,22 +232,14 @@ function App ({token, recordID, onDefaultDate}) {
     fGetAppointment();
   }, [])
 
+
   return (
     <Form
       form={form}
       name="basic"
-      // labelCol={{
-      //   span: 8,
-      // }}
-      // wrapperCol={{
-      //   span: 16,
-      // }}
       style={{
         maxWidth: 600,
       }}
-      // initialValues={{
-      //   remember: true,
-      // }}
       onFinish={onFinish}
       onFinishFailed={onFinishFailed}
       autoComplete="off"
@@ -247,7 +270,7 @@ function App ({token, recordID, onDefaultDate}) {
           >
             <div>{startTime}</div>
           </Form.Item>
-
+          
           <Form.Item
             label="Duration"
             name="duration"
@@ -258,6 +281,7 @@ function App ({token, recordID, onDefaultDate}) {
               },
             ]}
           >
+            {loaded === true && (
               <Select
                 placeholder="Select duration"
                 style={{
@@ -265,8 +289,9 @@ function App ({token, recordID, onDefaultDate}) {
                 }}
                 onChange={(e) => setDuration(e)}
                 options={dataDuration}
+                defaultValue={duration}
               />
-            
+            )}
           </Form.Item>
 
           <Form.Item
@@ -279,14 +304,18 @@ function App ({token, recordID, onDefaultDate}) {
               },
             ]}
           >
-            <Select
-              placeholder="Select appointment type"
-              style={{
-                width: sWidthComponent,
-              }}
-              onChange={(e) => setType(e)}
-              options={appointmentType}
-            />
+            {loaded === true && (
+              <Select
+                defaultValue={type}
+                placeholder="Select appointment type"
+                style={{
+                  width: sWidthComponent,
+                }}
+                onChange={(e) => setType(e)}
+                options={appointmentType}
+              />
+            )}
+            
           </Form.Item>
 
           <Form.Item
@@ -299,13 +328,17 @@ function App ({token, recordID, onDefaultDate}) {
               },
             ]}
           >
-            <Radio.Group onChange={(e) => setLocation(e.target.value)} value={location}>
-              <Space>
-                <Radio value={0}>Online</Radio>
-                <Radio value={1}>Offline</Radio>
-              </Space>
-              
-            </Radio.Group>
+            {loaded === true && (
+              <Select
+                defaultValue={location}
+                placeholder="Select location"
+                style={{
+                  width: sWidthComponent,
+                }}
+                onChange={(e) => setLocation(e)}
+                options={allLocation}
+              />
+            )}
           </Form.Item>
         </div>
         <div>
@@ -332,34 +365,44 @@ function App ({token, recordID, onDefaultDate}) {
           >
             <div>{patientSurname}</div>
           </Form.Item>
+          
+          
+            <Form.Item
+              label="State"
+              name="state"
+              rules={[
+                {
+                  required: true,
+                  message: 'Please choose the state!',
+                },
+              ]}
+            >
+              {loaded === true && (
+                <Select
+                  defaultValue={stateID}
+                  placeholder="Select state"
+                  style={{
+                    width: sWidthComponent,
+                  }}
+                  onChange={(e) => setStateID(e)}
+                  options={dataState}
+                />
+              )}
+            </Form.Item>
 
-          <Form.Item
-            label="State"
-            name="state"
-            rules={[
-              {
-                required: true,
-                message: 'Please choose the state!',
-              },
-            ]}
-          >
-              <Select
-                placeholder="Select state"
-                style={{
-                  width: sWidthComponent,
-                }}
-                onChange={(e) => setStateID(e)}
-                options={dataState}
-              />
-            
-          </Form.Item>
-
-          <Form.Item
-            label="Note"
-            name="note"
-          >
-            <TextArea onChange={(e) => setNote(e.target.value)} placeholder="Enter description" rows={5}/>
-          </Form.Item>
+          
+          
+          
+            <Form.Item
+              label="Note"
+              name="note"
+            >
+              {loaded && (
+                <TextArea defaultValue={note} onChange={(e) => setNote(e.target.value)} placeholder={"Input the note"} rows={5}/>
+              )} 
+            </Form.Item>
+         
+          
         </div>
       </Space>
       <Form.Item

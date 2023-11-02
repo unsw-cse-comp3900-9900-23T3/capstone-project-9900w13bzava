@@ -165,7 +165,7 @@ function App ({ token, onRecord, defaultDate }) {
   }
 
   async function fDelete (e) {
-    const response = await fetch('http://127.0.0.1:5000/Delete', {
+    const response = await fetch('http://127.0.0.1:5000/DeleteAppointment', {
       method: 'POST',
       headers: {
         'Content-type': 'application/json',

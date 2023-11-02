@@ -216,9 +216,6 @@ function App ({ token }) {
     }
     fPatientList();
   }, []);
-
-  useEffect(() => {
-  }, [dataF, dataH])
   
   return (
     <div>

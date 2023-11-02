@@ -1,9 +1,12 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import "./index.css";
-import { Button, Form, Input, Space, notification, Radio } from 'antd';
+import { Button, Form, Input, Space, notification, Radio, Select } from 'antd';
 import {
   useNavigate
 } from 'react-router-dom';
+
+const sWidthComponent = 195
+const iWidthComponent = 200
 
 function App ({ onSuccess }) {
   const [firstName, setFirstName] = React.useState('');
@@ -14,6 +17,7 @@ function App ({ onSuccess }) {
   const [email, setEmail] = React.useState('');
   const [phoneNumber, setPhoneNumber] = React.useState('');
   const [sexCode, setSexCode] = React.useState(0);
+  const [allLocation, setAllLocation] = React.useState(null);
   const navigate = useNavigate();
   
 
@@ -114,6 +118,26 @@ function App ({ onSuccess }) {
     }
   }
 
+  useEffect(() => {
+    async function fGetAllLocation() {
+      const response = await fetch('http://127.0.0.1:5000/GetAllLocation', {
+        method: 'POST',
+        headers: {
+          'Content-type': 'application/json',
+        },
+      });
+      const data = await response.json();
+      const temp = data.allLocation.slice(1).map(item => {
+        return {
+          value: item.locationid,
+          label: item.locationname,
+        }
+      })
+      setAllLocation(temp)
+    }
+    fGetAllLocation()
+  }, [])
+
   return (
     <div className="background">
       <Form
@@ -146,7 +170,7 @@ function App ({ onSuccess }) {
                 },
               ]}
             >
-              <Input value={firstName} onChange={(e) => setFirstName(e.target.value)}/>
+              <Input value={firstName} style={{display:'flex', width:iWidthComponent}}onChange={(e) => setFirstName(e.target.value)}/>
             </Form.Item>
 
             <Form.Item
@@ -159,7 +183,7 @@ function App ({ onSuccess }) {
                 },
               ]}
             >
-              <Input value={surname} onChange={(e) => setSurname(e.target.value)}/>
+              <Input value={surname} style={{display:'flex', width:iWidthComponent}}onChange={(e) => setSurname(e.target.value)}/>
             </Form.Item>
 
             <Form.Item
@@ -172,7 +196,7 @@ function App ({ onSuccess }) {
                 },
               ]}
             >
-              <Input.Password value={password} onChange={(e) => setPassword(e.target.value)}/>
+              <Input.Password style={{display:'flex', width:iWidthComponent}}value={password} onChange={(e) => setPassword(e.target.value)}/>
             </Form.Item>
 
             <Form.Item
@@ -185,7 +209,7 @@ function App ({ onSuccess }) {
                 },
               ]}
             >
-              <Input.Password value={conPassword} onChange={(e) => setConPassword(e.target.value)}/>
+              <Input.Password style={{display:'flex', width:iWidthComponent}}value={conPassword} onChange={(e) => setConPassword(e.target.value)}/>
             </Form.Item>
           </div>
           <div>
@@ -199,7 +223,14 @@ function App ({ onSuccess }) {
                 },
               ]}
             >
-              <Input value={location} onChange={(e) => setLocation(e.target.value)}/>
+              <Select
+                placeholder="Select location"
+                style={{
+                  width: sWidthComponent,
+                }}
+                onChange={(e) => setLocation(e)}
+                options={allLocation}
+              />
             </Form.Item>
 
             <Form.Item
@@ -212,7 +243,7 @@ function App ({ onSuccess }) {
                 },
               ]}
             >
-              <Input value={email} onChange={(e) => setEmail(e.target.value)}/>
+              <Input style={{display:'flex', width:iWidthComponent}}value={email} onChange={(e) => setEmail(e.target.value)}/>
             </Form.Item>
 
             <Form.Item
@@ -225,7 +256,7 @@ function App ({ onSuccess }) {
                 },
               ]}
             >
-              <Input value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)}/>
+              <Input style={{display:'flex', width:iWidthComponent}}value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)}/>
             </Form.Item>
             <Form.Item
               label="Gender"
@@ -257,10 +288,10 @@ function App ({ onSuccess }) {
           }}
         >
           <Space>
-            <Button type="primary" onClick={fRegister}>
+            <Button onClick={fRegister}>
               Confirm
             </Button>
-            <Button type="primary" onClick={goLogin}>
+            <Button onClick={goLogin}>
               Cancel
             </Button>
           </Space>

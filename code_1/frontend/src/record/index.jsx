@@ -139,7 +139,7 @@ function App ({ token }) {
       }
       const tempF = data.future.map((item, index) => ({
         key: index.toString(),
-        fTime: `${item.day} ${item.starttime}`,
+        fTime: item.starttime,
         fDoctor: `${item.userfirstname} ${item.usersurname}`,
         patientName: `${item.patientfirstname} ${item.patientsurname}`,
         hasMedicare: item.hasmedicare,

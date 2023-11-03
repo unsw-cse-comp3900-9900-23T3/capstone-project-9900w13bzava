@@ -35,6 +35,7 @@ for (let i=0; i<time_.length; i++) {
     beforeState: '',
     beforeType: '',
     beforeNote: '',
+    beforeLocationName: '',
     bHasMedicare: 1,
     bIsPhone: 0,
     bRecordID: 0,
@@ -42,6 +43,7 @@ for (let i=0; i<time_.length; i++) {
     dateState: '',
     dateType: '',
     dateNote: '',
+    dateLocationName: '',
     dHasMedicare: 1,
     dIsPhone: 0,
     dRecordID: 0,
@@ -49,6 +51,7 @@ for (let i=0; i<time_.length; i++) {
     afterState: '',
     afterType: '',
     afterNote: '',
+    afterLocationName: '',
     aHasMedicare: 1,
     aIsPhone: 0,
     aRecordID: 0,
@@ -66,6 +69,7 @@ function App ({ token, onRecord, defaultDate }) {
   const [description, setDescription] = useState("");
   const [jModal, setJModal] = useState("");
   const [upDelete, setUpDelete] = useState("");
+  const [locationName, setLocationName] = useState("");
   const navigate = useNavigate();
 
   const columns = [
@@ -278,6 +282,7 @@ function App ({ token, onRecord, defaultDate }) {
             temp[j].dateState = appointments[i].state
             temp[j].dateType = appointments[i].type
             temp[j].dateNote = appointments[i].note
+            temp[j].dateLocationName = appointments[i].locationName
             temp[j].dIsPhone = appointments[i].isPhone
             temp[j].dHasMedicare = appointments[i].hasMedicare
             temp[j].dRecordID = appointments[i].recordID
@@ -286,6 +291,7 @@ function App ({ token, onRecord, defaultDate }) {
             temp[j].beforeState = appointments[i].state
             temp[j].beforeType = appointments[i].type
             temp[j].beforeNote = appointments[i].note
+            temp[j].beforeLocationName = appointments[i].locationName
             temp[j].bIsPhone = appointments[i].isPhone
             temp[j].bHasMedicare = appointments[i].hasMedicare
             temp[j].bRecordID = appointments[i].recordID
@@ -294,6 +300,7 @@ function App ({ token, onRecord, defaultDate }) {
             temp[j].afterState = appointments[i].state
             temp[j].afterType = appointments[i].type
             temp[j].afterNote = appointments[i].note
+            temp[j].afterLocationName = appointments[i].locationName
             temp[j].aIsPhone = appointments[i].isPhone
             temp[j].aHasMedicare = appointments[i].hasMedicare
             temp[j].aRecordID = appointments[i].recordID
@@ -307,6 +314,7 @@ function App ({ token, onRecord, defaultDate }) {
             temp[j].dateState = appointments[judge_].state
             temp[j].dateType = appointments[judge_].type
             temp[j].dateNote = appointments[i].note
+            temp[j].dateLocationName = appointments[i].locationName
             temp[j].dIsPhone = appointments[i].isPhone
             temp[j].dHasMedicare = appointments[i].hasMedicare
             temp[j].dRecordID = appointments[i].recordID
@@ -315,6 +323,7 @@ function App ({ token, onRecord, defaultDate }) {
             temp[j].beforeState = appointments[judge_].state
             temp[j].beforeType = appointments[judge_].type
             temp[j].beforeNote = appointments[i].note
+            temp[j].beforeLocationName = appointments[i].locationName
             temp[j].bIsPhone = appointments[i].isPhone
             temp[j].bHasMedicare = appointments[i].hasMedicare
             temp[j].bRecordID = appointments[i].recordID
@@ -323,6 +332,7 @@ function App ({ token, onRecord, defaultDate }) {
             temp[j].afterState = appointments[judge_].state
             temp[j].afterType = appointments[judge_].type
             temp[j].afterNote = appointments[i].note
+            temp[j].afterLocationName = appointments[i].locationName
             temp[j].aIsPhone = appointments[i].isPhone
             temp[j].aHasMedicare = appointments[i].hasMedicare
             temp[j].aRecordID = appointments[i].recordID
@@ -362,6 +372,7 @@ function App ({ token, onRecord, defaultDate }) {
           surname: appointment.surname,
           firstName: appointment.firstname,
           recordID: appointment.appointmentid,
+          locationName: appointment.locationname
         };
       });
       setDescription(data.description);
@@ -444,6 +455,7 @@ function App ({ token, onRecord, defaultDate }) {
                   )
                 }
                 <p>Note: {selectedRecord.beforeNote}</p>
+                <p>Location: {selectedRecord.beforeLocationName}</p>
                 <Space>
                   <Button onClick={() => onEdit(selectedRecord.bRecordID)}>
                     Edit
@@ -485,6 +497,7 @@ function App ({ token, onRecord, defaultDate }) {
                   )
                 }
                 <p>Note: {selectedRecord.dateNote}</p>
+                <p>Location: {selectedRecord.dateLocationName}</p>
                 <Space>
                   <Button onClick={() => onEdit(selectedRecord.dRecordID)}>
                     Edit
@@ -527,6 +540,7 @@ function App ({ token, onRecord, defaultDate }) {
                   )
                 }
                 <p>Note: {selectedRecord.afterNote}</p>
+                <p>Location: {selectedRecord.afterLocationName}</p>
                 <Space>
                   <Button onClick={() => onEdit(selectedRecord.aRecordID)}>
                     Edit

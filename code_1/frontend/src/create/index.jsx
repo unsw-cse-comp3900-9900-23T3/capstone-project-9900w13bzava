@@ -75,7 +75,7 @@ function App ({token, recordID, onDefaultDate}) {
           "locationid": location,
           "appointmenttypeid": type,
           "patientfirstname": patientFirstName,
-          "patientsurtname": patientSurname,
+          "patientsurname": patientSurname,
           "note": note,
           "userid": tokenRef.current,
           "starttime": `${spaceSplit(rStartDate, 1)} ${spaceSplit(rStartTime, 1)}:00`,

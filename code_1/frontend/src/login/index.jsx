@@ -208,9 +208,15 @@ function App ({ onSuccess }) {
             <Button onClick={fLogin}>
               Log in
             </Button>
-            <Typography className="hover-text" onClick={goRegister}>
-              Do not have a account? Register now!
-            </Typography>
+            <Space style={{display: "flex"}}>
+              <Typography>
+                Do not have a account? 
+              </Typography>
+              <Typography className="hover-text" onClick={goRegister}>
+                Register now!
+              </Typography>
+            </Space>
+            
           </Space>
       </Form>
     </div>

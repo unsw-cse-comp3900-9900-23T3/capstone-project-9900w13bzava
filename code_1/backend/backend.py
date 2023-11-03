@@ -46,25 +46,24 @@ def login():
   firstname = str(data.get('firstname')).strip()
   surname = str(data.get('surname')).strip()
   password = str(data.get('password'))
-  location = data.get('location')
+  locationid = data.get('locationid')
 
-  print(data)
   # get the users result from database
   query = f'''
   SELECT surname, firstName, password, userID FROM users
-  WHERE firstname ILIKE '{firstname}' AND surname ILIKE '{surname}'
+  WHERE firstname ILIKE '{firstname}' AND surname ILIKE '{surname}' AND locationid ILIKE '{locationid}'
   '''
   records = operate_database(query, SEARCH)
-  print(records)
   # check name and password
-  if records:
-      if password == records[0]['password']:
-          return jsonify({"message": "Login Successful!", "status": True, "userid":records[0]['userid']}), 200
-      else:
-          return jsonify({"message": "Wrong Password!", "status": False}), 400
-  
-  return jsonify({"message": "User Does Not Exist!", "status": False}), 400
+  if not records:
+    return jsonify({"message": "User Does Not Exist!", "status": False}), 400
 
+  if password != records[0]['password']:
+    return jsonify({"message": "Wrong Password!", "status": False}), 400
+
+  # 登录成功      
+  return jsonify({"message": "Login Successful!", "status": True, "userid":records[0]['userid']}), 200
+  
 
 # Register
 @app.route('/register', methods=['POST'])
@@ -109,7 +108,7 @@ def get_spec_appointments(userid, date):
     CASE
       WHEN table1.appointmentTypeID=29 and table3.patientID in (
     SELECT patientID FROM appointments
-    WHERE locationID=1 and (CURRENT_DATE - appointmentDate) >= interval '365 days'
+    WHERE locationID=1 and ('{date}' - starttime) >= interval '365 days'
   ) THEN 1
       ELSE 0
     END AS isPhone,
@@ -127,7 +126,7 @@ def get_spec_appointments(userid, date):
   ON table4.appointmentTypeID = table1.appointmentTypeID
   inner join appointmentStatus as table5
   ON table5.appointmentStatusID = table1.appointmentStatusID
-  where table1.userID={userid} and DATE(table1.startTime)=\'{date}\'
+  where table1.userID={userid} and DATE(table1.startTime)='{date}'
   '''
 
 def proccess_result_for_ShowPanel(result, dayType):
@@ -163,7 +162,6 @@ def ShowPanel():
   # 将结果格式化为字符串
   pre_date = pre_date.strftime("%Y-%m-%d")
   next_date = next_date.strftime("%Y-%m-%d")
-
 
   # make query with id and date
   query1 = get_spec_appointments(userid, cur_date)  # 当天
@@ -495,7 +493,7 @@ def getAppointment():
   to_char(table1.startTime, 'YYYY-MM-DD HH24:MI:SS') as startTime, table4.appointmentTypeName as appointmentType, 
   table5.appointmentStatusName as status, table2.firstName as userFirstName, table2.surname as userSurname, 
   table3.firstName as patientFirstName, table3.surname as patientSurname,
-  table1.locationid as locationid, table1.note as note
+  table1.locationid as locationid, table1.note as note, table1.appointmentTypeID as appointmenttypeid
   FROM appointments as table1
   inner join users as table2
   ON table1.userID = table2.userID
@@ -514,6 +512,29 @@ def getAppointment():
     return jsonify({"message": f"Search Error, No Such Appointment", "status": False}), 400 
   # 查询成功
   return jsonify({"appointment": records, "status": True}), 200
+
+
+# GetAllUsers
+# 获取所有的users
+@app.route('/GetAllUsers', methods=['POST'])
+def getAllUsers():
+  query = '''
+  SELECT * FROM users;
+  '''
+  records = operate_database(query, SEARCH)
+  return jsonify({"allUsers": records, "status": True}), 200
+
+
+# GetAllLocation 
+# 获取所有的users
+@app.route('/GetAllLocation', methods=['POST'])
+def getAllLocation():
+  query = '''
+  SELECT * FROM locations;
+  '''
+  records = operate_database(query, SEARCH)
+  return jsonify({"allLocation": records, "status": True}), 200
+
 
 
 if __name__ == '__main__':

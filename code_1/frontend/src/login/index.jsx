@@ -181,7 +181,7 @@ function App ({ onSuccess }) {
             },
           ]}
         >
-          <Input.Password  value={password} onChange={(e) => setPassword(e.target.value)}/>
+          <Input.Password placeholder="Input password" value={password} onChange={(e) => setPassword(e.target.value)}/>
         </Form.Item>
 
         <Form.Item

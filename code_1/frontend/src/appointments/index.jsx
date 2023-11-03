@@ -350,7 +350,7 @@ function App ({ token, onRecord, defaultDate }) {
       const data = await response.json();
       const appointments_ = data.appointments.map(appointment => {
         return {
-          patientName: appointment.patientname,
+          patientName: `${appointment.patientfirstname} ${appointment.patientsurname}`,
           startTime: appointment.starttime,
           duration: appointment.duration,
           state: appointment.status,

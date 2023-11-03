@@ -187,7 +187,7 @@ function App ({ token, onRecord, defaultDate }) {
     onRecord(e)
   }
 
-  async function fDelete (e, signal) {
+  async function fDelete (e) {
     const response = await fetch('http://127.0.0.1:5000/DeleteAppointment', {
       method: 'POST',
       headers: {
@@ -208,38 +208,7 @@ function App ({ token, onRecord, defaultDate }) {
           console.log('Notification Clicked!');
         },
       });
-      // const updatedDataQ = dataQ.map(item => {
-      //   const newItem = { ...item };
-      //   if (signal === 0 && item.bRecordID === e) {
-      //     newItem.before = '';
-      //     newItem.beforeState = '';
-      //     newItem.beforeType = '';
-      //     newItem.beforeNote = '';
-      //     newItem.bHasMedicare = 1;
-      //     newItem.bIsPhone = 0;
-      //     newItem.bRecordID = 0;
-      //   }
-      //   if (signal === 1 && item.dRecordID === e) {
-      //     newItem.date = '';
-      //     newItem.dateState = '';
-      //     newItem.dateType = '';
-      //     newItem.dateNote = '';
-      //     newItem.dHasMedicare = 1;
-      //     newItem.dIsPhone = 0;
-      //     newItem.dRecordID = 0;
-      //   }
-      //   if (signal === 2 && item.aRecordID === e) {
-      //     newItem.after = '';
-      //     newItem.afterState = '';
-      //     newItem.afterType = '';
-      //     newItem.afterNote = '';
-      //     newItem.aHasMedicare = 1;
-      //     newItem.aIsPhone = 0;
-      //     newItem.aRecordID = 0;
-      //   }
-      //   return newItem;
-      // });
-      // setDataQ(updatedDataQ)
+
       console.log("sssdelete: ", e)
       setUpDelete(e)
     } else {
@@ -377,6 +346,7 @@ function App ({ token, onRecord, defaultDate }) {
       });
       setDescription(data.description);
       setAppointments(appointments_);
+      handleModalClose();
       console.log("showPanel: ", date, token, appointments_);
     };
     fDate();

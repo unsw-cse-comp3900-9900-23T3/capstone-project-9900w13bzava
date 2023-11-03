@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Button, Form, Input, Select, Space, notification, Radio } from 'antd';
+import { Button, Form, Input, Select, Space, notification } from 'antd';
 import {
   useNavigate
 } from 'react-router-dom';
@@ -171,12 +171,13 @@ function App ({token, recordID, onDefaultDate}) {
         },
       });
       const data = await response.json();
-      const temp = data.allLocation.slice(1).map(item => {
-        return {
+      const temp = [
+        { value: 0, label: 'Online' },
+        ...data.allLocation.slice(1).map(item => ({
           value: item.locationid,
           label: item.locationname,
-        }
-      })
+        })),
+      ];    
       setAllLocation(temp)
     }
     fGetAllLocation()

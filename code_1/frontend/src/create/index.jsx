@@ -1,8 +1,18 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Button, Form, Input, Select, Space, notification, Radio } from 'antd';
+import { Button, Form, Input, Select, Space, notification } from 'antd';
 import {
-  useNavigate
+  useNavigate,
+  useParams
 } from 'react-router-dom';
+
+const getIndex = ['Unavailable', 'Booked', 'Waiting', 'Urgent', 'With doctor', 'At billing', 'Completed']
+const dataState = []
+for (let i=0; i<getIndex.length; i++) {
+  dataState.push({
+    value: i+1,
+    label: getIndex[i],
+  })
+}
 
 const { TextArea } = Input
 // const widthComponent = "200"
@@ -16,10 +26,10 @@ const onFinishFailed = (errorInfo) => {
 };
 
 const dataDuration = []
-  for (let i=1;i<16;i+=1) {
+  for (let i=1;i<4;i+=1) {
     dataDuration.push({
-      "value": i,
-      "label": `${i} minutes`,
+      "value": i*15,
+      "label": `${i*15} minutes`,
     })
   }
 
@@ -33,36 +43,42 @@ dataType.sort(function(a, b) {
 
 function App ({token, recordID, onDefaultDate}) {
   const tokenRef = useRef(token);
-  const recordIDRef = useRef(recordID);
+  // const recordIDRef = useRef(recordID);
   const [appointmentType, setAppointmentType] = useState([]);
-  const [date, setDate] = useState('');
-  const [startTime, setStartTime] = useState('');
-  const [duration, setDuration] = useState(null);
-  const [type, setType] = useState(null);
-  const [note, setNote] = useState('');
+  // const [date, setDate] = useState('');
+  const [stateID, setStateID] = useState(null);
+  // const [startTime, setStartTime] = useState('');
+  const [duration, setDuration] = useState('');
+  const [type, setType] = useState(''); // 这个是typeID
+  const [note, setNote] = useState(null);
   const [patientFirstName, setPatientFirstName] = useState('')
   const [patientSurname, setPatientSurname] = useState('')
-  const [location, setLocation] = useState(2)
+  const [location, setLocation] = useState(-1)
+  // const [loaded, setLoaded] = useState(false)
+  const [allLocation, setAllLocation] = useState(null);
   const [form] = Form.useForm();
+  const params = useParams();
+  const { rStartDate, rStartTime } = params;
   const navigate = useNavigate();
 
 
   async function fCreate() {
-    if (patientSurname !== '' && duration !== 0 && patientFirstName !== '' && type!== null && location !== 2) {
+    console.log("CreateAppointment: ", duration, type, location, stateID)
+    if ( duration !== '' && type!== '' && location !== -1 && stateID !== 0) {
       const response = await fetch('http://127.0.0.1:5000/CreateAppointment', {
         method: 'POST',
         headers: {
           'Content-type': 'application/json',
         },
         body: JSON.stringify({
-          "userid": tokenRef.current,
-          "starttime": `${date} ${startTime}:00`,
           "duration": duration,
+          "locationid": location,
+          "appointmenttypeid": type,
           "patientfirstname": patientFirstName,
-          "patientsurname": patientSurname,
-          "location": location,
-          "type": type,
+          "patientsurtname": patientSurname,
           "note": note,
+          "userid": tokenRef.current,
+          "starttime": `${spaceSplit(rStartDate, 1)} ${spaceSplit(rStartTime, 1)}:00`
         })
       });
       const data = await response.json();
@@ -76,7 +92,7 @@ function App ({token, recordID, onDefaultDate}) {
             console.log('Notification Clicked!');
           },
         });
-        onDefaultDate(date);
+        onDefaultDate(spaceSplit(rStartDate, 1));
         navigate('/mainpage/appointments')
       } else {
         notification.open({
@@ -108,20 +124,29 @@ function App ({token, recordID, onDefaultDate}) {
   //   disabledHours: () => [0, 1, 2, 3, 4, 5, 18, 19, 20, 21, 22, 23],
   // });
 
+  function spaceSplit(string, signal) {
+    const [e, m] = string.split(' ')
+    if (signal === 1) {
+      return e
+    } else {
+      return m
+    }
+  }
+
   function clearAll() {
     form.setFieldsValue({
       duration: null,
-      patientFirstName: '',
-      patientSurname: '',
       appointmentType: null,
-      note: '',
+      note: null,
       location: null,
+      stateID: null,
+      patientFirstName: null,
+      patientSurname: null,
     });
   }
 
   function onCancel() {
-    console.log("create defaultdate: ", date)
-    onDefaultDate(date);
+    onDefaultDate(spaceSplit(rStartDate, 1));
     navigate('/mainpage/appointments')
   }
 
@@ -132,80 +157,56 @@ function App ({token, recordID, onDefaultDate}) {
         headers: {
           'Content-type': 'application/json',
         },
+        body: JSON.stringify({
+          "userid": tokenRef.current
+        })
       });
-      
       const data = await response.json();
       const temp = data.appointmenttypes.map(item => ({
         label: item.name,
         value: item.id,
       }));
+      console.log("temp", temp)
+      temp.sort(function(a, b) {
+        const valueA = a.label.toLowerCase();
+        const valueB = b.label.toLowerCase();
+        return valueA.localeCompare(valueB);
+      });
+
       setAppointmentType(temp);
     }
     fGetAllAppointmentTypes();
   }, [])
 
   useEffect(() => {
-    async function fGetAppointment() {
-      const response = await fetch('http://127.0.0.1:5000/GetAppointment', {
+    async function fGetAllLocation() {
+      const response = await fetch('http://127.0.0.1:5000/GetAllLocation', {
         method: 'POST',
         headers: {
           'Content-type': 'application/json',
         },
-        body: JSON.stringify({
-          "appointmentid": recordIDRef.current,
-        })
       });
-      console.log("getappointment: ", recordIDRef)
       const data = await response.json();
-      if (data.status) {
-        const temp = data.appointment.map(item => ({
-          duration: item.duration,
-          startTime: item.starttime, 
-          appointmentType: item.appointmenttype, 
-          state: item.status, 
-          patientFirstName: item.patientfirstname, 
-          patientSurname: item.patientsurname, 
-          location: item.locationid === 0 ? 'Online' : 'Offline', 
-          note: item.note
-        }));
-        const [datePart, timePart] = temp[0].startTime.split(' '); // 分割日期和时间
-        setDate(datePart); // 设置日期
-        
-        // 将时间部分（"09:45:00"）分割为小时和分钟
-        const [hours, minutes] = timePart.split(':').slice(0, 2); // 仅取小时和分钟
-        setStartTime(`${hours}:${minutes}`); // 格式化时间为 "09:45"
-      } else {
-        notification.open({
-          message: 'Error',
-          type: 'error',
-          description:
-          // error message
-              `${data.message}`,
-          onClick: () => {
-            console.log('Notification Clicked!');
-          },
-        });
-      }
+      const temp = [
+        { value: 0, label: 'Online' },
+        ...data.allLocation.slice(1).map(item => ({
+          value: item.locationid,
+          label: item.locationname,
+        })),
+      ];    
+      setAllLocation(temp)
     }
-    fGetAppointment();
+    fGetAllLocation()
   }, [])
+
 
   return (
     <Form
       form={form}
       name="basic"
-      // labelCol={{
-      //   span: 8,
-      // }}
-      // wrapperCol={{
-      //   span: 16,
-      // }}
       style={{
         maxWidth: 600,
       }}
-      // initialValues={{
-      //   remember: true,
-      // }}
       onFinish={onFinish}
       onFinishFailed={onFinishFailed}
       autoComplete="off"
@@ -219,11 +220,10 @@ function App ({token, recordID, onDefaultDate}) {
             rules={[
               {
                 required: false,
-                message: 'Please choose the start date!',
               },
             ]}
           >
-            <div>{date}</div>
+            <div>{rStartDate}</div>
           </Form.Item>
 
           <Form.Item
@@ -235,9 +235,9 @@ function App ({token, recordID, onDefaultDate}) {
               },
             ]}
           >
-            <div>{startTime}</div>
+            <div>{rStartTime}</div>
           </Form.Item>
-
+          
           <Form.Item
             label="Duration"
             name="duration"
@@ -248,15 +248,14 @@ function App ({token, recordID, onDefaultDate}) {
               },
             ]}
           >
-              <Select
-                placeholder="Select duration"
-                style={{
-                  width: sWidthComponent,
-                }}
-                onChange={(e) => setDuration(e)}
-                options={dataDuration}
-              />
-            
+            <Select
+              placeholder="Select duration"
+              style={{
+                width: sWidthComponent,
+              }}
+              onChange={(e) => setDuration(e)}
+              options={dataDuration}
+            />
           </Form.Item>
 
           <Form.Item
@@ -289,13 +288,14 @@ function App ({token, recordID, onDefaultDate}) {
               },
             ]}
           >
-            <Radio.Group onChange={(e) => setLocation(e.target.value)} value={location}>
-              <Space>
-                <Radio value={0}>Online</Radio>
-                <Radio value={1}>Offline</Radio>
-              </Space>
-              
-            </Radio.Group>
+            <Select
+              placeholder="Select location"
+              style={{
+                width: sWidthComponent,
+              }}
+              onChange={(e) => setLocation(e)}
+              options={allLocation}
+            />
           </Form.Item>
         </div>
         <div>
@@ -304,12 +304,11 @@ function App ({token, recordID, onDefaultDate}) {
             name="patientFirstName"
             rules={[
               {
-                required: true,
-                message: 'Please input the first name of the patient!',
+                required: false,
               },
             ]}
           >
-            <Input placeholder="Input the first name" value={patientFirstName} onChange={(e) => setPatientFirstName(e.target.value)}/>
+            <Input onChange={(e) => setPatientFirstName(e.target.value)} placeholder='Input first name'/>
           </Form.Item>
           
           <Form.Item
@@ -317,20 +316,40 @@ function App ({token, recordID, onDefaultDate}) {
             name="patientSurname"
             rules={[
               {
-                required: true,
-                message: 'Please input the surname of the patient!',
+                required: false,
               },
             ]}
           >
-            <Input placeholder="Input the surname" value={patientSurname} onChange={(e) => setPatientSurname(e.target.value)}/>
+            <Input onChange={(e) => setPatientSurname(e.target.value)} placeholder='Input surname'/>
           </Form.Item>
+          
+          
+            <Form.Item
+              label="State"
+              name="state"
+              rules={[
+                {
+                  required: true,
+                  message: 'Please choose the state!',
+                },
+              ]}
+            >
+              <Select
+                placeholder="Select state"
+                style={{
+                  width: sWidthComponent,
+                }}
+                onChange={(e) => setStateID(e)}
+                options={dataState}
+              />
+            </Form.Item>
 
-          <Form.Item
-            label="Note"
-            name="note"
-          >
-            <TextArea onChange={(e) => setNote(e.target.value)} placeholder="Enter description" rows={5}/>
-          </Form.Item>
+            <Form.Item
+              label="Note"
+              name="note"
+            >
+              <TextArea onChange={(e) => setNote(e.target.value)} placeholder={"Input the note"} rows={5}/>
+            </Form.Item>
         </div>
       </Space>
       <Form.Item

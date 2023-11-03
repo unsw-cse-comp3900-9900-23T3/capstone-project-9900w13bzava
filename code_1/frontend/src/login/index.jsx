@@ -41,7 +41,7 @@ function App ({ onSuccess }) {
             "firstname": firstName,
             "surname": surname,
             "password": password,
-            "location": location,
+            "locationid": location,
           })
         });
         const data = await response.json();

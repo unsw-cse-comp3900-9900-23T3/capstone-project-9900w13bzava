@@ -163,8 +163,8 @@ function App ({token, recordID, onDefaultDate}) {
       });
       const data = await response.json();
       const temp = data.appointmenttypes.map(item => ({
-        label: item.appointmenttypeid,
-        value: item.appointmenttypename,
+        label: item.appointmenttypename,
+        value: item.appointmenttypeid,
       }));
       console.log("temp", temp)
       temp.sort(function(a, b) {

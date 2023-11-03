@@ -69,7 +69,7 @@ function App ({ token, onRecord, defaultDate }) {
   const [description, setDescription] = useState("");
   const [jModal, setJModal] = useState("");
   const [upDelete, setUpDelete] = useState("");
-  const [locationName, setLocationName] = useState("");
+  // const [locationName, setLocationName] = useState("");
   const navigate = useNavigate();
 
   const columns = [

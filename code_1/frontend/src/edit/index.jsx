@@ -60,7 +60,7 @@ function App ({token, recordID, onDefaultDate}) {
 
 
   async function fEdit() {
-    console.log("EditAppointment: ", duration, type, location, stateID)
+    console.log("EditAppointment: ", duration, type, location, stateID, recordIDRef.current)
     if ( duration !== '' && type!== '' && location !== -1 && stateID !== 0) {
       const response = await fetch('http://127.0.0.1:5000/EditAppointment', {
         method: 'POST',
@@ -73,6 +73,7 @@ function App ({token, recordID, onDefaultDate}) {
           "appointmenttypeid": type,
           "appointmentstatusid": stateID,
           "note": note,
+          "appointmentid": recordIDRef.current,
         })
       });
       const data = await response.json();

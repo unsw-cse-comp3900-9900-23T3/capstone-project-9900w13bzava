@@ -110,7 +110,6 @@ INSERT INTO patients (firstName, surname, medicareNo, email, phoneNumber, sexCod
 ('Charlie', 'Liu', NULL, 'charlie.liu@example.com', '3344556677', 1, 1);
 
 
-
 -- 创建 users 表格
 CREATE TABLE IF NOT EXISTS users (
     userID SERIAL PRIMARY KEY,
@@ -138,12 +137,12 @@ INSERT INTO users (firstName, surname, password, email, phoneNumber, sexCode, lo
 CREATE TABLE IF NOT EXISTS appointments (
     appointmentID SERIAL PRIMARY KEY,     -- 主键，自增
     appointmentDate TIMESTAMP NOT NULL,  -- 预约日期和时间
-    duration INT CHECK (duration >= 0 AND duration <= 15),  -- 持续时间，0到15分钟之间
+    duration INT,  -- 持续时间，0到15分钟之间
     startTime TIMESTAMP NOT NULL,  -- 预约的开始时间，包括日期和时间
     userID INT REFERENCES users(userID), -- 外键，引用users表
     patientID INT REFERENCES patients(patientID), -- 外键，引用patients表
     appointmentTypeID INT REFERENCES appointmentTypes(appointmentTypeID), -- 预约类型ID（外键，如果存在对应的表则需要添加引用）
-    locationID INT CHECK (locationID IN (0, 1)),  -- 0表示线上，1表示线下
+    locationID INT REFERENCES locations(locationID),  -- 0表示线上
     appointmentStatusID INT REFERENCES appointmentStatus(appointmentStatusID), -- 预约状态ID（外键，如果存在对应的表则需要添加引用）
     note VARCHAR(255)
 );

@@ -51,12 +51,12 @@ def login():
   # get the users result from database
   query = f'''
   SELECT surname, firstName, password, userID FROM users
-  WHERE firstname ILIKE '{firstname}' AND surname ILIKE '{surname}' AND locationid ILIKE '{locationid}'
+  WHERE firstname ILIKE '{firstname}' AND surname ILIKE '{surname}' AND locationid = {locationid}
   '''
   records = operate_database(query, SEARCH)
   # check name and password
   if not records:
-    return jsonify({"message": "User Does Not Exist!", "status": False}), 400
+    return jsonify({"message": "User And Location Does Not Match!", "status": False}), 400
 
   if password != records[0]['password']:
     return jsonify({"message": "Wrong Password!", "status": False}), 400
@@ -104,29 +104,32 @@ def get_spec_appointments(userid, date):
   SELECT table1.appointmentID, table1.appointmentDate, table1.duration as duration, 
   table1.startTime as startTime, table4.appointmentTypeName as appointmentType, 
   table5.appointmentStatusName as status, table2.firstName as firstName, table2.surname as surname, 
-  table3.firstName as patientName, table3.patientID as patientID,
-    CASE
-      WHEN table1.appointmentTypeID=29 and table3.patientID in (
+  table3.firstName as patientFirstName, table3.surname as patientSurname, table3.patientID as patientID,
+  CASE
+    WHEN table1.appointmentTypeID=29 and table3.patientID in (
     SELECT patientID FROM appointments
     WHERE locationID=1 and ('{date}' - starttime) >= interval '365 days'
   ) THEN 1
-      ELSE 0
-    END AS isPhone,
-    CASE
-      WHEN table3.medicareNo IS NULL THEN 0
-      ELSE 1
-    END AS hasMedicare,
-	table1.note AS note
-  FROM appointments as table1
-  inner join users as table2
+    ELSE 0
+  END AS isPhone,
+  CASE
+    WHEN table3.medicareNo IS NULL THEN 0
+    ELSE 1
+  END AS hasMedicare,
+	table1.note AS note,
+  table6.locationName as locationname
+  FROM appointments AS table1
+  inner join users AS table2
   ON table1.userID = table2.userID
-  inner join patients as table3
+  inner join patients AS table3
   ON table3.patientID = table1.patientID
-  inner join appointmentTypes as table4
+  inner join appointmentTypes AS table4
   ON table4.appointmentTypeID = table1.appointmentTypeID
-  inner join appointmentStatus as table5
+  inner join appointmentStatus AS table5
   ON table5.appointmentStatusID = table1.appointmentStatusID
-  where table1.userID={userid} and DATE(table1.startTime)='{date}'
+  inner join locations AS table6
+  ON table6.locationID = table1.locationID
+  WHERE table1.userID={userid} AND DATE(table1.startTime)='{date}'
   '''
 
 def proccess_result_for_ShowPanel(result, dayType):
@@ -200,19 +203,6 @@ def ShowPatientList():
   return jsonify({'patients':result}), 200
 
 
-def proccess_result_for_ShowPatientRecord(result):
-  # convert second to readable time format
-  for idx in result:
-    startTime = idx['starttime']
-    # 1. 从字符串中解析出datetime对象
-    # startTime = datetime.strptime(startTime, '%Y-%m-%d %H:%M:%S')
-    # 2. 使用strftime方法格式化时间
-    startTime = startTime.strftime('%I:%M %p')
-    startTime = startTime.lower()  # 转换为小写，如am和pm
-    idx['starttime'] = startTime
-  return result
-
-
 # ShowPatientRecord
 @app.route('/ShowPatientRecord', methods=['POST'])
 def ShowPatientRecord():
@@ -221,8 +211,8 @@ def ShowPatientRecord():
   patientID = str(data.get('patientid'))
   # print(userid, patientID)
   base_query = '''
-  SELECT table1.appointmentID, DATE(table1.appointmentDate) as day, table1.duration as duration, 
-  table1.startTime as startTime, table4.appointmentTypeName as appointmentType, 
+  SELECT table1.appointmentID, table1.duration as duration, 
+  to_char(table1.startTime, 'YYYY-MM-DD HH24:MI') as startTime, table4.appointmentTypeName as appointmentType, 
   table5.appointmentStatusName as status, table2.firstName as userFirstName, table2.surname as userSurname, 
   table3.firstName as patientFirstName, table3.surname as patientSurname, table3.patientID as patientID,
     CASE
@@ -247,12 +237,14 @@ def ShowPatientRecord():
   inner join appointmentStatus as table5
   ON table5.appointmentStatusID = table1.appointmentStatusID 
   '''
-  query1 = base_query + f'''where table1.patientID = {patientID} and table1.userID = {userid} and table1.appointmentDate < CURRENT_TIMESTAMP'''
-  query2 = base_query + f'''where table1.patientID = {patientID} and table1.userID = {userid} and table1.appointmentDate >= CURRENT_TIMESTAMP'''
+  query1 = base_query + f'''where table1.patientID = {patientID} and table1.userID = {userid} and table1.startTime < CURRENT_TIMESTAMP'''
+  query2 = base_query + f'''where table1.patientID = {patientID} and table1.userID = {userid} and table1.startTime >= CURRENT_TIMESTAMP'''
 
-  history = proccess_result_for_ShowPatientRecord(operate_database(query1, SEARCH))
-  future = proccess_result_for_ShowPatientRecord(operate_database(query2, SEARCH))
-  # print(result)
+  history = operate_database(query1, SEARCH)
+  future = operate_database(query2, SEARCH)
+
+  print(history)
+  print(future)
   return jsonify({'history':history, 'future':future}), 200
 
 
@@ -284,7 +276,6 @@ def getAllAppointmentTypes():
   data = request.get_json()
   query = '''SELECT * FROM appointmentTypes;'''
   records = operate_database(query, SEARCH)
-  print(records)
   return jsonify({'appointmenttypes': records}), 200
 
 
@@ -331,15 +322,26 @@ def createPatient():
 def createAppointment():
   data = request.get_json()
   appointmentdate = datetime.now().strftime('%Y-%m-%d %H:%M:%S')  # 获得当前的时间
+  # print(appointmentdate)
   duration  = int(data.get('duration'))
+  # print(duration)
   starttime = str(data.get('starttime'))
+  # print(starttime)
   userid = str(data.get('userid'))
+  # print(userid)
   # 根据病人的firstname和surname来获取patientid
-  patientfirstname = str(data.get('patientfirstname')).strip().lower()
-  patientsurname = str(data.get('patientsurname')).strip().lower()
+  patientfirstname = str(data.get('patientfirstname')).strip()
+  # print(patientfirstname)
+  patientsurname = str(data.get('patientsurname')).strip()
+  # print(patientsurname)
   appointmenttypeid = int(data.get('appointmenttypeid'))
+  # print(appointmenttypeid)
   locationid = int(data.get('locationid'))
-  appointmenttatusid = 2 # 默认应该是booked，其id为2
+  # print(locationid)
+  appointmentstatusid = int(data.get('appointmentstatusid')) # 默认应该是booked，其id为2
+  # print(appointmentstatusid)
+  note = str(data.get('note'))
+  # print(note)
 
   # 查询病人是否存在
   query = f'''
@@ -356,8 +358,8 @@ def createAppointment():
   
   # 插入到 appointments中
   query = f'''
-  INSERT INTO appointments (appointmentDate, duration, startTime, userID, patientID, appointmentTypeID, locationID, appointmentStatusID) VALUES
-  ('{appointmentdate}', {duration}, '{starttime}', {userid}, {patientid}, {appointmenttypeid}, {locationid}, {appointmenttatusid});
+  INSERT INTO appointments (appointmentDate, duration, startTime, userID, patientID, appointmentTypeID, locationID, appointmentStatusID, note) VALUES
+  ('{appointmentdate}', {duration}, '{starttime}', {userid}, {patientid}, {appointmenttypeid}, {locationid}, {appointmentstatusid}, '{note}');
   '''
 
   try:
@@ -379,7 +381,8 @@ def editAppointment():
   duration  = int(data.get('duration'))
   appointmenttypeid = int(data.get('appointmenttypeid'))
   locationid = int(data.get('locationid'))
-  appointmenttatusid = int(data.get('appointmenttatusid'))
+  appointmentstatusid = int(data.get('appointmentstatusid'))
+  note = str(data.get('note'))
 
   query = f'''
   UPDATE appointments
@@ -387,7 +390,8 @@ def editAppointment():
     duration = {duration},
     appointmentTypeID = {appointmenttypeid},
     locationID = {locationid},
-    appointmentStatusID = {appointmenttatusid}
+    appointmentStatusID = {appointmentstatusid},
+    note = '{note}'
   WHERE
     appointmentID = {appointmentid};
   '''

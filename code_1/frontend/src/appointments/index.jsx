@@ -359,7 +359,7 @@ function App ({ token, onRecord, defaultDate }) {
         <Space>
           <Space direction="vertical">
           <Popover content={content1} title="Details">
-                <div style={{width: "80px", display:"flex", alignItems: "center", justifyContent: "center"}}>State: </div>
+                <div style={{width: "80px", display:"flex", alignItems: "center", justifyContent: "center"}}>Status: </div>
               </Popover>
             <Space>
               <Button style={{backgroundColor:'gray', width:widthButton, padding:"0"}}>Unavailable</Button>

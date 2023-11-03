@@ -369,19 +369,19 @@ function App ({token, recordID, onDefaultDate}) {
           
           
             <Form.Item
-              label="State"
+              label="Status"
               name="state"
               rules={[
                 {
                   required: true,
-                  message: 'Please choose the state!',
+                  message: 'Please choose the status!',
                 },
               ]}
             >
               {loaded === true && (
                 <Select
                   defaultValue={stateID}
-                  placeholder="Select state"
+                  placeholder="Select status"
                   style={{
                     width: sWidthComponent,
                   }}

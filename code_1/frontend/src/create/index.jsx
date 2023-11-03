@@ -78,7 +78,8 @@ function App ({token, recordID, onDefaultDate}) {
           "patientsurtname": patientSurname,
           "note": note,
           "userid": tokenRef.current,
-          "starttime": `${spaceSplit(rStartDate, 1)} ${spaceSplit(rStartTime, 1)}:00`
+          "starttime": `${spaceSplit(rStartDate, 1)} ${spaceSplit(rStartTime, 1)}:00`,
+          "appointmentstatusid": stateID,
         })
       });
       const data = await response.json();
@@ -325,17 +326,17 @@ function App ({token, recordID, onDefaultDate}) {
           
           
             <Form.Item
-              label="State"
+              label="Status"
               name="state"
               rules={[
                 {
                   required: true,
-                  message: 'Please choose the state!',
+                  message: 'Please choose the status!',
                 },
               ]}
             >
               <Select
-                placeholder="Select state"
+                placeholder="Select status"
                 style={{
                   width: sWidthComponent,
                 }}

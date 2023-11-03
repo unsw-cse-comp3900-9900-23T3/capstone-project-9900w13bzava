@@ -13,13 +13,13 @@
 }
 
 .hover-text {
-  color: black; /* 初始文字颜色 */
+  color: rgb(0, 200, 255); /* 初始文字颜色 */
   white-space: nowrap;
   transition: color 0.3s ease; /* 添加颜色过渡效果 */
 }
 
 .hover-text:hover {
-  color: rgb(0, 200, 255); /* 鼠标悬停时的文字颜色 */
+  color: rgb(76, 0, 255); /* 鼠标悬停时的文字颜色 */
 }
 
 

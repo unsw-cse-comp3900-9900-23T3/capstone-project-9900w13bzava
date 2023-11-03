@@ -62,10 +62,10 @@ function App ({ token, onRecord, defaultDate }) {
   const [selectedRecord, setSelectedRecord] = useState(null);
   const [date, setDate] = useState(defaultDate);
   const [appointments, setAppointments] = useState([]);
-  const [isInitialized, setIsInitialized] = useState(false);
   const [dataQ, setDataQ] = useState(dataA);
   const [description, setDescription] = useState("");
   const [jModal, setJModal] = useState("");
+  const [upDelete, setUpDelete] = useState("");
   const navigate = useNavigate();
 
   const columns = [
@@ -77,7 +77,7 @@ function App ({ token, onRecord, defaultDate }) {
       align: 'center',
     },
     {
-      title: 'The day before',
+      title: `${getDate(date, -1)}`,
       dataIndex: 'before',
       key: 'before',
       align: 'center',
@@ -87,12 +87,13 @@ function App ({ token, onRecord, defaultDate }) {
           backgroundColor: allState[getIndex.indexOf(record.beforeState)],display:"flex",justifyContent:"center",alignItems:"center"}}
           onClick={() =>{ handleCellClick(record);setJModal('0') }}>{text} -{record.beforeNote}</div>;
         } else {
-          return <div onClick={onCreate(`${date} ${record.time}`)}></div>;
+          return <Button onClick={() => {onCreate(record.bRecordID, getDate(date, -1), record.time)}} shape="default" style={{position:"absolute",top:0,bottom:0,left:0,right:0, 
+          display:"flex", height: "100%", width:"100%", borderRadius: "0"}}></Button>;
         }
       },
     },
     {
-      title: 'The chosen Date',
+      title: `${getDate(date, 0)}`,
       dataIndex: 'date',
       key: 'date',
       align: 'center',
@@ -102,12 +103,13 @@ function App ({ token, onRecord, defaultDate }) {
           backgroundColor: allState[getIndex.indexOf(record.dateState)],display:"flex",justifyContent:"center",alignItems:"center"}}
           onClick={() =>{ handleCellClick(record);setJModal('1') }}>{text} -{record.dateNote}</div>;
         } else {
-          return <div onClick={onCreate(`${date} ${record.time}`)}></div>;
+          return <Button onClick={() => {onCreate(record.dRecordID, getDate(date, 0), record.time)}} shape="default" style={{position:"absolute",top:0,bottom:0,left:0,right:0, 
+          display:"flex", height: "100%", width:"100%", borderRadius: "0"}}></Button>;
         }
       },
     },
     {
-      title: 'The day after',
+      title: `${getDate(date, 1)}`,
       key: 'after',
       dataIndex: 'after',
       align: 'center',
@@ -117,15 +119,32 @@ function App ({ token, onRecord, defaultDate }) {
           backgroundColor: allState[getIndex.indexOf(record.afterState)],display:"flex",justifyContent:"center",alignItems:"center"}}
           onClick={() =>{ handleCellClick(record);setJModal('2') }}>{text} -{record.afterNote}</div>;
         } else {
-          return <div onClick={onCreate(`${date} ${record.time}`)}></div>;
+          return <Button onClick={() => {onCreate(record.aRecordID, getDate(date, 1), record.time)}} shape="default" style={{position:"absolute",top:0,bottom:0,left:0,right:0, 
+          display:"flex", height: "100%", width:"100%", borderRadius: "0"}}></Button>;
         }
       },
     },
   ];
 
+  function getDate(day, e) {
+    const startDateString = day;
+    // 将字符串转换为日期对象
+    const startDate = new Date(startDateString);
+    // 增加e天
+    startDate.setDate(startDate.getDate() + e);
+    // 将结果转换回字符串
+    const endDateString = startDate.toISOString().split('T')[0];
+    const dateObject = new Date(endDateString);
+    const dayOfWeek = dateObject.getDay();
+    // 将数字转换为星期几的文字
+    const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    const dayName = daysOfWeek[dayOfWeek];
+    return `${endDateString} ${dayName}`
+  }
+
   const content1 = (
     <div>
-      <p>There are nine types of appointments' state.</p>
+      <p>There are seven types of appointments' state.</p>
     </div>
   );
   const content2 = (
@@ -158,13 +177,13 @@ function App ({ token, onRecord, defaultDate }) {
     onRecord(e)
   }
 
-  function onCreate (e) {
-    // navigate('/mainpage/create');
-    // console.log("create route: ", e);
-    // onRecord(e)
+  function onCreate (e, rSD, rST) {
+    navigate(`/mainpage/create/${rSD}/${rST}`);
+    console.log("edit route: ", e);
+    onRecord(e)
   }
 
-  async function fDelete (e) {
+  async function fDelete (e, signal) {
     const response = await fetch('http://127.0.0.1:5000/DeleteAppointment', {
       method: 'POST',
       headers: {
@@ -185,13 +204,47 @@ function App ({ token, onRecord, defaultDate }) {
           console.log('Notification Clicked!');
         },
       });
+      // const updatedDataQ = dataQ.map(item => {
+      //   const newItem = { ...item };
+      //   if (signal === 0 && item.bRecordID === e) {
+      //     newItem.before = '';
+      //     newItem.beforeState = '';
+      //     newItem.beforeType = '';
+      //     newItem.beforeNote = '';
+      //     newItem.bHasMedicare = 1;
+      //     newItem.bIsPhone = 0;
+      //     newItem.bRecordID = 0;
+      //   }
+      //   if (signal === 1 && item.dRecordID === e) {
+      //     newItem.date = '';
+      //     newItem.dateState = '';
+      //     newItem.dateType = '';
+      //     newItem.dateNote = '';
+      //     newItem.dHasMedicare = 1;
+      //     newItem.dIsPhone = 0;
+      //     newItem.dRecordID = 0;
+      //   }
+      //   if (signal === 2 && item.aRecordID === e) {
+      //     newItem.after = '';
+      //     newItem.afterState = '';
+      //     newItem.afterType = '';
+      //     newItem.afterNote = '';
+      //     newItem.aHasMedicare = 1;
+      //     newItem.aIsPhone = 0;
+      //     newItem.aRecordID = 0;
+      //   }
+      //   return newItem;
+      // });
+      // setDataQ(updatedDataQ)
+      console.log("sssdelete: ", e)
+      setUpDelete(e)
     } else {
       notification.open({
         message: 'Error',
         type: 'error',
         description:
         // error message
-            `${data.message}`,
+          `${data.message}`,
         onClick: () => {
           console.log('Notification Clicked!');
         },
@@ -200,6 +253,7 @@ function App ({ token, onRecord, defaultDate }) {
   }
 
   useEffect(() => {
+    console.log("sssdataQ")
     const temp = dataA.map(item => ({ ...item }));
     for (let i=0; i < appointments.length; i++ ) {
       for (let j=0; j < dataA.length; j++ ) {
@@ -278,11 +332,10 @@ function App ({ token, onRecord, defaultDate }) {
       }
     }
     setDataQ(temp)
-  }, [appointments, date]);
+  }, [appointments, date, upDelete]);
 
   useEffect(() => {
-    if (isInitialized) {
-      async function fDate () {
+    async function fDate () {
         const response = await fetch('http://127.0.0.1:5000/ShowPanel', {
           method: 'POST',
           headers: {
@@ -293,6 +346,7 @@ function App ({ token, onRecord, defaultDate }) {
             "date": date,
           })
         });
+      console.log("sssdate")
       const data = await response.json();
       const appointments_ = data.appointments.map(appointment => {
         return {
@@ -315,10 +369,7 @@ function App ({ token, onRecord, defaultDate }) {
       console.log("showPanel: ", date, token, appointments_);
     };
     fDate();
-    } else {
-      setIsInitialized(true);
-    }
-  }, [date, token, isInitialized]);
+  }, [date, token, upDelete]);
 
   return (
     <div>
@@ -397,10 +448,7 @@ function App ({ token, onRecord, defaultDate }) {
                   <Button onClick={() => onEdit(selectedRecord.bRecordID)}>
                     Edit
                   </Button>
-                  <Button onClick={() => onCreate(selectedRecord.aRecordID)}>
-                      Create
-                  </Button>
-                  <Button onClick={() => fDelete(selectedRecord.aRecordID)}>
+                  <Button onClick={() => fDelete(selectedRecord.bRecordID, '0')}>
                     Delete
                   </Button>
                 </Space>
@@ -441,10 +489,7 @@ function App ({ token, onRecord, defaultDate }) {
                   <Button onClick={() => onEdit(selectedRecord.dRecordID)}>
                     Edit
                   </Button>
-                  <Button onClick={() => onCreate(selectedRecord.aRecordID)}>
-                    Create
-                  </Button>
-                  <Button onClick={() => fDelete(selectedRecord.aRecordID)}>
+                  <Button onClick={() => fDelete(selectedRecord.dRecordID, '1')}>
                     Delete
                   </Button>
                 </Space>
@@ -486,10 +531,7 @@ function App ({ token, onRecord, defaultDate }) {
                   <Button onClick={() => onEdit(selectedRecord.aRecordID)}>
                     Edit
                   </Button>
-                  <Button onClick={() => onCreate(selectedRecord.aRecordID)}>
-                    Create
-                  </Button>
-                  <Button onClick={() => fDelete(selectedRecord.aRecordID)}>
+                  <Button onClick={() => fDelete(selectedRecord.aRecordID, '2')}>
                     Delete
                   </Button>
                 </Space>

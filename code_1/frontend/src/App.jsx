@@ -57,7 +57,7 @@ function App() {
             }
           >
             <Route path="/mainpage/appointments" element={<Appointments token={token} onRecord={manageRecordSet} defaultDate={defaultDate}/>} />
-            <Route path="/mainpage/create" element={<Create token={token} recordID={recordID} onDefaultDate={manageDefaultDateSet}/>} />
+            <Route path="/mainpage/create/:rStartDate/:rStartTime" element={<Create token={token} recordID={recordID} onDefaultDate={manageDefaultDateSet}/>} />
             <Route path="/mainpage/edit" element={<Edit  token={token} recordID={recordID} onDefaultDate={manageDefaultDateSet}/>}/>
             <Route path="/mainpage/record" element={<Record token={token}/>} />
           </Route>

@@ -12,6 +12,7 @@ import Create from './create';
 import Edit from './edit';
 import Appointments from './appointments';
 import Record from './record';
+import Statistic from './statistic';
 
 function App() {
   const [token, setToken] = React.useState(null);
@@ -60,6 +61,7 @@ function App() {
             <Route path="/mainpage/create/:rStartDate/:rStartTime" element={<Create token={token} recordID={recordID} onDefaultDate={manageDefaultDateSet}/>} />
             <Route path="/mainpage/edit" element={<Edit  token={token} recordID={recordID} onDefaultDate={manageDefaultDateSet}/>}/>
             <Route path="/mainpage/record" element={<Record token={token}/>} />
+            <Route path="/mainpage/statistic" element={<Statistic token={token}/>} />
           </Route>
           <Route path="*" element={<h2>404 page</h2>} />
         </Routes>

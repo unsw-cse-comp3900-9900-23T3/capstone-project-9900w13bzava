@@ -236,139 +236,140 @@ function App ({token, recordID, onDefaultDate}) {
 
 
   return (
-    <Form
-      form={form}
-      name="basic"
-      style={{
-        maxWidth: 600,
-      }}
-      onFinish={onFinish}
-      onFinishFailed={onFinishFailed}
-      autoComplete="off"
-      layout="vertical"
-    >
-      <Space size="large">
-        <div>
-          <Form.Item
-            label="Start date"
-            name="startDate"
-            rules={[
-              {
-                required: false,
-              },
-            ]}
-          >
-            <div>{date}</div>
-          </Form.Item>
+    <div>
 
-          <Form.Item
-            label="Start time"
-            name="startTime"
-            rules={[
-              {
-                required: false,
-              },
-            ]}
-          >
-            <div>{startTime}</div>
-          </Form.Item>
-          
-          <Form.Item
-            label="Duration"
-            name="duration"
-            rules={[
-              {
-                required: true,
-                message: 'Please input the duration!',
-              },
-            ]}
-          >
-            {loaded === true && (
-              <Select
-                placeholder="Select duration"
-                style={{
-                  width: sWidthComponent,
-                }}
-                onChange={(e) => setDuration(e)}
-                options={dataDuration}
-                defaultValue={duration}
-              />
-            )}
-          </Form.Item>
+      <Form
+        form={form}
+        name="basic"
+        style={{
+          maxWidth: 600,
+        }}
+        onFinish={onFinish}
+        onFinishFailed={onFinishFailed}
+        autoComplete="off"
+        layout="vertical"
+      >
+        <Space size="large">
+          <div>
+            <Form.Item
+              label="Start date"
+              name="startDate"
+              rules={[
+                {
+                  required: false,
+                },
+              ]}
+            >
+              <div>{date}</div>
+            </Form.Item>
 
-          <Form.Item
-            label="Appointment type"
-            name="appointmentType"
-            rules={[
-              {
-                required: true,
-                message: 'Please choose the appointment type!',
-              },
-            ]}
-          >
-            {loaded === true && (
-              <Select
-                defaultValue={type}
-                placeholder="Select appointment type"
-                style={{
-                  width: sWidthComponent,
-                }}
-                onChange={(e) => setType(e)}
-                options={appointmentType}
-              />
-            )}
+            <Form.Item
+              label="Start time"
+              name="startTime"
+              rules={[
+                {
+                  required: false,
+                },
+              ]}
+            >
+              <div>{startTime}</div>
+            </Form.Item>
             
-          </Form.Item>
+            <Form.Item
+              label="Duration"
+              name="duration"
+              rules={[
+                {
+                  required: true,
+                  message: 'Please input the duration!',
+                },
+              ]}
+            >
+              {loaded === true && (
+                <Select
+                  placeholder="Select duration"
+                  style={{
+                    width: sWidthComponent,
+                  }}
+                  onChange={(e) => setDuration(e)}
+                  options={dataDuration}
+                  defaultValue={duration}
+                />
+              )}
+            </Form.Item>
 
-          <Form.Item
-            label="Location"
-            name="location"
-            rules={[
-              {
-                required: true,
-                message: 'Please choose the location!',
-              },
-            ]}
-          >
-            {loaded === true && (
-              <Select
-                defaultValue={location}
-                placeholder="Select location"
-                style={{
-                  width: sWidthComponent,
-                }}
-                onChange={(e) => setLocation(e)}
-                options={allLocation}
-              />
-            )}
-          </Form.Item>
-        </div>
-        <div>
-          <Form.Item
-            label="Patient first name"
-            name="patientFirstName"
-            rules={[
-              {
-                required: false,
-              },
-            ]}
-          >
-            <div>{patientFirstName}</div>
-          </Form.Item>
-          
-          <Form.Item
-            label="Patient surname"
-            name="patientSurname"
-            rules={[
-              {
-                required: false,
-              },
-            ]}
-          >
-            <div>{patientSurname}</div>
-          </Form.Item>
-          
-          
+            <Form.Item
+              label="Appointment type"
+              name="appointmentType"
+              rules={[
+                {
+                  required: true,
+                  message: 'Please choose the appointment type!',
+                },
+              ]}
+            >
+              {loaded === true && (
+                <Select
+                  defaultValue={type}
+                  placeholder="Select appointment type"
+                  style={{
+                    width: sWidthComponent,
+                  }}
+                  onChange={(e) => setType(e)}
+                  options={appointmentType}
+                />
+              )}
+              
+            </Form.Item>
+
+            <Form.Item
+              label="Location"
+              name="location"
+              rules={[
+                {
+                  required: true,
+                  message: 'Please choose the location!',
+                },
+              ]}
+            >
+              {loaded === true && (
+                <Select
+                  defaultValue={location}
+                  placeholder="Select location"
+                  style={{
+                    width: sWidthComponent,
+                  }}
+                  onChange={(e) => setLocation(e)}
+                  options={allLocation}
+                />
+              )}
+            </Form.Item>
+          </div>
+          <div>
+            <Form.Item
+              label="Patient first name"
+              name="patientFirstName"
+              rules={[
+                {
+                  required: false,
+                },
+              ]}
+            >
+              <div>{patientFirstName}</div>
+            </Form.Item>
+            
+            <Form.Item
+              label="Patient surname"
+              name="patientSurname"
+              rules={[
+                {
+                  required: false,
+                },
+              ]}
+            >
+              <div>{patientSurname}</div>
+            </Form.Item>
+            
             <Form.Item
               label="Status"
               name="state"
@@ -403,29 +404,21 @@ function App ({token, recordID, onDefaultDate}) {
                 <TextArea defaultValue={note} onChange={(e) => setNote(e.target.value)} placeholder={"Input the note"} rows={5}/>
               )} 
             </Form.Item>
-         
-          
-        </div>
-      </Space>
-      <Form.Item
-        wrapperCol={{
-          offset: 8,
-          span: 16,
-        }}
-      >
-        <Space>
-          <Button onClick={fEdit}>
-            Edit
-          </Button>
-          <Button onClick={clearAll}>
-            Clear
-          </Button>
-          <Button onClick={onCancel}>
-            Cancel
-          </Button>
+          </div>
         </Space>
-      </Form.Item>
-    </Form>
+          <Space style={{display: "flex", justifyContent:"center"}}>
+            <Button onClick={fEdit}>
+              Edit
+            </Button>
+            <Button onClick={clearAll}>
+              Clear
+            </Button>
+            <Button onClick={onCancel}>
+              Cancel
+            </Button>
+          </Space>
+      </Form>
+    </div>
   );
 }
 export default App;

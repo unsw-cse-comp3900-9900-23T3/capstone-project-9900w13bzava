@@ -3,6 +3,7 @@ import {
   LogoutOutlined,
   DatabaseOutlined,
   SolutionOutlined,
+  BarChartOutlined,
 } from '@ant-design/icons';
 import {
   useNavigate
@@ -47,6 +48,11 @@ function App ( props ) {
                 key: 'record',
                 icon: <SolutionOutlined />,
                 label: 'Record',
+              },
+              {
+                key: 'statistic',
+                icon: <BarChartOutlined />,
+                label: 'Statistic',
               },
               {
                 key: 'logout',

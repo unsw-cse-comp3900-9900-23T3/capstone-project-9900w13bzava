@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Button, Form, Input, Select, Space, notification } from 'antd';
+import { Button, Form, Input, Select, Space, notification, Modal, Radio } from 'antd';
 import {
   useNavigate,
   useParams
@@ -56,7 +56,15 @@ function App ({token, recordID, onDefaultDate}) {
   const [location, setLocation] = useState(-1)
   // const [loaded, setLoaded] = useState(false)
   const [allLocation, setAllLocation] = useState(null);
+  const [cPatientFirstName, setCPatientFirstName] = useState('');
+  const [cPatientSurname, setCPatientSurname] = useState('');
+  const [email, setEmail] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [sexCode, setSexCode] = useState(0);
+  const [medicareNo, setMedicareNo] = useState('');
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [form] = Form.useForm();
+  const [pForm] = Form.useForm();
   const params = useParams();
   const { rStartDate, rStartTime } = params;
   const navigate = useNavigate();
@@ -151,6 +159,111 @@ function App ({token, recordID, onDefaultDate}) {
     navigate('/mainpage/appointments')
   }
 
+  
+  const showModal = () => {
+    setIsModalOpen(true);
+    clearPatient();
+  };
+  async function fCreatePatient() {
+    var emailPattern = /^[a-zA-Z0-9]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    var numberPattern = /^[0-9]+/;
+    if (!emailPattern.test(email)){
+      notification.open({
+        message: 'Error',
+        type: 'error',
+        description:
+        // error message
+          `The format of the email is incorrect!`,
+        onClick: () => {
+          console.log('Notification Clicked!');
+        },
+      });
+    } else if (!numberPattern.test(phoneNumber) || !numberPattern(medicareNo)) {
+      notification.open({
+        message: 'Error',
+        type: 'error',
+        description:
+        // error message
+          `The format of the phone number or medicare number is incorrect!`,
+        onClick: () => {
+          console.log('Notification Clicked!');
+        },
+      });
+    } else if ( email !== '' && cPatientFirstName!== '' && cPatientSurname !== ''
+     && sexCode !== 0 && phoneNumber !== '' && medicareNo !== '') {
+      const response = await fetch('http://127.0.0.1:5000/CreatePatient', {
+        method: 'POST',
+        headers: {
+          'Content-type': 'application/json',
+        },
+        body: JSON.stringify({
+          "firstname": cPatientFirstName,
+          "surname": cPatientSurname,
+          "email": email,
+          "phonenumber": phoneNumber,
+          "sexCode": sexCode,
+          "medicareno": medicareNo,
+        })
+      });
+      const data = await response.json();
+      if (data.status) {
+        notification.open({
+          message: 'Success',
+          type: 'success',
+          description:
+            `${data.message}`,
+          onClick: () => {
+            console.log('Notification Clicked!');
+          },
+        });
+        setIsModalOpen(false);
+        clearPatient()
+      } else {
+        notification.open({
+          message: 'Error',
+          type: 'error',
+          description:
+          // error message
+              `${data.message}`,
+          onClick: () => {
+            console.log('Notification Clicked!');
+          },
+        });
+      }
+    } else {
+      notification.open({
+        message: 'Error',
+        type: 'error',
+        description:
+        // error message
+          `Please input all information`,
+        onClick: () => {
+          console.log('Notification Clicked!');
+        },
+      });
+    }
+  };
+  const handleCancel = () => {
+    setIsModalOpen(false);
+    clearPatient();
+  };
+  function clearPatient() {
+    setCPatientFirstName('');
+    setCPatientSurname('');
+    setEmail('');
+    setPhoneNumber('');
+    setMedicareNo('');
+    setSexCode(0);
+    pForm.setFieldsValue({
+      cPatientFirstName: '',
+      cPatientSurname: '',
+      email: '',
+      gender: 0,
+      phoneNumber: '',
+      medicareNo: '',
+    });
+  }
+
   useEffect(() => {
     async function fGetAllAppointmentTypes() {
       const response = await fetch('http://127.0.0.1:5000/GetAllAppointmentTypes', {
@@ -202,163 +315,269 @@ function App ({token, recordID, onDefaultDate}) {
 
 
   return (
-    <Form
-      form={form}
-      name="basic"
-      style={{
-        maxWidth: 600,
-      }}
-      onFinish={onFinish}
-      onFinishFailed={onFinishFailed}
-      autoComplete="off"
-      layout="vertical"
-    >
-      <Space size="large">
-        <div>
-          <Form.Item
-            label="Start date"
-            name="startDate"
-            rules={[
-              {
-                required: false,
-              },
-            ]}
+    <div>
+      <Modal title="Create New Patient" 
+        open={isModalOpen} onCancel={handleCancel}
+        footer={[
+          <Button onClick={fCreatePatient}>Create new patient</Button>,
+          <Button onClick={handleCancel}>Cancel</Button>
+        ]}>
+          <Form
+            form={pForm}
+            name="basic"
+            style={{
+              maxWidth: 600,
+            }}
+            onFinish={onFinish}
+            onFinishFailed={onFinishFailed}
+            autoComplete="off"
+            layout="vertical"
           >
-            <div>{rStartDate}</div>
-          </Form.Item>
+            <Space size="large">
+              <div>
+                <Form.Item
+                  label="Patient first name"
+                  name="cPatientFirstName"
+                  rules={[
+                    {
+                      required: true,
+                      message: 'Please input the first name!',
+                    },
+                  ]}
+                >
+                  <Input placeholder='Input first name' onChange={(e) => setCPatientFirstName(e.target.value)}/>
+                </Form.Item>
+                
+                <Form.Item
+                  label="Patient surname"
+                  name="cPatientSurname"
+                  rules={[
+                    {
+                      required: true,
+                      message: 'Please input the surname!',
+                    },
+                  ]}
+                >
+                  <Input placeholder='Input surname' onChange={(e) => setCPatientSurname(e.target.value)}/>
+                </Form.Item>
+                
+                
+                <Form.Item
+                  label="Medicare number"
+                  name="medicareNo"
+                  rules={[
+                    {
+                      required: true,
+                      message: 'Please input the medicare number!',
+                    },
+                  ]}
+                >
+                  <Input placeholder='Input medicareNo' onChange={(e) => setMedicareNo(e.target.value)}/>
+                </Form.Item>
+              </div>
+              <div>
+                <Form.Item
+                  label="Email"
+                  name="email"
+                  rules={[
+                    {
+                      required: true,
+                      message: 'Please input the email!',
+                    },
+                  ]}
+                >
+                  <Input placeholder='Input email' onChange={(e) => setEmail(e.target.value)}/>
+                </Form.Item>
 
-          <Form.Item
-            label="Start time"
-            name="startTime"
-            rules={[
-              {
-                required: false,
-              },
-            ]}
-          >
-            <div>{rStartTime}</div>
-          </Form.Item>
-          
-          <Form.Item
-            label="Duration"
-            name="duration"
-            rules={[
-              {
-                required: true,
-                message: 'Please input the duration!',
-              },
-            ]}
-          >
-            <Select
-              placeholder="Select duration"
-              style={{
-                width: sWidthComponent,
-              }}
-              onChange={(e) => setDuration(e)}
-              options={dataDuration}
-            />
-          </Form.Item>
+                <Form.Item
+                  label="Phone number"
+                  name="phoneNumber"
+                  rules={[
+                    {
+                      required: true,
+                      message: 'Please input the phone number!',
+                    },
+                  ]}
+                >
+                  <Input placeholder='Input phone number' onChange={(e) => setPhoneNumber(e.target.value)}/>
+                </Form.Item>
 
-          <Form.Item
-            label="Appointment type"
-            name="appointmentType"
-            rules={[
-              {
-                required: true,
-                message: 'Please choose the appointment type!',
-              },
-            ]}
-          >
-            <Select
-              placeholder="Select appointment type"
-              style={{
-                width: sWidthComponent,
-              }}
-              onChange={(e) => setType(e)}
-              options={appointmentType}
-            />
-          </Form.Item>
-
-          <Form.Item
-            label="Location"
-            name="location"
-            rules={[
-              {
-                required: true,
-                message: 'Please choose the location!',
-              },
-            ]}
-          >
-            <Select
-              placeholder="Select location"
-              style={{
-                width: sWidthComponent,
-              }}
-              onChange={(e) => setLocation(e)}
-              options={allLocation}
-            />
-          </Form.Item>
-        </div>
-        <div>
-          <Form.Item
-            label="Patient first name"
-            name="patientFirstName"
-            rules={[
-              {
-                required: false,
-              },
-            ]}
-          >
-            <Input onChange={(e) => setPatientFirstName(e.target.value)} placeholder='Input first name'/>
-          </Form.Item>
-          
-          <Form.Item
-            label="Patient surname"
-            name="patientSurname"
-            rules={[
-              {
-                required: false,
-              },
-            ]}
-          >
-            <Input onChange={(e) => setPatientSurname(e.target.value)} placeholder='Input surname'/>
-          </Form.Item>
-          
-          
+                <Form.Item
+                  label="Gender"
+                  name="gender"
+                  rules={[
+                    {
+                      required: true,
+                      message: 'Please choose your gender!',
+                    },
+                  ]}
+                >
+                  <Radio.Group onChange={(e) => setSexCode(e.target.value)}>
+                    <Space>
+                      <Radio value={1}>Male</Radio>
+                      <Radio value={2}>Female</Radio>
+                    </Space>
+                    
+                  </Radio.Group>
+                </Form.Item>
+              
+                
+              </div>
+            </Space>
+          </Form>
+        </Modal>
+      <Form
+        form={form}
+        name="basic"
+        style={{
+          maxWidth: 600,
+        }}
+        onFinish={onFinish}
+        onFinishFailed={onFinishFailed}
+        autoComplete="off"
+        layout="vertical"
+      >
+        <Space size="large">
+          <div>
             <Form.Item
-              label="Status"
-              name="state"
+              label="Start date"
+              name="startDate"
+              rules={[
+                {
+                  required: false,
+                },
+              ]}
+            >
+              <div>{rStartDate}</div>
+            </Form.Item>
+
+            <Form.Item
+              label="Start time"
+              name="startTime"
+              rules={[
+                {
+                  required: false,
+                },
+              ]}
+            >
+              <div>{rStartTime}</div>
+            </Form.Item>
+            
+            <Form.Item
+              label="Duration"
+              name="duration"
               rules={[
                 {
                   required: true,
-                  message: 'Please choose the status!',
+                  message: 'Please input the duration!',
                 },
               ]}
             >
               <Select
-                placeholder="Select status"
+                placeholder="Select duration"
                 style={{
                   width: sWidthComponent,
                 }}
-                onChange={(e) => setStateID(e)}
-                options={dataState}
+                onChange={(e) => setDuration(e)}
+                options={dataDuration}
               />
             </Form.Item>
 
             <Form.Item
-              label="Note"
-              name="note"
+              label="Appointment type"
+              name="appointmentType"
+              rules={[
+                {
+                  required: true,
+                  message: 'Please choose the appointment type!',
+                },
+              ]}
             >
-              <TextArea onChange={(e) => setNote(e.target.value)} placeholder={"Input the note"} rows={5}/>
+              <Select
+                placeholder="Select appointment type"
+                style={{
+                  width: sWidthComponent,
+                }}
+                onChange={(e) => setType(e)}
+                options={appointmentType}
+              />
             </Form.Item>
-        </div>
-      </Space>
-      <Form.Item
-        wrapperCol={{
-          offset: 8,
-          span: 16,
-        }}
-      >
+
+            <Form.Item
+              label="Location"
+              name="location"
+              rules={[
+                {
+                  required: true,
+                  message: 'Please choose the location!',
+                },
+              ]}
+            >
+              <Select
+                placeholder="Select location"
+                style={{
+                  width: sWidthComponent,
+                }}
+                onChange={(e) => setLocation(e)}
+                options={allLocation}
+              />
+            </Form.Item>
+          </div>
+          <div>
+            <Form.Item
+              label="Patient first name"
+              name="patientFirstName"
+              rules={[
+                {
+                  required: false,
+                },
+              ]}
+            >
+              <Input onChange={(e) => setPatientFirstName(e.target.value)} placeholder='Input first name'/>
+            </Form.Item>
+            
+            <Form.Item
+              label="Patient surname"
+              name="patientSurname"
+              rules={[
+                {
+                  required: false,
+                },
+              ]}
+            >
+              <Input onChange={(e) => setPatientSurname(e.target.value)} placeholder='Input surname'/>
+            </Form.Item>
+            
+            
+              <Form.Item
+                label="Status"
+                name="state"
+                rules={[
+                  {
+                    required: true,
+                    message: 'Please choose the status!',
+                  },
+                ]}
+              >
+                <Select
+                  placeholder="Select status"
+                  style={{
+                    width: sWidthComponent,
+                  }}
+                  onChange={(e) => setStateID(e)}
+                  options={dataState}
+                />
+              </Form.Item>
+
+              <Form.Item
+                label="Note"
+                name="note"
+              >
+                <TextArea onChange={(e) => setNote(e.target.value)} placeholder={"Input the note"} rows={5}/>
+              </Form.Item>
+          </div>
+        </Space>
+
         <Space>
           <Button onClick={fCreate}>
             Create
@@ -369,9 +588,12 @@ function App ({token, recordID, onDefaultDate}) {
           <Button onClick={onCancel}>
             Cancel
           </Button>
+          <Button onClick={showModal}>
+            Create new patient
+          </Button>
         </Space>
-      </Form.Item>
-    </Form>
+      </Form>
+    </div>
   );
 }
 export default App;

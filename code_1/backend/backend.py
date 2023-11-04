@@ -540,6 +540,72 @@ def getAllLocation():
   return jsonify({"allLocation": records, "status": True}), 200
 
 
+# GetSpecRangeStatusStatistics
+# 返回[predate, lastdate]时间内，当前userid的所有appointments的不同status的数量。就是，status1的appointments的数量，status2的appointments的数量，status3的数量等等。 
+@app.route('/GetSpecRangeStatusStatistics', methods=['POST'])
+def getSpecRangeStatusStatistics():
+  data = request.get_json()
+  predate = str(data.get('predate'))  # 前一个日期
+  lastdate = str(data.get('lastdate'))  # 后一个日期
+  userid = int(data.get('userid'))  # userid
+
+  query = '''select appointmentstatusname from appointmentstatus'''  # 获取所有的status
+  records = operate_database(query, SEARCH)
+  
+  return_records = []
+  # 遍历每个status
+  for record in records:
+    appointmentstatusname = record['appointmentstatusname']
+    # print(record['appointmentstatusname'])
+    query = f'''
+    SELECT COUNT(*) AS val
+    FROM appointments as table1
+    INNER JOIN appointmentStatus as table5
+    ON table5.appointmentStatusID = table1.appointmentStatusID 
+    WHERE table5.appointmentStatusName = '{appointmentstatusname}' AND userid = {userid} 
+    AND DATE(starttime) >= '{predate}' AND DATE(starttime) <= '{lastdate}'
+    '''
+    value = operate_database(query, SEARCH)[0]['val']
+    return_records.append({"status": appointmentstatusname, "value": value})
+
+  print(return_records)
+  return jsonify({"statusStatistics": return_records, "status": True}), 200
+
+
+# GetSpecRangeAppNumStatistics
+# 返回一段时间内，当前user在当前location的，每一天的appointments的数量
+@app.route('/GetSpecRangeAppNumStatistics', methods=['POST'])
+def getSpecRangeAppNumStatistics():
+  data = request.get_json()
+  predate = str(data.get('predate'))  # 前一个日期
+  lastdate = str(data.get('lastdate'))  # 后一个日期
+  userid = int(data.get('userid'))  # userid
+
+  # 将日期字符串转换成datetime对象
+  predate = datetime.strptime(predate, "%Y-%m-%d")
+  lastdate = datetime.strptime(lastdate, "%Y-%m-%d")
+
+  # 初始化一个空列表来存储结果
+  date_strings = []
+
+  # 逐一增加日期并将其转换为所需格式的字符串
+  current_date = predate
+  while current_date <= lastdate:
+      date_strings.append(current_date.strftime("%Y-%m-%d"))
+      current_date += timedelta(days=1)
+
+  records = []  # 用来存最终结果
+  for date in date_strings:
+    query = f'''
+    SELECT COUNT(*) as val
+    FROM appointments
+    WHERE userid = {userid} AND DATE(starttime) = '{date}' 
+    '''
+    value = operate_database(query, SEARCH)[0]['val']
+    records.append({"date": date, "value": value})
+
+  return jsonify({"appNumStatistics": records, "status": True}), 200
+
 
 if __name__ == '__main__':
     app.run(debug=True)

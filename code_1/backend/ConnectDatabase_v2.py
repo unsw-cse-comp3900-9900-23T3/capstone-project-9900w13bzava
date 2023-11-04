@@ -38,12 +38,17 @@ def operate_database(query, operation):
 
 # 获取所有用户数据
 if __name__ == "__main__":
-    query = "select to_char(appointmentdate, 'YYYY-MM-DD HH24:MI:SS') as appointmentdate from appointments;"
+    query = '''    SELECT COUNT(*) AS val
+    FROM appointments as table1
+    INNER JOIN appointmentStatus as table5
+    ON table5.appointmentStatusID = table1.appointmentStatusID '''  # 获取所有的status
     records = operate_database(query, 1)
     print(type(records))
     print(type(records[0]))
 
     for record in records:
-        print(record)
+        temp = record['val']
+        print(type(temp))
+        print(record['val'])
     
     print()

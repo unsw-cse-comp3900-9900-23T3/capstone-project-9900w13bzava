@@ -289,7 +289,8 @@ def createPatient():
   medicareno = str(data.get('medicareno')).strip()
   email  = str(data.get('email')).strip()
   phonenumber = str(data.get('phonenumber')).strip()
-  sexcode = data.get('sexcode')
+  sexcode = str(data.get('sexcode'))
+
 
   query = f'''
   SELECT patientid FROM patients
@@ -305,7 +306,7 @@ def createPatient():
   # 将病人插入到数据库中
   query = f'''
   INSERT INTO patients (firstName, surname, medicareNo, email, phoneNumber, sexCode) VALUES
-  ('{firstname}', '{surname}', '{medicareno}', '{email}', '{phonenumber}', {sexcode}),
+  ('{firstname}', '{surname}', '{medicareno}', '{email}', '{phonenumber}', {sexcode});
   '''
   try:
     # 尝试插入新用户

@@ -8,8 +8,8 @@ dayjs.extend(customParseFormat);
 const { RangePicker } = DatePicker;
 const columWidth = 400;
 const columHeight = 400;
-const defaultPreDate = "2015-01-01";
-const defaultLastDate = "2015-02-02";
+const defaultPreDate = "2023-11-01";
+const defaultLastDate = "2023-11-13";
 const rangeWidth = 250;
 
 function App({ token }) {
@@ -110,8 +110,8 @@ function App({ token }) {
           <RangePicker
             style={{display: "flex", width: rangeWidth}}
             defaultValue={defaultRange2}
-            onChange={(e) => {
-              setSelectedRange2(e);
+            onChange={(e, dataString) => {
+              setSelectedRange2(dataString);
             }}
           />
           <Button onClick={() => fGetSpecRangeAppNumStatistics()}>

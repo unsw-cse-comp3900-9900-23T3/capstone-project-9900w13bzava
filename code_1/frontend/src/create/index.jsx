@@ -178,7 +178,7 @@ function App ({token, recordID, onDefaultDate}) {
           console.log('Notification Clicked!');
         },
       });
-    } else if (!numberPattern.test(phoneNumber) || !numberPattern(medicareNo)) {
+    } else if (!numberPattern.test(phoneNumber) || !numberPattern.test(medicareNo)) {
       notification.open({
         message: 'Error',
         type: 'error',

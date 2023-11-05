@@ -98,7 +98,7 @@ function App({ token }) {
           margin={{ top: 20, right: 30, left: -30, bottom: 5 }}
         >
           <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="status" />
+          <XAxis dataKey="status" tickCount={chartData1.length > 10 ? 10 : chartData1.length} />
           <YAxis />
           <Tooltip />
           <Legend />

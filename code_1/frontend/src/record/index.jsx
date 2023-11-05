@@ -114,7 +114,7 @@ function App ({ token }) {
       console.log("showpatientreocrd: ", data)
       const tempH = data.history.map((item, index) => ({
         key: index.toString(),
-        hTime: `${item.day} ${item.starttime}`,
+        hTime: item.starttime,
         hDoctor: `${item.userfirstname} ${item.usersurname}`,
         patientName: `${item.patientfirstname} ${item.patientsurname}`,
         hasMedicare: item.hasmedicare,

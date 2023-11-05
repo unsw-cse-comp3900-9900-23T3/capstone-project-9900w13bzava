@@ -1,12 +1,12 @@
 import React, { useState, useRef } from 'react';
 import { Button, DatePicker, Space } from 'antd';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts';
 import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 
 dayjs.extend(customParseFormat);
 const { RangePicker } = DatePicker;
-const columWidth = 400;
+const columWidth = 500;
 const columHeight = 400;
 const defaultPreDate = "2023-11-01";
 const defaultLastDate = "2023-11-13";
@@ -43,11 +43,14 @@ function App({ token }) {
     });
     const data = await response.json();
     const temp = data.statusStatistics.map(item => {
-      return {
-        status: item.status,
-        value: item.value,
-      }
-    })
+      if (item.value !== 0) {
+        return {
+          status: item.status,
+          amount: item.value,
+        }
+      };
+      return null;
+    }).filter(item => item !== null)
     setChartData1(temp)
     
   }
@@ -67,11 +70,14 @@ function App({ token }) {
     });
     const data = await response.json();
     const temp = data.appNumStatistics.map(item => {
-      return {
-        date: item.date,
-        value: item.value,
-      }
-    })
+      if (item.value !== 0) {
+        return {
+          date: item.date,
+          amount: item.value,
+        }
+      };
+      return null;
+    }).filter(item => item !== null)
     setChartData2(temp)
   }
 
@@ -90,19 +96,23 @@ function App({ token }) {
             Status
           </Button>
         </Space>
+        <div style={{display: "flex", marginLeft:30}}>
+          Different status's appointments between {selectedRange1[0]} and {selectedRange1[1]}
+        </div>
+
         
         <BarChart
           width={columWidth}
           height={columHeight}
           data={chartData1}
-          margin={{ top: 20, right: 30, left: -30, bottom: 20 }}
+          margin={{ top: 20, right: 40, left: -30, bottom: 50}}
         >
           <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="status"  angle={45} textAnchor="start" tickCount={chartData1.length > 10 ? 10 : chartData1.length} />
+          <XAxis dataKey="status" angle={45} textAnchor="start"
+          />
           <YAxis />
           <Tooltip />
-          <Legend />
-          <Bar dataKey="value" fill="#8884d8"/>
+          <Bar dataKey="amount" fill="#8884d8"/>
         </BarChart>
       </div>
       <div>
@@ -118,18 +128,21 @@ function App({ token }) {
             Sum
           </Button>
         </Space>
+        <div style={{display: "flex", marginLeft:30}}>
+          The sum of appointments between {selectedRange2[0]} and {selectedRange2[1]}
+        </div>
+        
         <BarChart
           width={columWidth}
           height={columHeight}
           data={chartData2}
-          margin={{ top: 20, right: 30, left: -30, bottom: 5 }}
+          margin={{ top: 20, right: 40, left: -30, bottom: 50 }}
         >
           <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="date" />
+          <XAxis dataKey="date" angle={45} textAnchor="start"/>
           <YAxis />
           <Tooltip />
-          <Legend />
-          <Bar dataKey="value" fill="#8884d8" />
+          <Bar dataKey="amount" fill="#8884d8" />
         </BarChart>
         
       </div>

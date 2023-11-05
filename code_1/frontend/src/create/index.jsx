@@ -69,6 +69,54 @@ function App ({token, recordID, onDefaultDate}) {
   const { rStartDate, rStartTime } = params;
   const navigate = useNavigate();
 
+  async function fJudgePatient() {
+    if ( patientFirstName !== '' && patientSurname !== '') {
+      const response = await fetch('http://127.0.0.1:5000/JudgePatient', {
+        method: 'POST',
+        headers: {
+          'Content-type': 'application/json',
+        },
+        body: JSON.stringify({
+          "patientfirstname": patientFirstName,
+          "patientsurname": patientSurname,
+        })
+      });
+      const data = await response.json();
+      if (data.status) {
+        notification.open({
+          message: 'Success',
+          type: 'success',
+          description:
+            `${data.message}`,
+          onClick: () => {
+            console.log('Notification Clicked!');
+          },
+        });
+      } else {
+        notification.open({
+          message: 'Error',
+          type: 'error',
+          description:
+          // error message
+            `${data.message}`,
+          onClick: () => {
+            console.log('Notification Clicked!');
+          },
+        });
+      }
+    } else {
+      notification.open({
+        message: 'Error',
+        type: 'error',
+        description:
+        // error message
+          `Please input the first name and the surname of the patient`,
+        onClick: () => {
+          console.log('Notification Clicked!');
+        },
+      });
+    }
+  }
 
   async function fCreate() {
     console.log("CreateAppointment: ", duration, type, location, stateID)
@@ -161,12 +209,19 @@ function App ({token, recordID, onDefaultDate}) {
 
   
   const showModal = () => {
+    setCPatientFirstName(patientFirstName);
+    setCPatientSurname(patientSurname);
+    pForm.setFieldsValue({
+      createPatientFirstName: patientFirstName,
+      createPatientSurname: patientSurname,
+    });
     setIsModalOpen(true);
     clearPatient();
   };
   async function fCreatePatient() {
     var emailPattern = /^[a-zA-Z0-9]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     var numberPattern = /^[0-9]+/;
+    var mNumberPattern = /^[0-9]{8}$/;
     if (!emailPattern.test(email)){
       notification.open({
         message: 'Error',
@@ -178,7 +233,7 @@ function App ({token, recordID, onDefaultDate}) {
           console.log('Notification Clicked!');
         },
       });
-    } else if (!numberPattern.test(phoneNumber) || !numberPattern.test(medicareNo)) {
+    } else if (!numberPattern.test(phoneNumber) || !mNumberPattern.test(medicareNo)) {
       notification.open({
         message: 'Error',
         type: 'error',
@@ -217,6 +272,12 @@ function App ({token, recordID, onDefaultDate}) {
           },
         });
         setIsModalOpen(false);
+        setPatientFirstName(cPatientFirstName);
+        setPatientSurname(cPatientSurname);
+        form.setFieldsValue({
+          patientFirstName: cPatientFirstName,
+          patientSurname: cPatientSurname,
+        });
         clearPatient()
       } else {
         notification.open({
@@ -263,6 +324,8 @@ function App ({token, recordID, onDefaultDate}) {
       medicareNo: '',
     });
   }
+
+
 
   useEffect(() => {
     async function fGetAllAppointmentTypes() {
@@ -313,7 +376,6 @@ function App ({token, recordID, onDefaultDate}) {
     fGetAllLocation()
   }, [])
 
-
   return (
     <div>
       <Modal title="Create New Patient" 
@@ -337,7 +399,7 @@ function App ({token, recordID, onDefaultDate}) {
               <div>
                 <Form.Item
                   label="Patient first name"
-                  name="cPatientFirstName"
+                  name="createPatientFirstName"
                   rules={[
                     {
                       required: true,
@@ -350,7 +412,7 @@ function App ({token, recordID, onDefaultDate}) {
                 
                 <Form.Item
                   label="Patient surname"
-                  name="cPatientSurname"
+                  name="createPatientSurname"
                   rules={[
                     {
                       required: true,
@@ -367,7 +429,7 @@ function App ({token, recordID, onDefaultDate}) {
                   name="medicareNo"
                   rules={[
                     {
-                      required: true,
+                      required: false,
                       message: 'Please input the medicare number!',
                     },
                   ]}
@@ -529,7 +591,7 @@ function App ({token, recordID, onDefaultDate}) {
               name="patientFirstName"
               rules={[
                 {
-                  required: false,
+                  required: true,
                 },
               ]}
             >
@@ -541,57 +603,65 @@ function App ({token, recordID, onDefaultDate}) {
               name="patientSurname"
               rules={[
                 {
-                  required: false,
+                  required: true,
                 },
               ]}
             >
               <Input onChange={(e) => setPatientSurname(e.target.value)} placeholder='Input surname'/>
             </Form.Item>
             
-            
-              <Form.Item
-                label="Status"
-                name="state"
-                rules={[
-                  {
-                    required: true,
-                    message: 'Please choose the status!',
-                  },
-                ]}
-              >
-                <Select
-                  placeholder="Select status"
-                  style={{
-                    width: sWidthComponent,
-                  }}
-                  onChange={(e) => setStateID(e)}
-                  options={dataState}
-                />
-              </Form.Item>
+            <Form.Item
+              label="Status"
+              name="state"
+              rules={[
+                {
+                  required: true,
+                  message: 'Please choose the status!',
+                },
+              ]}
+            >
+              <Select
+                placeholder="Select status"
+                style={{
+                  width: sWidthComponent,
+                }}
+                onChange={(e) => setStateID(e)}
+                options={dataState}
+              />
+            </Form.Item>
 
-              <Form.Item
-                label="Note"
-                name="note"
-              >
-                <TextArea onChange={(e) => setNote(e.target.value)} placeholder={"Input the note"} rows={5}/>
-              </Form.Item>
+            <Form.Item
+              label="Note"
+              name="note"
+            >
+              <TextArea onChange={(e) => setNote(e.target.value)} placeholder={"Input the note"} rows={3}/>
+            </Form.Item>
           </div>
         </Space>
-
-        <Space>
-          <Button onClick={fCreate}>
-            Create
-          </Button>
-          <Button onClick={clearAll}>
-            Clear
-          </Button>
-          <Button onClick={onCancel}>
-            Cancel
-          </Button>
-          <Button onClick={showModal}>
-            Create new patient
-          </Button>
-        </Space>
+        <div style={{display: "flex", justifyContent:"center"}}>
+          <Space direction='vertical'>
+            <Space style={{display: "flex", justifyContent:"center"}}>
+              <Button onClick={fCreate}>
+                Create
+              </Button>
+              <Button onClick={clearAll}>
+                Clear
+              </Button>
+              <Button onClick={onCancel}>
+                Cancel
+              </Button>
+            </Space>
+            <Space style={{display: "flex", justifyContent:"center"}}>
+              <Button onClick={fJudgePatient}>
+                Check patient existence
+              </Button>
+              <Button onClick={showModal}>
+                Create new patient
+              </Button>
+            </Space>
+          </Space>
+        </div>
+        
       </Form>
     </div>
   );

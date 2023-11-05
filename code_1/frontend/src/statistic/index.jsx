@@ -95,14 +95,14 @@ function App({ token }) {
           width={columWidth}
           height={columHeight}
           data={chartData1}
-          margin={{ top: 20, right: 30, left: -30, bottom: 5 }}
+          margin={{ top: 20, right: 30, left: -30, bottom: 20 }}
         >
           <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="status" tickCount={chartData1.length > 10 ? 10 : chartData1.length} />
+          <XAxis dataKey="status"  angle={45} textAnchor="start" tickCount={chartData1.length > 10 ? 10 : chartData1.length} />
           <YAxis />
           <Tooltip />
           <Legend />
-          <Bar dataKey="value" fill="#8884d8" />
+          <Bar dataKey="value" fill="#8884d8"/>
         </BarChart>
       </div>
       <div>

@@ -201,7 +201,7 @@ function App ({token, recordID, onDefaultDate}) {
           "surname": cPatientSurname,
           "email": email,
           "phonenumber": phoneNumber,
-          "sexCode": sexCode,
+          "sexcode": sexCode,
           "medicareno": medicareNo,
         })
       });

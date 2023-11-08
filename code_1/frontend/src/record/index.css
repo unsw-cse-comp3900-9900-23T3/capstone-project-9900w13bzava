@@ -5,3 +5,15 @@
 .hTable .ant-table-row {
   height: 50px; /* 设置表格行高为50px，可以根据需要调整 */
 }
+
+.recordFillCellTitle {
+  position: absolute;
+  top:0;
+  bottom:0;
+  left:0;
+  right:0;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  
+}

@@ -53,7 +53,7 @@ function App() {
             path="/mainpage"
             element={
               <MainPage>
-                <Outlet />
+                <Outlet/>
               </MainPage>
             }
           >

@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Table, Space, Button, Modal, DatePicker, Popover, notification } from 'antd';
+import { Table, Space, Button, Modal, DatePicker, Popover, notification, Typography } from 'antd';
 import "./index.css"
 import { useState } from 'react';
 import dayjs from 'dayjs';
@@ -8,7 +8,6 @@ import {
 } from 'react-router-dom';
 // import moment from "moment"
 
-const widthButton = "80px"
 const allState = ['gray', 'yellow', 'magenta', 'gold', 'lightgreen', 'lightgray', 'lightblue']
 const getIndex = ['Unavailable', 'Booked', 'Waiting', 'Urgent', 'With doctor', 'At billing', 'Completed']
 // const defaultDate = "2023-11-01"
@@ -58,8 +57,6 @@ for (let i=0; i<time_.length; i++) {
   });
 }
 
-
-
 function App ({ token, onRecord, defaultDate }) {
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedRecord, setSelectedRecord] = useState(null);
@@ -74,21 +71,20 @@ function App ({ token, onRecord, defaultDate }) {
 
   const columns = [
     {
-      title: 'Time',
+      title: <div className='fillCellTitle'>Time</div>,
       dataIndex: 'time',
       key: 'time',
       width:100,
       align: 'center',
     },
     {
-      title: `${getDate(date, -1)}`,
+      title: <div className='fillCellTitle'>{getDate(date, -1)}</div>,
       dataIndex: 'before',
       key: 'before',
       align: 'center',
       render: (text, record) => {
         if (record.beforeState !== "") {
-          return <div style={{position:"absolute",top:0,bottom:0,left:0,right:0,
-          backgroundColor: allState[getIndex.indexOf(record.beforeState)],display:"flex",justifyContent:"center",alignItems:"center"}}
+          return <div className='fillCell' style={{backgroundColor: allState[getIndex.indexOf(record.beforeState)]}}
           onClick={() =>{ handleCellClick(record);setJModal('0') }}>{text} -{record.beforeNote}</div>;
         } else {
           return <Button onClick={() => {onCreate(record.bRecordID, getDate(date, -1), record.time)}} shape="default" style={{position:"absolute",top:0,bottom:0,left:0,right:0, 
@@ -97,14 +93,13 @@ function App ({ token, onRecord, defaultDate }) {
       },
     },
     {
-      title: `${getDate(date, 0)}`,
+      title: <div className='fillCellTitle'>{getDate(date, 0)}</div>,
       dataIndex: 'date',
       key: 'date',
       align: 'center',
       render: (text, record) => {
         if (record.dateState !== "") {
-          return <div style={{position:"absolute",top:0,bottom:0,left:0,right:0,
-          backgroundColor: allState[getIndex.indexOf(record.dateState)],display:"flex",justifyContent:"center",alignItems:"center"}}
+          return <div  className='fillCell' style={{backgroundColor: allState[getIndex.indexOf(record.dateState)]}}
           onClick={() =>{ handleCellClick(record);setJModal('1') }}>{text} -{record.dateNote}</div>;
         } else {
           return <Button onClick={() => {onCreate(record.dRecordID, getDate(date, 0), record.time)}} shape="default" style={{position:"absolute",top:0,bottom:0,left:0,right:0, 
@@ -113,14 +108,13 @@ function App ({ token, onRecord, defaultDate }) {
       },
     },
     {
-      title: `${getDate(date, 1)}`,
+      title: <div className='fillCellTitle'>{getDate(date, -1)}</div>,
       key: 'after',
       dataIndex: 'after',
       align: 'center',
       render: (text, record) => {
         if (record.afterState !== "") {
-          return <div style={{position:"absolute",top:0,bottom:0,left:0,right:0,
-          backgroundColor: allState[getIndex.indexOf(record.afterState)],display:"flex",justifyContent:"center",alignItems:"center"}}
+          return <div  className='fillCell' style={{backgroundColor: allState[getIndex.indexOf(record.afterState)]}}
           onClick={() =>{ handleCellClick(record);setJModal('2') }}>{text} -{record.afterNote}</div>;
         } else {
           return <Button onClick={() => {onCreate(record.aRecordID, getDate(date, 1), record.time)}} shape="default" style={{position:"absolute",top:0,bottom:0,left:0,right:0, 
@@ -355,30 +349,37 @@ function App ({ token, onRecord, defaultDate }) {
   return (
     <div>
       <Space direction="vertical">
-        <DatePicker onChange={onDateChange} defaultValue={dayjs(defaultDate)}/>
+        <Space>
+          <div style={{fontWeight: 'bold'}}>Choose a date: </div>
+          <DatePicker onChange={onDateChange} defaultValue={dayjs(defaultDate)}/>
+        </Space>
         <Space>
           <Space direction="vertical">
-          <Popover content={content1} title="Details">
-                <div style={{width: "80px", display:"flex", alignItems: "center", justifyContent: "center"}}>Status: </div>
-              </Popover>
             <Space>
-              <Button style={{backgroundColor:'gray', width:widthButton, padding:"0"}}>Unavailable</Button>
-              <Button style={{backgroundColor:'yellow', width:widthButton, padding:"0"}}>Booked</Button>
-              <Button style={{backgroundColor:'magenta', width:widthButton, padding:"0"}}>Waiting</Button>
-              <Button style={{backgroundColor:'gold', width:widthButton, padding:"0"}}>Urgent</Button>
-              <Button style={{backgroundColor:'lightgreen', width:widthButton, padding:"0"}}>With doctor</Button>
-              <Button style={{backgroundColor:'lightgray', width:widthButton, padding:"0"}}>At billing</Button>
-              <Button style={{backgroundColor:'lightblue', width:widthButton, padding:"0"}}>Completed</Button>
+              <Popover content={content1} title="Details">
+                <div style={{fontWeight: 'bold'}}>Status: </div>
+              </Popover>
+              <div className='appointmentsBox'style={{backgroundColor:'gray'}}>Unavailable</div>
+              <div className='appointmentsBox'style={{backgroundColor:'yellow'}}>Booked</div>
+              <div className='appointmentsBox'style={{backgroundColor:'magenta'}}>Waiting</div>
+              <div className='appointmentsBox'style={{backgroundColor:'gold'}}>Urgent</div>
+              <div className='appointmentsBox'style={{backgroundColor:'lightgreen'}}>With doctor</div>
+              <div className='appointmentsBox'style={{backgroundColor:'lightgray'}}>At billing</div>
+              <div className='appointmentsBox'style={{backgroundColor:'lightblue'}}>Completed</div>
               
             </Space>
           </Space>
-          
         </Space>
-        <Popover placement="topLeft" content={content2} title="Details">
-          <div style={{width: "800px"}}>{description}</div>
-        </Popover>
-        <Table columns={columns} dataSource={dataQ} pagination={false} bordered scroll={{y:400}} size="small"
-         />
+        <Space>
+          <div style={{fontWeight: 'bold'}}>Workload: </div>
+          <Popover placement="topLeft" content={content2} title="Details">
+            <Typography.Text level={5} style={{width: "800px"}}>{description}</Typography.Text>
+          </Popover>
+        </Space>
+        <Table columns={columns} dataSource={dataQ} pagination={false} bordered scroll={{y:380}} size="small"
+         onHeaderRow={() => ({
+          height: 40,
+        })}/>
       </Space>
       <Modal
         title={'Details'}

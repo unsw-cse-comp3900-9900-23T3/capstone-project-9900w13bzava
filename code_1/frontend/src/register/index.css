@@ -1,13 +1,33 @@
-.background {
+.registerBackground {
   display: flex;
   align-items: center;
   justify-content: center;
   height: 100vh;
+  background-image: linear-gradient(to top, rgb(239, 250, 250),rgb(255, 255, 255), rgb(238, 248, 248));
+  background-size: cover;
 }
 
-/* 在小屏幕上（例如手机屏幕）调整样式 */
-@media (max-width: 600px) {
-  .background {
-    flex-direction: column; /* 垂直方向居中 */
+.rChangeColor {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 670px;
+  height: 480px;
+  background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+  background-size: 600% 600%;
+  animation: rChangeColorBG 5s ease infinite;
+  border-radius: 35px
+}
+
+/* 动画，控制背景 background-position */
+@keyframes rChangeColorBG {
+  0% {
+      background-position: 0% 50%;
+  }
+  50% {
+      background-position: 100% 50%;
+  }
+  100% {
+      background-position: 0% 50%;
   }
 }

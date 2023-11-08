@@ -139,164 +139,179 @@ function App ({ onSuccess }) {
   }, [])
 
   return (
-    <div className="background">
-      <Form
-        name="basic"
-        labelCol={{
-          span: 8,
-        }}
-        wrapperCol={{
-          span: 16,
-        }}
-        style={{
-          maxWidth: 600,
-        }}
-        initialValues={{
-          remember: true,
-        }}
-        onFinish={onFinish}
-        onFinishFailed={onFinishFailed}
-        autoComplete="off"
-      >
-        <Space>
-          <div>
+    <div className="registerBackground">
+      <div className='rChangeColor'>
+        <div style={{backgroundColor: "white", borderRadius: '30px', width: '650px',
+        height: '450px', display: 'flex', justifyContent: 'center', alignItems: 'center', paddingBottom: '10px'}}>
+          <Form
+            name="basic"
+            labelCol={{
+              span: 8,
+            }}
+            wrapperCol={{
+              span: 16,
+            }}
+            style={{
+              width: '600px',
+            }}
+            initialValues={{
+              remember: true,
+            }}
+            onFinish={onFinish}
+            onFinishFailed={onFinishFailed}
+            autoComplete="off"
+          >
             <Form.Item
-              label="First name"
-              name="firstName"
-              rules={[
-                {
-                  required: true,
-                  message: 'Please input your first name!',
-                },
-              ]}
+              name="logo"
+              style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}
             >
-              <Input value={firstName} style={{display:'flex', width:iWidthComponent}}onChange={(e) => setFirstName(e.target.value)}/>
-            </Form.Item>
-
-            <Form.Item
-              label="Surname"
-              name="surname"
-              rules={[
-                {
-                  required: true,
-                  message: 'Please input your surname!',
-                },
-              ]}
-            >
-              <Input value={surname} style={{display:'flex', width:iWidthComponent}}onChange={(e) => setSurname(e.target.value)}/>
-            </Form.Item>
-
-            <Form.Item
-              label="Password"
-              name="password"
-              rules={[
-                {
-                  required: true,
-                  message: 'Please input your password!',
-                },
-              ]}
-            >
-              <Input.Password style={{display:'flex', width:iWidthComponent}}value={password} onChange={(e) => setPassword(e.target.value)}/>
-            </Form.Item>
-
-            <Form.Item
-              label="Confirm again"
-              name="confirm password"
-              rules={[
-                {
-                  required: true,
-                  message: 'Please confirm your password!',
-                },
-              ]}
-            >
-              <Input.Password style={{display:'flex', width:iWidthComponent}}value={conPassword} onChange={(e) => setConPassword(e.target.value)}/>
-            </Form.Item>
-          </div>
-          <div>
-            <Form.Item
-              label="Location"
-              name="location"
-              rules={[
-                {
-                  required: true,
-                  message: 'Please input your location!',
-                },
-              ]}
-            >
-              <Select
-                placeholder="Select location"
-                style={{
-                  width: sWidthComponent,
-                }}
-                onChange={(e) => setLocation(e)}
-                options={allLocation}
+              <img
+                width={400}
+                src={require('../components/img/BestPracticeLogo.jpg')}
+                style={{borderRadius: '0% 0% 0% 0%'}}
+                alt="logo"
               />
             </Form.Item>
+            <Space>
+              <div>
+                <Form.Item
+                  label="First name"
+                  name="firstName"
+                  rules={[
+                    {
+                      required: true,
+                      message: 'Please input your first name!',
+                    },
+                  ]}
+                  style={{fontWeight:"bold"}}
+                >
+                  <Input placeholder='Input first name' value={firstName} style={{display:'flex', width:iWidthComponent}}onChange={(e) => setFirstName(e.target.value)}/>
+                </Form.Item>
 
-            <Form.Item
-              label="Email"
-              name="email"
-              rules={[
-                {
-                  required: true,
-                  message: 'Please input your email!',
-                },
-              ]}
-            >
-              <Input style={{display:'flex', width:iWidthComponent}}value={email} onChange={(e) => setEmail(e.target.value)}/>
-            </Form.Item>
+                <Form.Item
+                  label="Surname"
+                  name="surname"
+                  rules={[
+                    {
+                      required: true,
+                      message: 'Please input your surname!',
+                    },
+                  ]}
+                  style={{fontWeight:"bold"}}
+                >
+                  <Input placeholder='Input surname' value={surname} style={{display:'flex', width:iWidthComponent}}onChange={(e) => setSurname(e.target.value)}/>
+                </Form.Item>
 
-            <Form.Item
-              label="Telephone"
-              name="phoneNumber"
-              rules={[
-                {
-                  required: true,
-                  message: 'Please input your phone number!',
-                },
-              ]}
-            >
-              <Input style={{display:'flex', width:iWidthComponent}}value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)}/>
-            </Form.Item>
-            <Form.Item
-              label="Gender"
-              name="gender"
-              rules={[
-                {
-                  required: true,
-                  message: 'Please choose your gender!',
-                },
-              ]}
-            >
-              <Radio.Group onChange={(e) => setSexCode(e.target.value)} value={sexCode}>
-                <Space>
-                  <Radio value={1}>Male</Radio>
-                  <Radio value={2}>Female</Radio>
-                </Space>
-                
-              </Radio.Group>
-            </Form.Item>
-                
-          </div>
-        </Space>
-        
+                <Form.Item
+                  label="Password"
+                  name="password"
+                  rules={[
+                    {
+                      required: true,
+                      message: 'Please input your password!',
+                    },
+                  ]}
+                  style={{fontWeight:"bold"}}
+                >
+                  <Input.Password placeholder='Input password' style={{display:'flex', width:iWidthComponent}}value={password} onChange={(e) => setPassword(e.target.value)}/>
+                </Form.Item>
 
-        <Form.Item
-          wrapperCol={{
-            offset: 8,
-            span: 16,
-          }}
-        >
-          <Space>
-            <Button onClick={fRegister}>
-              Confirm
-            </Button>
-            <Button onClick={goLogin}>
-              Cancel
-            </Button>
-          </Space>
-        </Form.Item>
-      </Form>
+                <Form.Item
+                  label="Confirm again"
+                  name="confirm password"
+                  rules={[
+                    {
+                      required: true,
+                      message: 'Please confirm your password!',
+                    },
+                  ]}
+                  style={{fontWeight:"bold"}}
+                >
+                  <Input.Password placeholder='Input password again' style={{display:'flex', width:iWidthComponent}}value={conPassword} onChange={(e) => setConPassword(e.target.value)}/>
+                </Form.Item>
+              </div>
+              <div>
+                <Form.Item
+                  label="Location"
+                  name="location"
+                  rules={[
+                    {
+                      required: true,
+                      message: 'Please input your location!',
+                    },
+                  ]}
+                  style={{fontWeight:"bold"}}
+                >
+                  <Select
+                    placeholder="Select location"
+                    style={{
+                      width: sWidthComponent,
+                      fontWeight:"normal",
+                    }}
+                    onChange={(e) => setLocation(e)}
+                    options={allLocation}
+                  />
+                </Form.Item>
+
+                <Form.Item
+                  label="Email"
+                  name="email"
+                  rules={[
+                    {
+                      required: true,
+                      message: 'Please input your email!',
+                    },
+                  ]}
+                  style={{fontWeight:"bold"}}
+                >
+                  <Input placeholder='Input email' style={{display:'flex', width:iWidthComponent}}value={email} onChange={(e) => setEmail(e.target.value)}/>
+                </Form.Item>
+
+                <Form.Item
+                  label="Telephone"
+                  name="phoneNumber"
+                  rules={[
+                    {
+                      required: true,
+                      message: 'Please input your phone number!',
+                    },
+                  ]}
+                  style={{fontWeight:"bold"}}
+                >
+                  <Input placeholder='Input phone number' style={{display:'flex', width:iWidthComponent}}value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)}/>
+                </Form.Item>
+                <Form.Item
+                  label="Gender"
+                  name="gender"
+                  rules={[
+                    {
+                      required: true,
+                      message: 'Please choose your gender!',
+                    },
+                  ]}
+                  style={{fontWeight:"bold"}}
+                >
+                  <Radio.Group onChange={(e) => setSexCode(e.target.value)} value={sexCode}>
+                    <Space>
+                      <Radio style={{fontWeight:"normal"}} value={1}>Male</Radio>
+                      <Radio style={{fontWeight:"normal"}} value={2}>Female</Radio>
+                    </Space>
+                  </Radio.Group>
+                </Form.Item>
+              </div>
+            </Space>
+            <Space style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+              <Button onClick={fRegister} style={{backgroundColor: "#C3F3EE", fontWeight:'bold', width: 200}}>
+                Confirm
+              </Button>
+              <Button onClick={goLogin} style={{backgroundColor: "#C3F3EE", fontWeight:'bold', width: 200}}>
+                Cancel
+              </Button>
+            </Space>
+          </Form>
+        </div>
+      </div>
+      
     </div>
   )
 };

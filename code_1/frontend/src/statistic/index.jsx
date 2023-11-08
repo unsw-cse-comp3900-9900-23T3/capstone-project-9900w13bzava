@@ -1,12 +1,13 @@
-import React, { useState, useRef } from 'react';
-import { Button, DatePicker, Space } from 'antd';
+import React, { useState, useRef, useEffect } from 'react';
+import { Button, DatePicker, Space, Checkbox } from 'antd';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts';
 import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
+import './index.css'
 
 dayjs.extend(customParseFormat);
 const { RangePicker } = DatePicker;
-const columWidth = 500;
+const columWidth = 570;
 const columHeight = 400;
 const defaultPreDate = "2023-11-01";
 const defaultLastDate = "2023-11-13";
@@ -25,20 +26,28 @@ function App({ token }) {
   const [selectedRange2, setSelectedRange2] = useState([defaultPreDate, defaultLastDate]);
   const [chartData1, setChartData1] = useState([]);
   const [chartData2, setChartData2] = useState([]);
+  const [isCheckBox, setIsCheckBox] = useState('none');
+  const [allUsersName, setAllUsersName] = useState([])
   const tokenRef = useRef(token);
-
+  const [allID, setAllID] = useState([]); 
 
   async function fGetSpecRangeStatusStatistics() {
-    console.log("select:", selectedRange1, selectedRange1[0])
     const response = await fetch('http://127.0.0.1:5000/GetSpecRangeStatusStatistics', {
       method: 'POST',
       headers: {
         'Content-type': 'application/json',
       },
       body: JSON.stringify({
-        "userid": tokenRef.current,
-        "predate": selectedRange1[0],
-        "lastdate": selectedRange1[1],
+        ...(tokenRef.current !== '0' ? {
+          "userid": tokenRef.current,
+          "predate": selectedRange1[0],
+          "lastdate": selectedRange1[1],
+        } : {
+          "userid": allID,
+          "predate": selectedRange1[0],
+          "lastdate": selectedRange1[1],
+        }
+        )
       })
     });
     const data = await response.json();
@@ -56,16 +65,22 @@ function App({ token }) {
   }
 
   async function fGetSpecRangeAppNumStatistics() {
-    console.log("select:", selectedRange2, selectedRange2[0])
     const response = await fetch('http://127.0.0.1:5000/GetSpecRangeAppNumStatistics', {
       method: 'POST',
       headers: {
         'Content-type': 'application/json',
       },
       body: JSON.stringify({
-        "userid": tokenRef.current,
-        "predate": selectedRange2[0],
-        "lastdate": selectedRange2[1],
+        ...(tokenRef.current !== '0' ? {
+          "userid": tokenRef.current,
+          "predate": selectedRange2[0],
+          "lastdate": selectedRange2[1],
+        } : {
+          "userid": allID,
+          "predate": selectedRange2[0],
+          "lastdate": selectedRange2[1],
+        }
+        )
       })
     });
     const data = await response.json();
@@ -81,72 +96,137 @@ function App({ token }) {
     setChartData2(temp)
   }
 
-  return (
-    <Space>
-      <div>
-        <Space style={{display: "flex", marginLeft: 30}}>
-          <RangePicker
-            style={{display: "flex", width: rangeWidth}}
-            defaultValue={defaultRange1}
-            onChange={(e, dataString) => {
-              setSelectedRange1(dataString);
-            }}
-          />
-          <Button onClick={() => fGetSpecRangeStatusStatistics()}>
-            Status
-          </Button>
-        </Space>
-        <div style={{display: "flex", marginLeft:30}}>
-          Different status's appointments between {selectedRange1[0]} and {selectedRange1[1]}
-        </div>
+  function onAllID(e) {
+    
+    if (e.target.checked) {
+      const temp = allID.map(item => ({ ...item }));
+      temp.push(
+        {'id': e.target.value}
+      )
+      setAllID(temp)
+    } else {
+      const temp = allID.filter(item => item.id !== e.target.value);
+      setAllID(temp)
+    }
+    
+  }
 
-        
-        <BarChart
-          width={columWidth}
-          height={columHeight}
-          data={chartData1}
-          margin={{ top: 20, right: 40, left: -30, bottom: 50}}
-        >
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="status" angle={45} textAnchor="start"
-          />
-          <YAxis />
-          <Tooltip />
-          <Bar dataKey="amount" fill="#8884d8"/>
-        </BarChart>
-      </div>
-      <div>
-        <Space style={{display: "flex", marginLeft: 30}}>
-          <RangePicker
-            style={{display: "flex", width: rangeWidth}}
-            defaultValue={defaultRange2}
-            onChange={(e, dataString) => {
-              setSelectedRange2(dataString);
-            }}
-          />
-          <Button onClick={() => fGetSpecRangeAppNumStatistics()}>
-            Sum
-          </Button>
-        </Space>
-        <div style={{display: "flex", marginLeft:30}}>
-          The sum of appointments between {selectedRange2[0]} and {selectedRange2[1]}
+  useEffect(() => {
+    if (tokenRef.current === '0') {
+      setIsCheckBox('flex')
+    }
+    async function fGetAllUsers() {
+      const response = await fetch('http://127.0.0.1:5000/GetAllUsers', {
+        method: 'POST',
+        headers: {
+          'Content-type': 'application/json',
+        },
+      });
+      const data = await response.json();
+      const temp = data.allUsers.map(item => {
+        return {
+          value: item.userid,
+          label: `${item.firstname} ${item.surname}`,
+        }
+      })
+      temp.sort(function(a, b) {
+        const valueA = a.label.toLowerCase();
+        const valueB = b.label.toLowerCase();
+        return valueA.localeCompare(valueB);
+      });
+      console.log(temp)
+      setAllUsersName(temp)
+    }
+    fGetAllUsers() 
+  }, [])
+
+  return (
+    <div>
+      <Space style={{ display: isCheckBox }} size={[8, 16]} wrap>
+        <div style={{ marginLeft: 30, fontWeight: 'bold', fontSize: 15 }}>
+          Choose users:
         </div>
-        
-        <BarChart
-          width={columWidth}
-          height={columHeight}
-          data={chartData2}
-          margin={{ top: 20, right: 40, left: -30, bottom: 50 }}
-        >
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="date" angle={45} textAnchor="start"/>
-          <YAxis />
-          <Tooltip />
-          <Bar dataKey="amount" fill="#8884d8" />
-        </BarChart>
-        
-      </div>
-    </Space>
+        {allUsersName.map((user, index) => (
+          user.label !== 'administrator ' ? (
+            <Checkbox
+              key={index}
+              value={user.value}
+              style={{
+                display: "flex",
+                fontSize: 15,
+                whiteSpace: 'nowrap'
+              }}
+              onChange={(e) => onAllID(e)}
+            >
+              {user.label}
+            </Checkbox>
+          ) : null
+        ))}
+      </Space>
+      <br/>
+      <Space size='small'>
+        <Space direction='vertical'>
+          <div style={{display: "flex", marginLeft:30, fontWeight: 'bold', fontSize: 15}}>
+            Different status's appointments between {selectedRange1[0]} and {selectedRange1[1]}
+          </div>
+          <Space style={{display: "flex", marginLeft: 30}}>
+            <RangePicker
+              style={{display: "flex", width: rangeWidth}}
+              defaultValue={defaultRange1}
+              onChange={(e, dataString) => {
+                setSelectedRange1(dataString);
+              }}
+            />
+            <Button onClick={() => fGetSpecRangeStatusStatistics()} style={{marginLeft: 140, backgroundColor: "#C3F3EE", fontWeight:'bold', width: 100}}>
+              OK
+            </Button>
+          </Space>
+          <BarChart
+            width={columWidth}
+            height={columHeight}
+            data={chartData1}
+            margin={{ top: 20, right: 40, left: -30, bottom: 50}}
+          >
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="status" angle={45} textAnchor="start"
+            />
+            <YAxis />
+            <Tooltip />
+            <Bar dataKey="amount" fill="#FECD52"/>
+          </BarChart>
+        </Space>
+        <Space direction='vertical'>
+          <div style={{display: "flex", marginLeft:30, fontWeight: 'bold', fontSize: 15}}>
+            The sum of appointments between {selectedRange2[0]} and {selectedRange2[1]}
+          </div>
+          <Space style={{display: "flex", marginLeft: 30}}>
+            <RangePicker
+              style={{display: "flex", width: rangeWidth}}
+              defaultValue={defaultRange2}
+              onChange={(e, dataString) => {
+                setSelectedRange2(dataString);
+              }}
+            />
+            <Button onClick={() => fGetSpecRangeAppNumStatistics()} style={{marginLeft: 140, backgroundColor: "#C3F3EE", fontWeight:'bold', width: 100}}>
+              OK
+            </Button>
+          </Space>
+          <BarChart
+            width={columWidth}
+            height={columHeight}
+            data={chartData2}
+            margin={{ top: 20, right: 40, left: -30, bottom: 50 }}
+          >
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="date" angle={45} textAnchor="start"/>
+            <YAxis />
+            <Tooltip />
+            <Bar dataKey="amount" fill="#FECD52" />
+          </BarChart>
+          
+        </Space>
+      </Space>
+    </div>
   );
 }
 

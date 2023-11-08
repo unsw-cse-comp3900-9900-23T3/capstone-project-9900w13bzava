@@ -8,21 +8,19 @@ import {
 import {
   useNavigate
 } from 'react-router-dom';
-import { Layout, Menu, theme } from 'antd';
-const { Sider, Content } = Layout;
-const heightContent = 600
+import { Layout, Menu } from 'antd';
+import "./index.css";
+const { Header, Content } = Layout;
+const heightContent = 550
 
-function App ( props ) {
-  
-  const {
-    token: { colorBgContainer },
-  } = theme.useToken();
+function App ( props, {token} ) {
   const navigate = useNavigate();
-
+  
   function onMenuChange ({key, keyPath}) {
     console.log(key, keyPath);
     if (key !== "logout") {
       navigate(`/mainpage/${key}`);
+      console.log('xxx', token);
     } else {
       localStorage.clear();
       navigate(`/`);
@@ -30,56 +28,63 @@ function App ( props ) {
   }
 
   return (
-    <div className="background">
+    <div className='mainBackground'>
       <Layout>
-        <Sider trigger={null} width={180}>
-          <div className="demo-logo-vertical" />
+        <Header 
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            width: '1200px',
+            marginLeft: 10,
+            marginRight:10,
+            paddingRight:30,
+            paddingLeft: 30,
+            backgroundColor: 'blue'
+          }}
+          className='mainHeader'
+          >
           <Menu
-            theme="dark"
-            mode="inline"
+            mode='horizontal'
             onClick={onMenuChange}
-            items={[
-              {
-                key: 'appointments',
-                icon: <DatabaseOutlined />,
-                label: 'Appointments',
-              },
-              {
-                key: 'record',
-                icon: <SolutionOutlined />,
-                label: 'Record',
-              },
-              {
-                key: 'statistic',
-                icon: <BarChartOutlined />,
-                label: 'Statistic',
-              },
-              {
-                key: 'logout',
-                icon: <LogoutOutlined />,
-                label: 'Log out',
-              },
-            ]}
-          />
-        </Sider>
+            style={{ width: '1100px', backgroundColor: 'transparent' }}
+            className='mainMenu'
+          >
+            <Menu.Item key='appointments' icon={<DatabaseOutlined />} className='mainFont'>
+              Appointments
+            </Menu.Item>
+            <Menu.Item key='record' icon={<SolutionOutlined />} className='mainFont'>
+              Record
+            </Menu.Item>
+            <Menu.Item key='statistic' icon={<BarChartOutlined />} className='mainFont'>
+              Statistic
+            </Menu.Item>
+            <Menu.Item key='logout' icon={<LogoutOutlined />} className='mainFont'>
+              Log out
+            </Menu.Item>
+          </Menu>
+        </Header>
         <Layout>
           <Content
             style={{
-              margin: 10,
+              marginLeft: 10,
+              marginRight: 10,
+              marginBottom: 10,
               padding: 24,
               height: heightContent,
-              background: colorBgContainer,
+              width: '1200px',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
             }}
-            className='backgroundChild'
+            className='mainContent'
           >
             {props.children}
           </Content>
         </Layout>
       </Layout>
+
     </div>
+    
   );
 };
 export default App;

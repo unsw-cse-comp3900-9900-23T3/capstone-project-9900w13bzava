@@ -4,7 +4,7 @@ import "./index.css"
 
 const hColumns = [
   {
-    title: 'History',
+    title: <div className='recordFillCellTitle' style={{backgroundColor: 'lightgray'}}>History</div>,
     dataIndex: 'history',
     key: 'history',
     align: 'center',
@@ -33,7 +33,7 @@ const hColumns = [
 ];
 const fColumns = [
   {
-    title: 'Future',
+    title: <div className='recordFillCellTitle' style={{backgroundColor: 'lightgray'}}>Future</div>,
     dataIndex: 'future',
     key: 'future',
     align: 'center',
@@ -220,7 +220,6 @@ function App ({ token }) {
   return (
     <div>
       <Space direction="vertical">
-        
         <Select
           showSearch
           placeholder="Select a patient"
@@ -232,8 +231,16 @@ function App ({ token }) {
           style={selectStyle}
         />
         <Space>
-          <Table className="hTable" columns={hColumns} dataSource={dataH} pagination={false} bordered scroll={{y:450}} size="small" onRow={rowClickHandler}/>
-          <Table className='fTable' columns={fColumns} dataSource={dataF} pagination={false} bordered scroll={{y:450}} size="small" onRow={rowClickHandler}/>
+          <Table className="hTable" columns={hColumns} dataSource={dataH} pagination={false} 
+          bordered scroll={{y:380}} size="small" onRow={rowClickHandler}
+          onHeaderRow={() => ({
+            height: 40,
+          })}/>
+          <Table className='fTable' columns={fColumns} dataSource={dataF} pagination={false} 
+          bordered scroll={{y:380}} size="small" onRow={rowClickHandler} 
+          onHeaderRow={() => ({
+            height: 40,
+          })}/>
         </Space>
 
         {selectedRow && (

@@ -608,6 +608,27 @@ def getSpecRangeAppNumStatistics():
   return jsonify({"appNumStatistics": records, "status": True}), 200
 
 
+# JudgePatient
+# 判断病人是否存在
+@app.route('/JudgePatient', methods=['POST'])
+def judgePatient():
+  data = request.get_json()
+  patientfirstname = str(data.get('patientfirstname'))
+  patientsurname = str(data.get('patientsurname'))
+
+  # 查询病人是否存在
+  query = f'''
+  SELECT patientid FROM patients
+  WHERE LOWER(firstname) = LOWER('{patientfirstname}') AND LOWER(surname) = LOWER('{patientsurname}');
+  '''
+  records = operate_database(query, SEARCH)
+  # 判断病人是否已经存在。
+  if records:
+    return jsonify({"message": "Patient Exist!", "status": True}), 200  # 存在
+  else:
+    return jsonify({"message": "Patient Does Not Exist!", "status": False }), 200  # 不存在
+
+
 if __name__ == '__main__':
     app.run(debug=True)
 

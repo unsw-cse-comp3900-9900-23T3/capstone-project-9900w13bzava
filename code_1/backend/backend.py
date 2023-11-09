@@ -152,6 +152,24 @@ def proccess_result_for_ShowPanel(result, dayType):
 # ShowAppt
 @app.route('/ShowPanel', methods=['POST'])
 def ShowPanel():
+  """
+  This is the ShowPane endpoint
+  Call this endpoint to show the panel
+  ---
+  tags:
+    - ShowPanel API
+  parameters:
+    - name: userid
+      in: formData
+      type: string
+      required: true
+    - name: cur_date
+      in: formData
+      type: string
+  responses:
+    200:
+      description: Found the total result
+  """
   data = request.get_json()
   userid = str(data.get('userid'))
   cur_date = str(data.get('date'))  # 当天的日期
@@ -169,15 +187,15 @@ def ShowPanel():
   # make query with id and date
   query1 = get_spec_appointments(userid, cur_date)  # 当天
   query2 = get_spec_appointments(userid, pre_date)  # 前一天
-  query3 = get_spec_appointments(userid, next_date)  # 后一天雪糕呢
+  query3 = get_spec_appointments(userid, next_date)  # 后一天
 
   result1 = operate_database(query1, SEARCH)  # 当天
-  result2 = operate_database(query2, SEARCH)  # 前一天雪糕呢
+  result2 = operate_database(query2, SEARCH)  # 前一天
   result3 = operate_database(query3, SEARCH)  # 后一天
 
-  result1, sum = proccess_result_for_ShowPanel(result1, 1)  # 当天 xuegaone 
+  result1, sum = proccess_result_for_ShowPanel(result1, 1)  # 当天 
   result2, _ = proccess_result_for_ShowPanel(result2, 0)  # 前一天
-  result3, _ = proccess_result_for_ShowPanel(result3, 2)  # 后一天雪糕呢
+  result3, _ = proccess_result_for_ShowPanel(result3, 2)  # 后一天
   
   hours = sum // 60
   mins = sum % 60

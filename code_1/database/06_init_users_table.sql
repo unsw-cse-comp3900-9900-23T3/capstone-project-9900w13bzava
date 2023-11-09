@@ -17,3 +17,5 @@ INSERT INTO users (firstName, surname, password, email, phoneNumber, sexCode, lo
     ('Sha', 'Zhou', 'password3', NULL, '2584202356', 1, 1),
     ('Zhetai', 'Jiang', 'password4', 'z55667788@ad.unsw.edu.au', '21314654811', 1, 1),
     ('Yalin', 'Li', '12345678', 'z2165484@ad.unsw.edu.au', '5454984981', 2, 1);
+INSERT INTO users (userID, firstName, surname, password, email, phoneNumber, sexCode, locationID) VALUES
+	(0, 'administrator', '', 'password', 'adminadmin@ad.unsw.edu.au', '1234567890', 1, 1);  -- 超级用户

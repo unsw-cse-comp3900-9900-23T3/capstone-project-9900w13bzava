@@ -75,7 +75,8 @@ def register():
   confirmPassword = str(data.get('confirmpassword'))
   email = str(data.get('email'))
   phoneNumber = str(data.get('phonenumber')).lower().strip()
-  sexCode = str(data.get('sexcode')).lower().strip()
+  sexCode = int(data.get('sexcode'))
+  locationid = int(data.get('location'))
 
   if password != confirmPassword:
       return jsonify({"message": "Passwords Do Not Match!", "status": False}), 400
@@ -86,8 +87,8 @@ def register():
   if records:
     return jsonify({"message": "User Already Exists!", "status": False}), 400
 
-  query = f'''INSERT INTO users (firstName, surname, password, email, phoneNumber, sexCode) VALUES 
-  ('{firstName}', '{surname}', '{password}', '{email}', '{phoneNumber}', {sexCode});'''
+  query = f'''INSERT INTO users (firstName, surname, password, email, phoneNumber, sexCode, locationid) VALUES 
+  ('{firstName}', '{surname}', '{password}', '{email}', '{phoneNumber}', {sexCode}, {locationid});'''
   
   try:
     # 尝试插入新用户
@@ -564,9 +565,10 @@ def getAllLocation():
 @app.route('/GetSpecRangeStatusStatistics', methods=['POST'])
 def getSpecRangeStatusStatistics():
   data = request.get_json()
+
   predate = str(data.get('predate'))  # 前一个日期
   lastdate = str(data.get('lastdate'))  # 后一个日期
-  userid = int(data.get('userid'))  # userid
+  userids = data.get('userid')  # userid
 
   query = '''select appointmentstatusname from appointmentstatus'''  # 获取所有的status
   records = operate_database(query, SEARCH)
@@ -574,17 +576,19 @@ def getSpecRangeStatusStatistics():
   return_records = []
   # 遍历每个status
   for record in records:
-    appointmentstatusname = record['appointmentstatusname']
-    # print(record['appointmentstatusname'])
-    query = f'''
-    SELECT COUNT(*) AS val
-    FROM appointments as table1
-    INNER JOIN appointmentStatus as table5
-    ON table5.appointmentStatusID = table1.appointmentStatusID 
-    WHERE table5.appointmentStatusName = '{appointmentstatusname}' AND userid = {userid} 
-    AND DATE(starttime) >= '{predate}' AND DATE(starttime) <= '{lastdate}'
-    '''
-    value = operate_database(query, SEARCH)[0]['val']
+    value = 0
+    for userid in userids:
+      appointmentstatusname = record['appointmentstatusname']
+      # print(record['appointmentstatusname'])
+      query = f'''
+      SELECT COUNT(*) AS val
+      FROM appointments as table1
+      INNER JOIN appointmentStatus as table5
+      ON table5.appointmentStatusID = table1.appointmentStatusID 
+      WHERE table5.appointmentStatusName = '{appointmentstatusname}' AND userid = {userid['id']} 
+      AND DATE(starttime) >= '{predate}' AND DATE(starttime) <= '{lastdate}'
+      '''
+      value += operate_database(query, SEARCH)[0]['val']
     return_records.append({"status": appointmentstatusname, "value": value})
 
   print(return_records)
@@ -598,7 +602,7 @@ def getSpecRangeAppNumStatistics():
   data = request.get_json()
   predate = str(data.get('predate'))  # 前一个日期
   lastdate = str(data.get('lastdate'))  # 后一个日期
-  userid = int(data.get('userid'))  # userid
+  userids = data.get('userid')  # userid
 
   # 将日期字符串转换成datetime对象
   predate = datetime.strptime(predate, "%Y-%m-%d")
@@ -615,12 +619,14 @@ def getSpecRangeAppNumStatistics():
 
   records = []  # 用来存最终结果
   for date in date_strings:
-    query = f'''
-    SELECT COUNT(*) as val
-    FROM appointments
-    WHERE userid = {userid} AND DATE(starttime) = '{date}' 
-    '''
-    value = operate_database(query, SEARCH)[0]['val']
+    value = 0
+    for userid in userids:
+      query = f'''
+      SELECT COUNT(*) as val
+      FROM appointments
+      WHERE userid = {userid['id']} AND DATE(starttime) = '{date}' 
+      '''
+      value += operate_database(query, SEARCH)[0]['val']
     records.append({"date": date, "value": value})
 
   return jsonify({"appNumStatistics": records, "status": True}), 200

@@ -26,7 +26,7 @@ function App ({ onSuccess }) {
   }
 
   async function fLogin () {
-    if (firstName.length !== 0 && surname.length !== 0 && password.length !== 0 && location.length !== 0) {
+    if (firstName.length !== 0 && password.length !== 0 && location.length !== 0) {
       const response = await fetch('http://127.0.0.1:5000/login', {
         method: 'POST',
         headers: {

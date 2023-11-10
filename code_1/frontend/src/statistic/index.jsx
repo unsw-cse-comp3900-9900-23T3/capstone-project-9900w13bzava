@@ -39,7 +39,7 @@ function App({ token }) {
       },
       body: JSON.stringify({
         ...(tokenRef.current !== '0' ? {
-          "userid": tokenRef.current,
+          "userid": [{'id': tokenRef.current}],
           "predate": selectedRange1[0],
           "lastdate": selectedRange1[1],
         } : {
@@ -72,7 +72,7 @@ function App({ token }) {
       },
       body: JSON.stringify({
         ...(tokenRef.current !== '0' ? {
-          "userid": tokenRef.current,
+          "userid": [{'id': tokenRef.current}],
           "predate": selectedRange2[0],
           "lastdate": selectedRange2[1],
         } : {

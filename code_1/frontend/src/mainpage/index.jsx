@@ -4,6 +4,7 @@ import {
   DatabaseOutlined,
   SolutionOutlined,
   BarChartOutlined,
+  SettingOutlined,
 } from '@ant-design/icons';
 import {
   useNavigate
@@ -57,6 +58,9 @@ function App ( props, {token} ) {
             </Menu.Item>
             <Menu.Item key='statistic' icon={<BarChartOutlined />} className='mainFont'>
               Statistic
+            </Menu.Item>
+            <Menu.Item key='settings' icon={<SettingOutlined />} className='mainFont'>
+              Settings
             </Menu.Item>
             <Menu.Item key='logout' icon={<LogoutOutlined />} className='mainFont'>
               Log out

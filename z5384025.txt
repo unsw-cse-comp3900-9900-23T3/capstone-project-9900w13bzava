@@ -29,4 +29,15 @@ Following the lecture's advice, I created a mock-up database using PostgreSQL, m
 This database will be used for the development and testing of the website's functionality in the future.
 Several APIs created for add, delete, edit database.
 
+Week8:
+According to the requirements of the frontend, numerous APIs have been added and improved. 
+The APIs for scheduling have been enhanced with additions and modifications, 
+and the APIs for user login and registration have been refined. The API for viewing patient records has also been improved, 
+and some auxiliary APIs have been added.
 
+Week9:
+Following the lecture's advice, statistical functionality has been added, 
+allowing the counting of the number of appointments in different states within a specific time period, 
+as well as the total number of appointments at different days.
+An admin user account has been created, who can access records of all doctors and patients, 
+and view summary data charts.

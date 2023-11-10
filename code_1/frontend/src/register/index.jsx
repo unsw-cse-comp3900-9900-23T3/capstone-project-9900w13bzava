@@ -35,7 +35,7 @@ function App ({ onSuccess }) {
   };
 
   async function fRegister () {
-    var emailPattern = /^[a-zA-Z0-9]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    var emailPattern = /^[a-zA-Z0-9.]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     var phonePattern = /^[0-9]+/;
     if (!emailPattern.test(email)){
       notification.open({

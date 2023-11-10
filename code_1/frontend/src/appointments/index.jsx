@@ -57,6 +57,14 @@ for (let i=0; i<time_.length; i++) {
   });
 }
 
+function transformTime(timeString) {
+  const [hours, minutes] = timeString.split(":").map(Number);
+
+  // 将小时和分钟合并为一个数字
+  const timeInNumber = hours * 100 + minutes;
+  return timeInNumber
+}
+
 function App ({ token, onRecord, defaultDate }) {
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedRecord, setSelectedRecord] = useState(null);
@@ -111,7 +119,7 @@ function App ({ token, onRecord, defaultDate }) {
       },
     },
     {
-      title: <div className='fillCellTitle'>{getDate(date, -1)}</div>,
+      title: <div className='fillCellTitle'>{getDate(date, 1)}</div>,
       key: 'after',
       dataIndex: 'after',
       align: 'center',
@@ -381,7 +389,28 @@ function App ({ token, onRecord, defaultDate }) {
     fGetAllUsers()
   }, [token])
 
-
+  useEffect(() => {
+    async function fGetSettings() {
+      const response = await fetch('http://127.0.0.1:5000/GetSettings', {
+        method: 'POST',
+        headers: {
+          'Content-type': 'application/json',
+        },
+        body: JSON.stringify({
+          "userid": token,
+        })
+      });
+      const data = await response.json();
+      const temp = {
+        rangeStartTime: transformTime(data.settings.timerange.split(' ')[0]),
+        rangeEndTime: transformTime(data.settings.timerange.split(' ')[1]),
+        breakStartTime: transformTime(data.settings.breaktimerange.split(' ')[0]),
+        breakEndTime: transformTime(data.settings.breaktimerange.split(' ')[1]),
+      };
+      console.log("tgetsettings: ", temp)
+    }
+    fGetSettings()
+  }, [token])
   
 
   return (
@@ -389,7 +418,7 @@ function App ({ token, onRecord, defaultDate }) {
       <Space direction="vertical">
         <Space>
           <div style={{fontWeight: 'bold'}}>Choose a date: </div>
-          <DatePicker onChange={onDateChange} defaultValue={dayjs(defaultDate)}/>
+          <DatePicker onChange={onDateChange} defaultValue={dayjs(defaultDate)} allowClear={false}/>
           <div style={{display: isSelect, alignItems:'center'}}>
             <div style={{fontWeight: 'bold', marginLeft: 30}}>Choose a doctor: </div>
             <Select style={{width: 195, marginLeft:10}}onChange={(e) => setDoctorID(e)} placeholder="Select doctor" options={allUsersName}/>

@@ -1,9 +1,8 @@
-import React, { useState, useRef, useEffect, useForm } from 'react';
-import { Button, Form, Input, Select, Checkbox, Space, TimePicker } from 'antd';
+import React, { useState, useRef } from 'react';
+import { Button, Form, Space, TimePicker, notification } from 'antd';
 import './index.css'
 import dayjs from 'dayjs';
 import { QuestionCircleOutlined } from '@ant-design/icons';
-import { useActionData } from 'react-router-dom';
 
 const format = "HH:mm"
 const defaultStartTime = '6:00'
@@ -17,6 +16,8 @@ function App({ token }) {
   const tokenRef = useRef(token);
   const [rangeStartTime, setRangeStartTime] = useState(defaultStartTime);
   const [rangeEndTime, setRangeEndTime] = useState(defaultEndTime);
+  const [breakStartTime, setBreakStartTime] = useState(defaultStartTime);
+  const [breakEndTime, setBreakEndTime] = useState(defaultEndTime);
 
   const [form] = Form.useForm();
 
@@ -31,10 +32,55 @@ function App({ token }) {
     setRangeStartTime(timeString[0])
     setRangeEndTime(timeString[1])
   }
+  function onBreakChange(timeString) {
+    setBreakStartTime(timeString[0])
+    setBreakEndTime(timeString[1])
+    console.log(breakStartTime, breakEndTime)
+  }
 
+  // default setting
   function clearRangeTime() {
     setRangeStartTime(defaultStartTime)
     setRangeEndTime(defaultEndTime)
+  }
+  function clearBreakTime() {
+    setBreakStartTime(dBreakStartTime)
+    setBreakEndTime(dBreakEndTime)
+  }
+
+  async function fEditSettings() {
+    const response = await fetch('http://127.0.0.1:5000/EditSettings', {
+      method: 'POST',
+      headers: {
+        'Content-type': 'application/json',
+      },
+      body: JSON.stringify({
+        "userid": tokenRef.current,
+        "timerange": `${rangeStartTime} ${rangeEndTime}`,
+        "breaktimerange": `${breakStartTime} ${breakEndTime}`
+      })
+    });
+    const data = await response.json();
+    if (data.status) {
+      notification.open({
+        message: 'Success',
+        type: 'success',
+        description: `${data.message}`,
+        onClick: () => {
+          console.log('Notification Clicked!');
+        },
+      });
+    } else {
+      notification.open({
+        message: 'Error',
+        type: 'error',
+        description:
+          `${data.message}`,
+        onClick: () => {
+          console.log('Notification Clicked!');
+        },
+      });
+    }
   }
 
   // useEffect(() => {
@@ -95,7 +141,7 @@ function App({ token }) {
             onChange={(e, timeString) => onRangeChange(timeString)}
             value={[dayjs(rangeStartTime, format), dayjs(rangeEndTime, format)]}
           />
-          <Button style={{marginLeft: 10, backgroundColor: "#C3F3EE", fontWeight:'bold', width: 150}} onClick={clearRangeTime}>Default setting</Button>
+          <Button style={{marginLeft: 10, backgroundColor: "#C3F3EE", fontWeight:'bold', width: 130}} onClick={clearRangeTime}>Default setting</Button>
         </Space>
         
       </Form.Item>
@@ -115,37 +161,24 @@ function App({ token }) {
         ]}
       >
         <Space>
-          <TimePicker.RangePicker defaultValue={[dayjs(defaultStartTime, format), dayjs(defaultEndTime, format)]} format={format} 
+          <TimePicker.RangePicker defaultValue={[dayjs(dBreakStartTime, format), dayjs(dBreakEndTime, format)]} format={format} 
             picker="time"
             minuteStep={15}
             disabledTime={() => ({disabledHours:() => [0,1,2,3,4,5,20,21,22,23]})}
+            onChange={(e, timeString) => onBreakChange(timeString)}
+            value={[dayjs(breakStartTime, format), dayjs(breakEndTime, format)]}
             // onChange={onRange}
           />
-          <Button style={{marginLeft: 10, backgroundColor: "#C3F3EE", fontWeight:'bold', width: 150}} >Default setting</Button>
+          <Button style={{marginLeft: 10, backgroundColor: "#C3F3EE", fontWeight:'bold', width: 130}} onClick={clearBreakTime}>Default setting</Button>
         </Space>
       </Form.Item>
 
-      <Form.Item
-        name="remember"
-        valuePropName="checked"
-        wrapperCol={{
-          offset: 8,
-          span: 16,
-        }}
-      >
-        <Checkbox>Remember me</Checkbox>
-      </Form.Item>
-
-      <Form.Item
-        wrapperCol={{
-          offset: 8,
-          span: 16,
-        }}
-      >
-        <Button type="primary" htmlType="submit">
-          Submit
-        </Button>
-      </Form.Item>
+      <br></br>
+      <div style={{display: 'flex', justifyContent: 'center'}}>
+        <Button style={{marginLeft: 10, backgroundColor: "#C3F3EE", fontWeight:'bold', width: 200}} 
+        onClick={fEditSettings}>OK</Button>
+      </div>
+      
     </Form>
   );
 }

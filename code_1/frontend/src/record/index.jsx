@@ -250,8 +250,11 @@ function App ({ token }) {
   }, [doctorID]);
 
   useEffect(() => {
+    async function fGetSettings() {
 
-  }, [doctorID])
+    }
+    fGetSettings()
+  }, [])
   
   return (
     <div>

@@ -219,7 +219,7 @@ function App ({token, recordID, onDefaultDate}) {
     console.log(patientFirstName, patientSurname, cPatientFirstName, cPatientSurname)
   };
   async function fCreatePatient() {
-    var emailPattern = /^[a-zA-Z0-9]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    var emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     var numberPattern = /^[0-9]+/;
     if (!emailPattern.test(email)){
       notification.open({

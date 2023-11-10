@@ -69,3 +69,8 @@
   align-items:center;
   background-image: url(../components/img/R.jpg);
 }
+
+.disabled-row {
+  pointer-events: none;
+  background-color: #696868; /* 或者其他你想要的禁用行的样式 */
+}

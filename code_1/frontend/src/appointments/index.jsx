@@ -30,6 +30,7 @@ for (let i=0; i<time_.length; i++) {
   dataA.push({
     key: time_[i].toString().padStart(4, '0'),
     time: formatTime(time_[i]),
+    isBreak: false,
     before: '',
     beforeState: '',
     beforeType: '',
@@ -77,6 +78,10 @@ function App ({ token, onRecord, defaultDate }) {
   const [doctorID, setDoctorID] = useState(0);
   const [allUsersName, setAllUsersName] = useState([]);
   const [isSelect, setIsSelect] = useState('none')
+  const [rangeStartTime, setRangeStartTime] = useState('')
+  const [rangeEndTime, setRangeEndTime] = useState('')
+  const [breakStartTime, setBreakStartTime] = useState('')
+  const [breakEndTime, setBreakEndTime] = useState('')
   // const [locationName, setLocationName] = useState("");
   const navigate = useNavigate();
 
@@ -407,11 +412,34 @@ function App ({ token, onRecord, defaultDate }) {
         breakStartTime: transformTime(data.settings.breaktimerange.split(' ')[0]),
         breakEndTime: transformTime(data.settings.breaktimerange.split(' ')[1]),
       };
-      console.log("tgetsettings: ", temp)
+      setRangeEndTime(temp.rangeEndTime)
+      setRangeStartTime(temp.rangeStartTime)
+      setBreakStartTime(temp.breakStartTime)
+      setBreakEndTime(temp.breakEndTime)
     }
     fGetSettings()
   }, [token])
   
+  useEffect(() => {
+    const temp = dataA.map(item => {
+      const itemTime = transformTime(item.time.split(' ')[0]);
+      if (itemTime>=breakStartTime && itemTime<=breakEndTime) {
+        return {
+          ...item,
+          isBreak: true,
+        }
+      } else {
+        return item
+      }
+    }).filter(item => {
+      // 获取当前项的时间
+      const itemTime = transformTime(item.time.split(' ')[0]);
+      // 检查是否在指定的时间范围内
+      return itemTime >= rangeStartTime && itemTime <= rangeEndTime;
+    });
+    console.log("temp",dataA,temp)
+    setDataQ(temp)
+  }, [rangeStartTime, rangeEndTime, breakEndTime, breakStartTime])
 
   return (
     <div>
@@ -451,7 +479,8 @@ function App ({ token, onRecord, defaultDate }) {
         <Table columns={columns} dataSource={dataQ} pagination={false} bordered scroll={{y:380}} size="small"
          onHeaderRow={() => ({
           height: 40,
-        })}/>
+        })}
+        rowClassName={(record) => (record.isBreak ? 'disabled-row' : '')}/>
       </Space>
       <Modal
         title={'Details'}

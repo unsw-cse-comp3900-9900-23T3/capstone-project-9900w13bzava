@@ -144,7 +144,7 @@ function App({ token }) {
     <div>
       <Space style={{ display: isCheckBox }} size={[8, 16]} wrap>
         <div style={{ marginLeft: 30, fontWeight: 'bold', fontSize: 15 }}>
-          Choose users:
+          Choose doctors:
         </div>
         {allUsersName.map((user, index) => (
           user.label !== 'administrator ' ? (

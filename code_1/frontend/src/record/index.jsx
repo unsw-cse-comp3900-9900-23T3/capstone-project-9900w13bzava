@@ -91,6 +91,9 @@ function App ({ token }) {
   const [optionData, setOptionData] = useState([])
   const [selectedRow, setSelectedRow] = useState(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isSelect, setIsSelect] = useState(false);
+  const [doctorID, setDoctorID] = useState(0);
+  const [allUsersName, setAllUsersName] = useState([])
 
   // style
   const selectStyle = {
@@ -98,8 +101,7 @@ function App ({ token }) {
   };
 
   const onChange = (value) => {
-    console.log(`selected ${value}`);
-    async function fPatientRecord() {
+    async function fPatientRecord(e) {
       const response = await fetch('http://127.0.0.1:5000/ShowPatientRecord', {
         method: 'POST',
         headers: {
@@ -107,7 +109,7 @@ function App ({ token }) {
         },
         body: JSON.stringify({
           "patientid": value,
-          "userid": tokenRef,
+          "userid": e,
         })
       });
       const data = await response.json();
@@ -165,7 +167,11 @@ function App ({ token }) {
       setDataH(tempH);
       setDataF(tempF);
     }
-    fPatientRecord();
+    if (tokenRef.current === '0') {
+      fPatientRecord(doctorID);
+    } else {
+      fPatientRecord(tokenRef.current)
+    }
   };
   const onSearch = (value) => {
     console.log('search:', value);
@@ -193,7 +199,7 @@ function App ({ token }) {
   };
 
   useEffect(() => {
-    async function fPatientList() {
+    async function fPatientList(e) {
       try {
         const response = await fetch('http://127.0.0.1:5000/ShowPatientList', {
           method: 'POST',
@@ -201,7 +207,7 @@ function App ({ token }) {
             'Content-type': 'application/json',
           },
           body: JSON.stringify({
-            "userid": tokenRef,
+            "userid": e,
           })
         });
         const data = await response.json();
@@ -214,22 +220,64 @@ function App ({ token }) {
         console.error("Error fetching data: ", error);
       }
     }
-    fPatientList();
-  }, []);
+    
+    if (tokenRef.current === '0') {
+      setIsSelect(true)
+      fPatientList(doctorID);
+    } else {
+      fPatientList(tokenRef.current)
+    }
+    async function fGetAllUsers() {
+      const response = await fetch('http://127.0.0.1:5000/GetAllUsers', {
+        method: 'POST',
+        headers: {
+          'Content-type': 'application/json',
+        },
+      });
+      const data = await response.json();
+      const temp = data.allUsers.map(item => {
+        return {
+          value: item.userid,
+          label: `${item.firstname} ${item.surname}`,
+        }
+      }).filter(item => item.label!== 'administrator ')
+      temp.sort(function(a, b) {
+        const valueA = a.label.toLowerCase();
+        const valueB = b.label.toLowerCase();
+        return valueA.localeCompare(valueB);
+      });
+      console.log(temp)
+      setAllUsersName(temp)
+    }
+    fGetAllUsers()
+  }, [doctorID]);
   
   return (
     <div>
       <Space direction="vertical">
-        <Select
-          showSearch
-          placeholder="Select a patient"
-          optionFilterProp="children"
-          onChange={onChange}
-          onSearch={onSearch}
-          filterOption={filterOption}
-          options={optionData}
-          style={selectStyle}
-        />
+        <Space style={{marginLeft: 10}}>
+          {isSelect && (
+            <Space>
+              <div style={{fontWeight: 'bold'}}>Choose a doctor: </div>
+              <Select style={{width: 195}} onChange={(e) => setDoctorID(e)} placeholder="Select doctor" options={allUsersName}/>
+            </Space>
+          )}
+          <div style={{fontWeight: 'bold', marginLeft: 30}}>
+            Choose a patient:
+          </div>
+          <Select
+            showSearch
+            placeholder="Select a patient"
+            optionFilterProp="children"
+            onChange={onChange}
+            onSearch={onSearch}
+            filterOption={filterOption}
+            options={optionData}
+            style={selectStyle}
+          />
+           
+        </Space>
+        
         <Space>
           <Table className="hTable" columns={hColumns} dataSource={dataH} pagination={false} 
           bordered scroll={{y:380}} size="small" onRow={rowClickHandler}

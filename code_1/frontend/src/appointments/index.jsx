@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Table, Space, Button, Modal, DatePicker, Popover, notification, Typography } from 'antd';
+import { Table, Space, Button, Modal, DatePicker, Popover, notification, Typography, Select } from 'antd';
 import "./index.css"
 import { useState } from 'react';
 import dayjs from 'dayjs';
@@ -66,6 +66,9 @@ function App ({ token, onRecord, defaultDate }) {
   const [description, setDescription] = useState("");
   const [jModal, setJModal] = useState("");
   const [upDelete, setUpDelete] = useState("");
+  const [doctorID, setDoctorID] = useState(0);
+  const [allUsersName, setAllUsersName] = useState([]);
+  const [isSelect, setIsSelect] = useState('none')
   // const [locationName, setLocationName] = useState("");
   const navigate = useNavigate();
 
@@ -220,7 +223,6 @@ function App ({ token, onRecord, defaultDate }) {
   }
 
   useEffect(() => {
-    console.log("sssdataQ")
     const temp = dataA.map(item => ({ ...item }));
     for (let i=0; i < appointments.length; i++ ) {
       for (let j=0; j < dataA.length; j++ ) {
@@ -308,18 +310,17 @@ function App ({ token, onRecord, defaultDate }) {
   }, [appointments, date, upDelete]);
 
   useEffect(() => {
-    async function fDate () {
-        const response = await fetch('http://127.0.0.1:5000/ShowPanel', {
-          method: 'POST',
-          headers: {
-            'Content-type': 'application/json',
-          },
-          body: JSON.stringify({
-            "userid": token,
-            "date": date,
-          })
-        });
-      console.log("sssdate")
+    async function fDate (e) {
+      const response = await fetch('http://127.0.0.1:5000/ShowPanel', {
+        method: 'POST',
+        headers: {
+          'Content-type': 'application/json',
+        },
+        body: JSON.stringify({
+          "userid": e,
+          "date": date,
+        })
+      });
       const data = await response.json();
       const appointments_ = data.appointments.map(appointment => {
         return {
@@ -343,8 +344,45 @@ function App ({ token, onRecord, defaultDate }) {
       handleModalClose();
       console.log("showPanel: ", date, token, appointments_);
     };
-    fDate();
-  }, [date, token, upDelete]);
+    if (token === '0') {
+      fDate(doctorID);
+    } else {
+      fDate(token)
+    }
+  }, [date, token, upDelete, doctorID]);
+
+
+  useEffect(() => {
+    if (token === '0') {
+      setIsSelect('flex')
+    }
+    async function fGetAllUsers() {
+      const response = await fetch('http://127.0.0.1:5000/GetAllUsers', {
+        method: 'POST',
+        headers: {
+          'Content-type': 'application/json',
+        },
+      });
+      const data = await response.json();
+      const temp = data.allUsers.map(item => {
+        return {
+          value: item.userid,
+          label: `${item.firstname} ${item.surname}`,
+        }
+      }).filter(item => item.label!== 'administrator ')
+      temp.sort(function(a, b) {
+        const valueA = a.label.toLowerCase();
+        const valueB = b.label.toLowerCase();
+        return valueA.localeCompare(valueB);
+      });
+      console.log(temp)
+      setAllUsersName(temp)
+    }
+    fGetAllUsers()
+  }, [token])
+
+
+  
 
   return (
     <div>
@@ -352,6 +390,11 @@ function App ({ token, onRecord, defaultDate }) {
         <Space>
           <div style={{fontWeight: 'bold'}}>Choose a date: </div>
           <DatePicker onChange={onDateChange} defaultValue={dayjs(defaultDate)}/>
+          <div style={{display: isSelect, alignItems:'center'}}>
+            <div style={{fontWeight: 'bold', marginLeft: 30}}>Choose a doctor: </div>
+            <Select style={{width: 195, marginLeft:10}}onChange={(e) => setDoctorID(e)} placeholder="Select doctor" options={allUsersName}/>
+          </div>
+          
         </Space>
         <Space>
           <Space direction="vertical">

@@ -40,14 +40,14 @@ function App ( props, {token} ) {
             marginRight:10,
             paddingRight:30,
             paddingLeft: 30,
-            backgroundColor: 'blue'
+            backgroundColor: 'blue',
           }}
           className='mainHeader'
           >
           <Menu
             mode='horizontal'
             onClick={onMenuChange}
-            style={{ width: '1100px', backgroundColor: 'transparent' }}
+            style={{ width: '1100px', backgroundColor: 'transparent'}}
             className='mainMenu'
           >
             <Menu.Item key='appointments' icon={<DatabaseOutlined />} className='mainFont'>
@@ -62,7 +62,7 @@ function App ( props, {token} ) {
             <Menu.Item key='settings' icon={<SettingOutlined />} className='mainFont'>
               Settings
             </Menu.Item>
-            <Menu.Item key='logout' icon={<LogoutOutlined />} className='mainFont'>
+            <Menu.Item key='logout' style={{marginLeft: 500}}icon={<LogoutOutlined />} className='mainFont'>
               Log out
             </Menu.Item>
           </Menu>

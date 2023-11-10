@@ -94,13 +94,10 @@ function App ({ token }) {
   const [isSelect, setIsSelect] = useState(false);
   const [doctorID, setDoctorID] = useState(0);
   const [allUsersName, setAllUsersName] = useState([])
-
-  // style
-  const selectStyle = {
-    minWidth: '100px',
-  };
+  const [patientID, setPatientID] = useState(null)
 
   const onChange = (value) => {
+    setPatientID(value)
     async function fPatientRecord(e) {
       const response = await fetch('http://127.0.0.1:5000/ShowPatientRecord', {
         method: 'POST',
@@ -251,6 +248,10 @@ function App ({ token }) {
     }
     fGetAllUsers()
   }, [doctorID]);
+
+  useEffect(() => {
+
+  }, [doctorID])
   
   return (
     <div>
@@ -259,7 +260,7 @@ function App ({ token }) {
           {isSelect && (
             <Space>
               <div style={{fontWeight: 'bold'}}>Choose a doctor: </div>
-              <Select style={{width: 195}} onChange={(e) => setDoctorID(e)} placeholder="Select doctor" options={allUsersName}/>
+              <Select style={{width: 195}} onChange={(e) => {setDoctorID(e);setPatientID(null)}} placeholder="Select doctor" options={allUsersName}/>
             </Space>
           )}
           <div style={{fontWeight: 'bold', marginLeft: 30}}>
@@ -273,7 +274,8 @@ function App ({ token }) {
             onSearch={onSearch}
             filterOption={filterOption}
             options={optionData}
-            style={selectStyle}
+            value={patientID}
+            style={{width: 195}} 
           />
            
         </Space>

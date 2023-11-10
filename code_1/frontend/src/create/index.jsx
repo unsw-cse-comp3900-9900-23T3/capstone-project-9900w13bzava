@@ -210,18 +210,17 @@ function App ({token, recordID, onDefaultDate}) {
   
   const showModal = () => {
     setCPatientFirstName(patientFirstName);
-    setCPatientSurname(patientSurname);
+    setCPatientSurname(patientSurname)
     pForm.setFieldsValue({
       createPatientFirstName: patientFirstName,
       createPatientSurname: patientSurname,
     });
     setIsModalOpen(true);
-    clearPatient();
+    console.log(patientFirstName, patientSurname, cPatientFirstName, cPatientSurname)
   };
   async function fCreatePatient() {
     var emailPattern = /^[a-zA-Z0-9]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     var numberPattern = /^[0-9]+/;
-    var mNumberPattern = /^[0-9]{8}$/;
     if (!emailPattern.test(email)){
       notification.open({
         message: 'Error',
@@ -233,7 +232,18 @@ function App ({token, recordID, onDefaultDate}) {
           console.log('Notification Clicked!');
         },
       });
-    } else if (!numberPattern.test(phoneNumber) || !mNumberPattern.test(medicareNo)) {
+    } else if (!numberPattern.test(phoneNumber)) {
+      notification.open({
+        message: 'Error',
+        type: 'error',
+        description:
+        // error message
+          `The format of the phone number!`,
+        onClick: () => {
+          console.log('Notification Clicked!');
+        },
+      });
+    } else if (!numberPattern.test(medicareNo)&&medicareNo!=='') {
       notification.open({
         message: 'Error',
         type: 'error',
@@ -245,7 +255,7 @@ function App ({token, recordID, onDefaultDate}) {
         },
       });
     } else if ( email !== '' && cPatientFirstName!== '' && cPatientSurname !== ''
-     && sexCode !== 0 && phoneNumber !== '' && medicareNo !== '') {
+     && sexCode !== 0 && phoneNumber !== '') {
       const response = await fetch('http://127.0.0.1:5000/CreatePatient', {
         method: 'POST',
         headers: {
@@ -324,8 +334,6 @@ function App ({token, recordID, onDefaultDate}) {
       medicareNo: '',
     });
   }
-
-
 
   useEffect(() => {
     async function fGetAllAppointmentTypes() {
@@ -487,7 +495,7 @@ function App ({token, recordID, onDefaultDate}) {
               </div>
             </Space>
           </Form>
-        </Modal>
+      </Modal>
       <Form
         form={form}
         name="basic"

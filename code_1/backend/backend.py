@@ -211,8 +211,7 @@ def ShowPanel():
 @app.route('/ShowPatientList', methods=['POST'])
 def ShowPatientList():
   data = request.get_json()
-  userid = str(data.get('userid').get('current'))
-
+  userid = str(data.get('userid'))
   query=f'''SELECT DISTINCT table2.firstname as firstname, table2.surname as surname, table1.patientID as patientID 
   FROM appointments as table1
   inner join patients as table2 on table2.patientID = table1.patientID
@@ -226,7 +225,7 @@ def ShowPatientList():
 @app.route('/ShowPatientRecord', methods=['POST'])
 def ShowPatientRecord():
   data = request.get_json()
-  userid = str(data.get('userid').get('current'))
+  userid = str(data.get('userid'))
   patientID = str(data.get('patientid'))
   # print(userid, patientID)
   base_query = '''
@@ -577,6 +576,7 @@ def getSpecRangeStatusStatistics():
   # 遍历每个status
   for record in records:
     value = 0
+    appointmentstatusname = ''
     for userid in userids:
       appointmentstatusname = record['appointmentstatusname']
       # print(record['appointmentstatusname'])
@@ -589,9 +589,9 @@ def getSpecRangeStatusStatistics():
       AND DATE(starttime) >= '{predate}' AND DATE(starttime) <= '{lastdate}'
       '''
       value += operate_database(query, SEARCH)[0]['val']
-    return_records.append({"status": appointmentstatusname, "value": value})
+    if(appointmentstatusname):
+      return_records.append({"status": appointmentstatusname, "value": value})
 
-  print(return_records)
   return jsonify({"statusStatistics": return_records, "status": True}), 200
 
 

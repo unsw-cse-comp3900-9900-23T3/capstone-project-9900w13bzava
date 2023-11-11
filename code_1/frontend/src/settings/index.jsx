@@ -16,8 +16,8 @@ function App({ token }) {
   const tokenRef = useRef(token);
   const [rangeStartTime, setRangeStartTime] = useState(defaultStartTime);
   const [rangeEndTime, setRangeEndTime] = useState(defaultEndTime);
-  const [breakStartTime, setBreakStartTime] = useState(defaultStartTime);
-  const [breakEndTime, setBreakEndTime] = useState(defaultEndTime);
+  const [breakStartTime, setBreakStartTime] = useState(dBreakStartTime);
+  const [breakEndTime, setBreakEndTime] = useState(dBreakEndTime);
 
   const [form] = Form.useForm();
 

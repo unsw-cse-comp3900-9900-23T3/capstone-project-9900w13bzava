@@ -415,10 +415,11 @@ function App ({ token, onRecord, defaultDate }) {
           breakEndTime: transformTime(item.breaktimerange.split(' ')[1]),
         }
       })
-      setRangeEndTime(temp.rangeEndTime)
-      setRangeStartTime(temp.rangeStartTime)
-      setBreakStartTime(temp.breakStartTime)
-      setBreakEndTime(temp.breakEndTime)
+      console.log("xxx", temp)
+      setRangeEndTime(temp[0].rangeEndTime)
+      setRangeStartTime(temp[0].rangeStartTime)
+      setBreakStartTime(temp[0].breakStartTime)
+      setBreakEndTime(temp[0].breakEndTime)
     }
     fGetSettings()
   }, [token])

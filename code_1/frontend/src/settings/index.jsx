@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Button, Form, Space, TimePicker, notification } from 'antd';
 import './index.css'
 import dayjs from 'dayjs';
@@ -82,6 +82,34 @@ function App({ token }) {
       });
     }
   }
+
+  useEffect(() => {
+    async function fGetSettings() {
+      const response = await fetch('http://127.0.0.1:5000/GetSettings', {
+        method: 'POST',
+        headers: {
+          'Content-type': 'application/json',
+        },
+        body: JSON.stringify({
+          "userid": tokenRef.current,
+        })
+      });
+      const data = await response.json();
+      const temp = data.settings.map(item => {
+        return {
+          rangeStartTime: item.timerange.split(' ')[0],
+          rangeEndTime: item.timerange.split(' ')[1],
+          breakStartTime: item.breaktimerange.split(' ')[0],
+          breakEndTime: item.breaktimerange.split(' ')[1],
+        }
+      })
+      setRangeEndTime(temp[0].rangeEndTime)
+      setRangeStartTime(temp[0].rangeStartTime)
+      setBreakStartTime(temp[0].breakStartTime)
+      setBreakEndTime(temp[0].breakEndTime)
+    }
+    fGetSettings()
+  }, [])
 
   // useEffect(() => {
   //   if (tokenRef.current === '0') {

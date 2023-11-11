@@ -1,15 +1,12 @@
 from flask import Flask, jsonify, request
 from flasgger import Swagger
 from flask_cors import CORS
-from ConnectDatabase_v2 import operate_database
+from ConnectDatabase_v2 import operate_database, SEARCH, ADD_DELETE_UPDATE
 from datetime import datetime, timedelta
 
 app = Flask(__name__)
 swagger = Swagger(app)
 CORS(app)
-
-SEARCH = 1
-ADD_DELETE_UPDATE = 2
 
 # Login
 @app.route('/login', methods=['POST'])

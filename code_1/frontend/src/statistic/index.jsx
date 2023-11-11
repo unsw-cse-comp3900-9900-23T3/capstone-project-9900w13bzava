@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Button, DatePicker, Space, Checkbox } from 'antd';
+import { Button, DatePicker, Space, Checkbox, notification } from 'antd';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts';
 import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
@@ -32,35 +32,49 @@ function App({ token }) {
   const [allID, setAllID] = useState([]); 
 
   async function fGetSpecRangeStatusStatistics() {
-    const response = await fetch('http://127.0.0.1:5000/GetSpecRangeStatusStatistics', {
-      method: 'POST',
-      headers: {
-        'Content-type': 'application/json',
-      },
-      body: JSON.stringify({
-        ...(tokenRef.current !== '0' ? {
-          "userid": [{'id': tokenRef.current}],
-          "predate": selectedRange1[0],
-          "lastdate": selectedRange1[1],
-        } : {
-          "userid": allID,
-          "predate": selectedRange1[0],
-          "lastdate": selectedRange1[1],
-        }
-        )
-      })
-    });
-    const data = await response.json();
-    const temp = data.statusStatistics.map(item => {
-      if (item.value !== 0) {
-        return {
-          status: item.status,
-          amount: item.value,
-        }
-      };
-      return null;
-    }).filter(item => item !== null)
-    setChartData1(temp)
+    if (allID.length === 0 && tokenRef.current === '0') {
+      notification.open({
+        message: 'Error',
+        type: 'error',
+        description:
+        // error message
+            `Please choose a doctor at least`,
+        onClick: () => {
+          console.log('Notification Clicked!');
+        },
+      });
+    } else {
+      const response = await fetch('http://127.0.0.1:5000/GetSpecRangeStatusStatistics', {
+        method: 'POST',
+        headers: {
+          'Content-type': 'application/json',
+        },
+        body: JSON.stringify({
+          ...(tokenRef.current !== '0' ? {
+            "userid": [{'id': tokenRef.current}],
+            "predate": selectedRange1[0],
+            "lastdate": selectedRange1[1],
+          } : {
+            "userid": allID,
+            "predate": selectedRange1[0],
+            "lastdate": selectedRange1[1],
+          }
+          )
+        })
+      });
+      const data = await response.json();
+      const temp = data.statusStatistics.map(item => {
+        if (item.value !== 0) {
+          return {
+            status: item.status,
+            amount: item.value,
+          }
+        };
+        return null;
+      }).filter(item => item !== null)
+      setChartData1(temp)
+    }
+    
     
   }
 

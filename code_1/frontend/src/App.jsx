@@ -16,9 +16,12 @@ import Statistic from './statistic';
 import Settings from './settings';
 
 function App() {
+  const dayjs = require('dayjs');
+// 获取当前日期并格式化
+  const today = dayjs().format('YYYY-MM-DD');
   const [token, setToken] = React.useState(null);
   const [recordID, setRecordID] = React.useState(0);
-  const [defaultDate, setDefaultDate] = React.useState("2023-11-01");
+  const [defaultDate, setDefaultDate] = React.useState(today);
   
   function manageTokenSet (token) {
     setToken(token);

@@ -191,7 +191,6 @@ function App ({ token, onRecord, defaultDate }) {
     console.log("edit route: ", e);
     onRecord(e)
   }
-
   function onCreate (e, rSD, rST) {
     navigate(`/mainpage/create/${rSD}/${rST}`);
     console.log("edit route: ", e);

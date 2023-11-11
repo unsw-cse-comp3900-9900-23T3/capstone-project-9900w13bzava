@@ -17,7 +17,6 @@ import Settings from './settings';
 
 function App() {
   const dayjs = require('dayjs');
-// 获取当前日期并格式化
   const today = dayjs().format('YYYY-MM-DD');
   const [token, setToken] = React.useState(null);
   const [recordID, setRecordID] = React.useState(0);

@@ -1,4 +1,5 @@
 -- 先根据构建的顺序，反向删除
+DROP TABLE IF EXISTS settings CASCADE;
 DROP TABLE IF EXISTS appointments CASCADE;
 DROP TABLE IF EXISTS locations CASCADE;
 DROP TABLE IF EXISTS users CASCADE;
@@ -84,8 +85,7 @@ CREATE TABLE locations (
 
 INSERT INTO locations (locationID, locationName) VALUES (0, 'online');
 INSERT INTO locations (locationName) VALUES ('Main Surgery');
-INSERT INTO locations (locationName) VALUES ('Secondary Surgery');
-INSERT INTO locations (locationName) VALUES ('UNSW');
+
 
 -- 初始化 patients 表
 -- 这个表主要存储了 patients 的信息
@@ -163,3 +163,21 @@ INSERT INTO appointments (appointmentDate, duration, startTime, userID, patientI
     ('2023-11-02 13:00:00', 10, '2023-11-02 13:00:00', 5, 4, 11, 0, 2, 'ask Dr.haodong for advice'),   -- Yalin Li为Bob Zhang安排了一个手术预约
     ('2022-09-27 09:00:00', 10, '2022-10-27 09:00:00', 1, 2, 2, 1, 7, 'completed')  -- 一年前的一次线下预约
 ;
+
+
+-- 创建 setting 表格
+CREATE TABLE IF NOT EXISTS settings (
+    settingID SERIAL PRIMARY KEY,
+    userID INT NOT NULL REFERENCES users(userID),  -- 1 表示male, 2表示female，不能出现其他数字
+    timerange VARCHAR(15) NOT NULL,
+    breaktimerange VARCHAR(15) NOT NULL
+);
+
+-- 先把每个用户都设置为默认设置
+INSERT INTO settings (userID, timerange, breaktimerange) VALUES
+    (0, '6:00 18:00', '12:00 12:00'),
+    (1, '6:00 18:00', '12:00 12:00'),
+    (2, '6:00 18:00', '12:00 12:00'),
+    (3, '6:00 18:00', '12:00 12:00'),
+    (4, '6:00 18:00', '12:00 12:00'),
+    (5, '6:00 18:00', '12:00 12:00');

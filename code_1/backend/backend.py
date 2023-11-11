@@ -93,6 +93,16 @@ def register():
   except Exception as _:
     return jsonify({"message": f"Insert Error, Wrong Input", "status": False}), 400  # 不确定500状态码是什么
   
+  # 插入新用户后，要在setting表中新增数据：
+  query = f"SELECT userid from users where LOWER(firstName) = '{firstName}' and LOWER(surname) = '{surname}'"
+  userid = operate_database(query, SEARCH)[0]['userid']
+  # 插入默认的setting
+  query = f'''
+  INSERT INTO settings (userID, timerange, breaktimerange) VALUES
+    ({userid}, '6:00 18:00', '12:00 12:00');
+  '''
+  operate_database(query, ADD_DELETE_UPDATE)  # 为当前user新增setting记录
+
   return jsonify({"message": "Registration successful!", "status": True}), 200
 
 
@@ -651,18 +661,38 @@ def judgePatient():
 @app.route('/EditSettings', methods=['POST'])
 def editSettings ():
   data = request.get_json()
-  # print("editSettings : ", data)
-  return jsonify({"message": "自己想", "status": True}), 200
+  print(data)
+  userid = int(data.get('userid'))
+  timerange = str(data.get('timerange'))
+  breaktimerange = str(data.get('breaktimerange'))
+
+  query = f'''
+  UPDATE settings
+  SET
+    timerange = '{timerange}',
+    breaktimerange = '{breaktimerange}'
+  WHERE
+    userID = {userid};
+  '''
+  try:
+    operate_database(query, ADD_DELETE_UPDATE)
+  except Exception as _:
+    return jsonify({"message": f"Edit Error, Please check userid", "status": False}), 400 
+  # 成功
+  return jsonify({"message": f"Setting Changed!", "status": True}), 200
+
 
 @app.route('/GetSettings', methods=['POST'])
 def getSettings ():
   data = request.get_json()
-  # print("getSettings : ", data)
+  userid = int(data.get('userid'))
+  query = f'''
+  SELECT * FROM settings WHERE userid = {userid}
+  '''
 
-  return jsonify({"settings": {
-  "timerange": "07:00 17:00",
-  "breaktimerange": "12:00 13:00",
-  }, "status": True}), 200
+  records = operate_database(query, SEARCH)
+
+  return jsonify({"settings": records, "status": True}), 200
 
 
 if __name__ == '__main__':

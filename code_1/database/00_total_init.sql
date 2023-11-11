@@ -109,8 +109,6 @@ INSERT INTO patients (firstName, surname, medicareNo, email, phoneNumber, sexCod
 ('Charlie', 'Liu', NULL, 'charlie.liu@example.com', '3344556677', 1);
 
 
-
-
 -- 创建 users 表格
 CREATE TABLE IF NOT EXISTS users (
     userID SERIAL PRIMARY KEY,

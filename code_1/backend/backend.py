@@ -205,7 +205,6 @@ def ShowPanel():
   My expected workload duration is {hours} hour(s) {mins} minute(s).'''
   
   total_result = result1 + result2 + result3
-  print(result1)
   return jsonify({"appointments": total_result, "description": stat}), 200
 
 
@@ -262,8 +261,6 @@ def ShowPatientRecord():
   history = operate_database(query1, SEARCH)
   future = operate_database(query2, SEARCH)
 
-  print(history)
-  print(future)
   return jsonify({'history':history, 'future':future}), 200
 
 
@@ -657,13 +654,13 @@ def judgePatient():
 @app.route('/EditSettings', methods=['POST'])
 def editSettings ():
   data = request.get_json()
-  print("editSettings : ", data)
+  # print("editSettings : ", data)
   return jsonify({"message": "自己想", "status": True}), 200
 
 @app.route('/GetSettings', methods=['POST'])
 def getSettings ():
   data = request.get_json()
-  print("getSettings : ", data)
+  # print("getSettings : ", data)
 
   return jsonify({"settings": {
   "timerange": "07:00 17:00",

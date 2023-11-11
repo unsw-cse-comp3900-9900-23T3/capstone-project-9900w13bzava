@@ -67,19 +67,19 @@ def operate_database(query, operation):
 #         return []
 
 
-# 执行函数会初始化数据库
-def init_database():
-    # 构建SQL文件的相对路径
-    file_dir = os.path.dirname(__file__)  # 获取当前Python脚本的目录
-    sql_file_path = os.path.join(file_dir, '../database/00_total_init.sql')
+# # 执行函数会初始化数据库
+# def init_database():
+#     # 构建SQL文件的相对路径
+#     file_dir = os.path.dirname(__file__)  # 获取当前Python脚本的目录
+#     sql_file_path = os.path.join(file_dir, '../database/00_total_init.sql')
 
-    # 用只读模式打开SQL文件
-    with open(sql_file_path, 'r', encoding='utf-8') as file:
-        # 读取文件内容到字符串
-        sql_query = file.read()
+#     # 用只读模式打开SQL文件
+#     with open(sql_file_path, 'r', encoding='utf-8') as file:
+#         # 读取文件内容到字符串
+#         sql_query = file.read()
 
-    # 现在，sql_query 
-    operate_database(sql_query, 2)
+#     # 现在，sql_query 
+#     operate_database(sql_query, 2)
 
 
 # 获取所有用户数据

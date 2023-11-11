@@ -72,5 +72,5 @@
 
 .disabled-row {
   pointer-events: none;
-  background-color: #696868; /* 或者其他你想要的禁用行的样式 */
+  background-color: gray; /* 或者其他你想要的禁用行的样式 */
 }

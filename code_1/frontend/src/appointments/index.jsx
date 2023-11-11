@@ -415,7 +415,6 @@ function App ({ token, onRecord, defaultDate }) {
           breakEndTime: transformTime(item.breaktimerange.split(' ')[1]),
         }
       })
-      console.log("xxx", temp)
       setRangeEndTime(temp[0].rangeEndTime)
       setRangeStartTime(temp[0].rangeStartTime)
       setBreakStartTime(temp[0].breakStartTime)
@@ -429,7 +428,7 @@ function App ({ token, onRecord, defaultDate }) {
     if (prevDataQRef.current !== dataQ) {
       const temp = dataQ.map(item => {
         const itemTime = transformTime(item.time.split(' ')[0]);
-        if (itemTime >= breakStartTime && itemTime <= breakEndTime) {
+        if (itemTime >= breakStartTime && itemTime < breakEndTime) {
           return {
             ...item,
             isBreak: true,
@@ -439,7 +438,7 @@ function App ({ token, onRecord, defaultDate }) {
         }
       }).filter(item => {
         const itemTime = transformTime(item.time.split(' ')[0]);
-        return itemTime >= rangeStartTime && itemTime <= rangeEndTime;
+        return itemTime >= rangeStartTime && itemTime < rangeEndTime;
       });
       console.log("temp", dataA, temp);
       setDataQ(temp);

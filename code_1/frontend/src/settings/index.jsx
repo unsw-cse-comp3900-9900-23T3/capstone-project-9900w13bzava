@@ -18,7 +18,7 @@ function App({ token }) {
   const [rangeEndTime, setRangeEndTime] = useState(defaultEndTime);
   const [breakStartTime, setBreakStartTime] = useState(dBreakStartTime);
   const [breakEndTime, setBreakEndTime] = useState(dBreakEndTime);
-
+  const [isAdmin, setIsAdmin] = useState(false);
   const [form] = Form.useForm();
 
   const onFinish = (values) => {
@@ -108,6 +108,9 @@ function App({ token }) {
       setBreakStartTime(temp[0].breakStartTime)
       setBreakEndTime(temp[0].breakEndTime)
     }
+    if (tokenRef.current === '0') {
+      setIsAdmin(true)
+    }
     fGetSettings()
   }, [])
 
@@ -147,32 +150,37 @@ function App({ token }) {
       onFinish={onFinish}
       onFinishFailed={onFinishFailed}
     >
-      <Form.Item
-        label={
-          <div style={{display: "flex"}}>
-            <div>Time range</div>
-            <QuestionCircleOutlined style={{marginLeft: 2}}/>
-          </div>
-        }
-        name="timeRange"
-        rules={[
-          {
-            required: false,
-          },
-        ]}
-      >
-        <Space>
-          <TimePicker.RangePicker defaultValue={[dayjs(defaultStartTime, format), dayjs(defaultEndTime, format)]} format={format} 
-            picker="time"
-            minuteStep={15}
-            disabledTime={() => ({disabledHours:() => [0,1,2,3,4,5,20,21,22,23]})}
-            onChange={(e, timeString) => onRangeChange(timeString)}
-            value={[dayjs(rangeStartTime, format), dayjs(rangeEndTime, format)]}
-          />
-          <Button style={{marginLeft: 10, backgroundColor: "#C3F3EE", fontWeight:'bold', width: 130}} onClick={clearRangeTime}>Default setting</Button>
-        </Space>
-        
-      </Form.Item>
+      {
+        isAdmin && (
+          <Form.Item
+            label={
+              <div style={{display: "flex"}}>
+                <div>Time range</div>
+                <QuestionCircleOutlined style={{marginLeft: 2}}/>
+              </div>
+            }
+            name="timeRange"
+            rules={[
+              {
+                required: false,
+              },
+            ]}
+          >
+            <Space>
+              <TimePicker.RangePicker defaultValue={[dayjs(defaultStartTime, format), dayjs(defaultEndTime, format)]} format={format} 
+                picker="time"
+                minuteStep={15}
+                disabledTime={() => ({disabledHours:() => [0,1,2,3,4,5,20,21,22,23]})}
+                onChange={(e, timeString) => onRangeChange(timeString)}
+                value={[dayjs(rangeStartTime, format), dayjs(rangeEndTime, format)]}
+              />
+              <Button style={{marginLeft: 10, backgroundColor: "#C3F3EE", fontWeight:'bold', width: 130}} onClick={clearRangeTime}>Default setting</Button>
+            </Space>
+            
+          </Form.Item>
+        )
+      }
+      
       
       <Form.Item
         label={

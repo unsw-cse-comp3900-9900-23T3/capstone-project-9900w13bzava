@@ -248,13 +248,6 @@ function App ({ token }) {
     }
     fGetAllUsers()
   }, [doctorID]);
-
-  useEffect(() => {
-    async function fGetSettings() {
-
-    }
-    fGetSettings()
-  }, [])
   
   return (
     <div>

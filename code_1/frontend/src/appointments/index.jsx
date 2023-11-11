@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Table, Space, Button, Modal, DatePicker, Popover, notification, Typography, Select } from 'antd';
 import "./index.css"
 import { useState } from 'react';
@@ -82,6 +82,7 @@ function App ({ token, onRecord, defaultDate }) {
   const [rangeEndTime, setRangeEndTime] = useState('')
   const [breakStartTime, setBreakStartTime] = useState('')
   const [breakEndTime, setBreakEndTime] = useState('')
+  const prevDataQRef = useRef(dataQ);
   // const [locationName, setLocationName] = useState("");
   const navigate = useNavigate();
 
@@ -406,12 +407,14 @@ function App ({ token, onRecord, defaultDate }) {
         })
       });
       const data = await response.json();
-      const temp = {
-        rangeStartTime: transformTime(data.settings.timerange.split(' ')[0]),
-        rangeEndTime: transformTime(data.settings.timerange.split(' ')[1]),
-        breakStartTime: transformTime(data.settings.breaktimerange.split(' ')[0]),
-        breakEndTime: transformTime(data.settings.breaktimerange.split(' ')[1]),
-      };
+      const temp = data.settings.map(item => {
+        return {
+          rangeStartTime: transformTime(item.timerange.split(' ')[0]),
+          rangeEndTime: transformTime(item.timerange.split(' ')[1]),
+          breakStartTime: transformTime(item.breaktimerange.split(' ')[0]),
+          breakEndTime: transformTime(item.breaktimerange.split(' ')[1]),
+        }
+      })
       setRangeEndTime(temp.rangeEndTime)
       setRangeStartTime(temp.rangeStartTime)
       setBreakStartTime(temp.breakStartTime)
@@ -419,27 +422,31 @@ function App ({ token, onRecord, defaultDate }) {
     }
     fGetSettings()
   }, [token])
-  
+
   useEffect(() => {
-    const temp = dataQ.map(item => {
-      const itemTime = transformTime(item.time.split(' ')[0]);
-      if (itemTime>=breakStartTime && itemTime<=breakEndTime) {
-        return {
-          ...item,
-          isBreak: true,
+    // 判断当前 dataQ 和前一个 dataQ 是否相同，如果相同则不执行
+    if (prevDataQRef.current !== dataQ) {
+      const temp = dataQ.map(item => {
+        const itemTime = transformTime(item.time.split(' ')[0]);
+        if (itemTime >= breakStartTime && itemTime <= breakEndTime) {
+          return {
+            ...item,
+            isBreak: true,
+          };
+        } else {
+          return item;
         }
-      } else {
-        return item
-      }
-    }).filter(item => {
-      // 获取当前项的时间
-      const itemTime = transformTime(item.time.split(' ')[0]);
-      // 检查是否在指定的时间范围内
-      return itemTime >= rangeStartTime && itemTime <= rangeEndTime;
-    });
-    console.log("temp",dataA,temp)
-    setDataQ(temp)
-  }, [rangeStartTime, rangeEndTime, breakEndTime, breakStartTime])
+      }).filter(item => {
+        const itemTime = transformTime(item.time.split(' ')[0]);
+        return itemTime >= rangeStartTime && itemTime <= rangeEndTime;
+      });
+      console.log("temp", dataA, temp);
+      setDataQ(temp);
+      
+      // 更新 prevDataQRef 的值
+      prevDataQRef.current = temp;
+    }
+  }, [rangeStartTime, rangeEndTime, breakEndTime, breakStartTime, dataQ]); // 添加 dataQ 到依赖数组
 
   return (
     <div>

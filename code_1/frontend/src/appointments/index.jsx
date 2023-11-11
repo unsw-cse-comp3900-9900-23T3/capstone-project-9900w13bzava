@@ -411,16 +411,33 @@ function App ({ token, onRecord, defaultDate }) {
         return {
           rangeStartTime: transformTime(item.timerange.split(' ')[0]),
           rangeEndTime: transformTime(item.timerange.split(' ')[1]),
-          breakStartTime: transformTime(item.breaktimerange.split(' ')[0]),
-          breakEndTime: transformTime(item.breaktimerange.split(' ')[1]),
         }
       })
       setRangeEndTime(temp[0].rangeEndTime)
       setRangeStartTime(temp[0].rangeStartTime)
+    }
+    fGetSettings()
+    async function fGetSettingsA() {
+      const response = await fetch('http://127.0.0.1:5000/GetSettings', {
+        method: 'POST',
+        headers: {
+          'Content-type': 'application/json',
+        },
+        body: JSON.stringify({
+          "userid": '0',
+        })
+      });
+      const data = await response.json();
+      const temp = data.settings.map(item => {
+        return {
+          breakStartTime: transformTime(item.breaktimerange.split(' ')[0]),
+          breakEndTime: transformTime(item.breaktimerange.split(' ')[1]),
+        }
+      })
       setBreakStartTime(temp[0].breakStartTime)
       setBreakEndTime(temp[0].breakEndTime)
     }
-    fGetSettings()
+    fGetSettingsA()
   }, [token])
 
   useEffect(() => {

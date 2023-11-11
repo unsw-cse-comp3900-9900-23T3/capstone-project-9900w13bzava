@@ -104,7 +104,7 @@ function App ({ token, onRecord, defaultDate }) {
           onClick={() =>{ handleCellClick(record);setJModal('0') }}>{text} -{record.beforeNote}</div>;
         } else {
           return <Button onClick={() => {onCreate(record.bRecordID, getDate(date, -1), record.time)}} shape="default" style={{position:"absolute",top:0,bottom:0,left:0,right:0, 
-          display:"flex", height: "100%", width:"100%", borderRadius: "0"}}></Button>;
+          display:"flex", height: "100%", width:"100%", borderRadius: "0", backgroundColor: record.isBreak ? 'gray' : ''}}></Button>;
         }
       },
     },
@@ -119,7 +119,7 @@ function App ({ token, onRecord, defaultDate }) {
           onClick={() =>{ handleCellClick(record);setJModal('1') }}>{text} -{record.dateNote}</div>;
         } else {
           return <Button onClick={() => {onCreate(record.dRecordID, getDate(date, 0), record.time)}} shape="default" style={{position:"absolute",top:0,bottom:0,left:0,right:0, 
-          display:"flex", height: "100%", width:"100%", borderRadius: "0"}}></Button>;
+          display:"flex", height: "100%", width:"100%", borderRadius: "0", backgroundColor: record.isBreak ? 'gray' : ''}}></Button>;
         }
       },
     },
@@ -134,7 +134,7 @@ function App ({ token, onRecord, defaultDate }) {
           onClick={() =>{ handleCellClick(record);setJModal('2') }}>{text} -{record.afterNote}</div>;
         } else {
           return <Button onClick={() => {onCreate(record.aRecordID, getDate(date, 1), record.time)}} shape="default" style={{position:"absolute",top:0,bottom:0,left:0,right:0, 
-          display:"flex", height: "100%", width:"100%", borderRadius: "0"}}></Button>;
+          display:"flex", height: "100%", width:"100%", borderRadius: "0", backgroundColor: record.isBreak ? 'gray' : ''}}></Button>;
         }
       },
     },
@@ -421,7 +421,7 @@ function App ({ token, onRecord, defaultDate }) {
   }, [token])
   
   useEffect(() => {
-    const temp = dataA.map(item => {
+    const temp = dataQ.map(item => {
       const itemTime = transformTime(item.time.split(' ')[0]);
       if (itemTime>=breakStartTime && itemTime<=breakEndTime) {
         return {
@@ -451,7 +451,6 @@ function App ({ token, onRecord, defaultDate }) {
             <div style={{fontWeight: 'bold', marginLeft: 30}}>Choose a doctor: </div>
             <Select style={{width: 195, marginLeft:10}}onChange={(e) => setDoctorID(e)} placeholder="Select doctor" options={allUsersName}/>
           </div>
-          
         </Space>
         <Space>
           <Space direction="vertical">

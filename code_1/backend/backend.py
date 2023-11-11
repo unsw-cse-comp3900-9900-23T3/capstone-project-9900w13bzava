@@ -142,7 +142,7 @@ def proccess_result_for_ShowPanel(result, dayType):
       # 1. 从字符串中解析出datetime对象
       # startTime = datetime.strptime(startTime, '%Y-%m-%d %H:%M:%S')
       # 2. 使用strftime方法格式化时间
-      startTime = startTime.strftime('%I:%M %p')
+      startTime = startTime.strftime('%H:%M %p')
       startTime = startTime.lower()  # 转换为小写，如am和pm
       idx['starttime'] = startTime
 
@@ -205,6 +205,7 @@ def ShowPanel():
   My expected workload duration is {hours} hour(s) {mins} minute(s).'''
   
   total_result = result1 + result2 + result3
+  print(result1)
   return jsonify({"appointments": total_result, "description": stat}), 200
 
 
@@ -651,6 +652,23 @@ def judgePatient():
     return jsonify({"message": "Patient Exist!", "status": True}), 200  # 存在
   else:
     return jsonify({"message": "Patient Does Not Exist!", "status": False }), 200  # 不存在
+
+
+@app.route('/EditSettings', methods=['POST'])
+def editSettings ():
+  data = request.get_json()
+  print("editSettings : ", data)
+  return jsonify({"message": "自己想", "status": True}), 200
+
+@app.route('/GetSettings', methods=['POST'])
+def getSettings ():
+  data = request.get_json()
+  print("getSettings : ", data)
+
+  return jsonify({"settings": {
+  "timerange": "07:00 17:00",
+  "breaktimerange": "12:00 13:00",
+  }, "status": True}), 200
 
 
 if __name__ == '__main__':

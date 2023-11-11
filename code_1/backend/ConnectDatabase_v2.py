@@ -4,9 +4,9 @@ from datetime import datetime
 
 
 # 连接参数
-DATABASE_HOST = 'localhost'
+DATABASE_HOST = '35.189.16.131'
 DATABASE_PORT = '5432'  # 默认为5432，除非你有不同的配置
-DATABASE_NAME = '9900_database'
+DATABASE_NAME = 'comp9900_database'
 DATABASE_USER = 'postgres'
 DATABASE_PASSWORD = 'password'
 
@@ -38,17 +38,8 @@ def operate_database(query, operation):
 
 # 获取所有用户数据
 if __name__ == "__main__":
-    query = '''    SELECT COUNT(*) AS val
-    FROM appointments as table1
-    INNER JOIN appointmentStatus as table5
-    ON table5.appointmentStatusID = table1.appointmentStatusID '''  # 获取所有的status
+    query = '''select * from sex'''  # 获取所有的status
     records = operate_database(query, 1)
-    print(type(records))
-    print(type(records[0]))
-
-    for record in records:
-        temp = record['val']
-        print(type(temp))
-        print(record['val'])
+    print(records)
     
     print()

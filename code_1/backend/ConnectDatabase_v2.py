@@ -1,7 +1,7 @@
 import psycopg2
 import os
 
-# 连接参数
+# Database Connection Parameters
 DATABASE_HOST = '34.151.110.251'
 # DATABASE_HOST = 'localhost'
 DATABASE_NAME = '9900_database'

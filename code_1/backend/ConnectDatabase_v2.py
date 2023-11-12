@@ -1,3 +1,4 @@
+# used to connect to cloud PostgreSQL database
 import psycopg2
 import os
 

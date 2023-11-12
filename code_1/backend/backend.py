@@ -1,11 +1,9 @@
 from flask import Flask, jsonify, request
-from flasgger import Swagger
 from flask_cors import CORS
 from ConnectDatabase_v2 import operate_database, SEARCH, ADD_DELETE_UPDATE
 from datetime import datetime, timedelta
 
 app = Flask(__name__)
-swagger = Swagger(app)
 CORS(app)
 
 # Login
@@ -683,7 +681,7 @@ def getSettings ():
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run()
 
 # http://127.0.0.1:5000/
 # http://127.0.0.1:5000/apidocs

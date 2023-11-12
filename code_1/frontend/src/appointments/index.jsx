@@ -60,7 +60,6 @@ for (let i=0; i<time_.length; i++) {
 
 function transformTime(timeString) {
   const [hours, minutes] = timeString.split(":").map(Number);
-
   // 将小时和分钟合并为一个数字
   const timeInNumber = hours * 100 + minutes;
   return timeInNumber

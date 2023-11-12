@@ -204,7 +204,7 @@ function App({ token }) {
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="status" angle={45} textAnchor="start"
             />
-            <YAxis />
+            <YAxis tick={{ interval: 1 }}/>
             <Tooltip />
             <Bar dataKey="amount" fill="#FECD52"/>
           </BarChart>
@@ -233,7 +233,7 @@ function App({ token }) {
           >
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="date" angle={45} textAnchor="start"/>
-            <YAxis />
+            <YAxis tick={{ interval: 1 }}/>
             <Tooltip />
             <Bar dataKey="amount" fill="#FECD52" />
           </BarChart>

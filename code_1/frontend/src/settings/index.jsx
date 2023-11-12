@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Button, Form, Space, TimePicker, notification } from 'antd';
+import { Button, Form, Space, TimePicker, notification, Popover } from 'antd';
 import './index.css'
 import dayjs from 'dayjs';
 import { QuestionCircleOutlined } from '@ant-design/icons';
@@ -20,6 +20,20 @@ function App({ token }) {
   const [breakEndTime, setBreakEndTime] = useState(dBreakEndTime);
   const [isAdmin, setIsAdmin] = useState(false);
   const [form] = Form.useForm();
+
+  const content1 = (
+    <div>
+      <p>Choose a start time and a end time for the time range shown in the page of appointments</p>
+    </div>
+  );
+
+  const content2 = (
+    <div>
+      <p>Choose a start time and a end time. </p>
+      <p>This time range is for the nap in the noon. </p>
+      <p>During this time range, any appointments can not be created, edited or deleted.</p>
+    </div>
+  );
 
   const onFinish = (values) => {
     console.log('Success:', values);
@@ -114,35 +128,6 @@ function App({ token }) {
     fGetSettings()
   }, [])
 
-  // useEffect(() => {
-  //   if (tokenRef.current === '0') {
-  //     setIsCheckBox('flex')
-  //   }
-  //   async function fGetAllUsers() {
-  //     const response = await fetch('http://127.0.0.1:5000/GetAllUsers', {
-  //       method: 'POST',
-  //       headers: {
-  //         'Content-type': 'application/json',
-  //       },
-  //     });
-  //     const data = await response.json();
-  //     const temp = data.allUsers.map(item => {
-  //       return {
-  //         value: item.userid,
-  //         label: `${item.firstname} ${item.surname}`,
-  //       }
-  //     })
-  //     temp.sort(function(a, b) {
-  //       const valueA = a.label.toLowerCase();
-  //       const valueB = b.label.toLowerCase();
-  //       return valueA.localeCompare(valueB);
-  //     });
-  //     console.log(temp)
-  //     setAllUsersName(temp)
-  //   }
-  //   fGetAllUsers() 
-  // }, [])
-
   return (
     <Form
       name="basic"
@@ -155,7 +140,10 @@ function App({ token }) {
         label={
           <div style={{display: "flex"}}>
             <div>Time range</div>
-            <QuestionCircleOutlined style={{marginLeft: 2}}/>
+            <Popover content={content1} title="Explanation">
+              <QuestionCircleOutlined style={{marginLeft: 2}}/>
+            </Popover>
+          
           </div>
         }
         name="timeRange"
@@ -185,7 +173,9 @@ function App({ token }) {
             label={
               <div style={{display: "flex"}}>
                 <div>Break time</div>
-                <QuestionCircleOutlined style={{marginLeft: 2}}/>
+                <Popover content={content2} title="Explanation">
+                  <QuestionCircleOutlined style={{marginLeft: 2}}/>
+                </Popover>
               </div>
             }
             name="breakTime"

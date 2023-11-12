@@ -62,7 +62,9 @@ function App({ token }) {
           )
         })
       });
+      
       const data = await response.json();
+      console.log('data: ', data, data.length)
       const temp = data.statusStatistics.map(item => {
         if (item.value !== 0) {
           return {
@@ -72,6 +74,7 @@ function App({ token }) {
         };
         return null;
       }).filter(item => item !== null)
+      console.log('temp: ', temp, temp.length)
       setChartData1(temp)
     }
     
@@ -111,7 +114,6 @@ function App({ token }) {
   }
 
   function onAllID(e) {
-    
     if (e.target.checked) {
       const temp = allID.map(item => ({ ...item }));
       temp.push(
@@ -123,6 +125,17 @@ function App({ token }) {
       setAllID(temp)
     }
     
+  }
+
+  function getMax(data) {
+    let max = 0;
+    for (let i=0; i<data.length; i++) {
+      if (data[i].amount>max) {
+        max = data[i].amount
+      }
+    }
+    console.log("max: ", max)
+    return max
   }
 
   useEffect(() => {
@@ -204,11 +217,12 @@ function App({ token }) {
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="status" angle={45} textAnchor="start"
             />
-            <YAxis tick={{ interval: 1 }}/>
+            <YAxis tickCount={getMax(chartData1)<=5 ? getMax(chartData1):5} />
             <Tooltip />
             <Bar dataKey="amount" fill="#FECD52"/>
           </BarChart>
         </Space>
+        
         <Space direction='vertical'>
           <div style={{display: "flex", marginLeft:30, fontWeight: 'bold', fontSize: 15}}>
             The sum of appointments between {selectedRange2[0]} and {selectedRange2[1]}
@@ -233,7 +247,7 @@ function App({ token }) {
           >
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="date" angle={45} textAnchor="start"/>
-            <YAxis tick={{ interval: 1 }}/>
+            <YAxis tickCount={getMax(chartData2)<=5 ? getMax(chartData2):5}/>
             <Tooltip />
             <Bar dataKey="amount" fill="#FECD52" />
           </BarChart>

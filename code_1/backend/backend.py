@@ -58,7 +58,7 @@ def login():
   if password != records[0]['password']:
     return jsonify({"message": "Wrong Password!", "status": False}), 400
 
-  # 登录成功      
+  # login successful
   return jsonify({"message": "Login Successful!", "status": True, "userid":records[0]['userid']}), 200
   
 
@@ -88,25 +88,24 @@ def register():
   ('{firstName}', '{surname}', '{password}', '{email}', '{phoneNumber}', {sexCode}, {locationid});'''
   
   try:
-    # 尝试插入新用户
+    # try insert users
     operate_database(query, ADD_DELETE_UPDATE)
   except Exception as _:
-    return jsonify({"message": f"Insert Error, Wrong Input", "status": False}), 400  # 不确定500状态码是什么
+    return jsonify({"message": f"Insert Error, Wrong Input", "status": False}), 400 
   
-  # 插入新用户后，要在setting表中新增数据：
+  # insert defualt user settings
   query = f"SELECT userid from users where LOWER(firstName) = '{firstName}' and LOWER(surname) = '{surname}'"
   userid = operate_database(query, SEARCH)[0]['userid']
-  # 插入默认的setting
   query = f'''
   INSERT INTO settings (userID, timerange, breaktimerange) VALUES
     ({userid}, '6:00 18:00', '12:00 12:00');
   '''
-  operate_database(query, ADD_DELETE_UPDATE)  # 为当前user新增setting记录
+  operate_database(query, ADD_DELETE_UPDATE)
 
   return jsonify({"message": "Registration successful!", "status": True}), 200
 
 
-# 根据输入的userid和date来获取query
+# get user's specific date appointments query
 def get_spec_appointments(userid, date):
   return f'''
   SELECT table1.appointmentID, table1.appointmentDate, table1.duration as duration, 
@@ -140,6 +139,7 @@ def get_spec_appointments(userid, date):
   WHERE table1.userID={userid} AND DATE(table1.startTime)='{date}'
   '''
 
+# process result
 def proccess_result_for_ShowPanel(result, dayType):
   sum = 0
   # convert second to readable time format
@@ -158,6 +158,7 @@ def proccess_result_for_ShowPanel(result, dayType):
 
 
 # ShowAppt
+# get user's specific date appointments
 @app.route('/ShowPanel', methods=['POST'])
 def ShowPanel():
   """
@@ -180,30 +181,29 @@ def ShowPanel():
   """
   data = request.get_json()
   userid = str(data.get('userid'))
-  cur_date = str(data.get('date'))  # 当天的日期
-  # 将日期字符串转换为日期对象
+  cur_date = str(data.get('date')) 
+  # get year-month-day
   date_obj = datetime.strptime(cur_date, "%Y-%m-%d")
 
-  # 计算前一天和后一天
+  # get pre-day and next-day
   pre_date = date_obj - timedelta(days=1)
   next_date = date_obj + timedelta(days=1)
 
-  # 将结果格式化为字符串
   pre_date = pre_date.strftime("%Y-%m-%d")
   next_date = next_date.strftime("%Y-%m-%d")
 
   # make query with id and date
-  query1 = get_spec_appointments(userid, cur_date)  # 当天
-  query2 = get_spec_appointments(userid, pre_date)  # 前一天
-  query3 = get_spec_appointments(userid, next_date)  # 后一天
+  query1 = get_spec_appointments(userid, cur_date)  # current day
+  query2 = get_spec_appointments(userid, pre_date)  # pre-day
+  query3 = get_spec_appointments(userid, next_date)  # next-day
 
-  result1 = operate_database(query1, SEARCH)  # 当天
-  result2 = operate_database(query2, SEARCH)  # 前一天
-  result3 = operate_database(query3, SEARCH)  # 后一天
+  result1 = operate_database(query1, SEARCH)  # current day
+  result2 = operate_database(query2, SEARCH)  # pre-day
+  result3 = operate_database(query3, SEARCH)  # next-day
 
-  result1, sum = proccess_result_for_ShowPanel(result1, 1)  # 当天 
-  result2, _ = proccess_result_for_ShowPanel(result2, 0)  # 前一天
-  result3, _ = proccess_result_for_ShowPanel(result3, 2)  # 后一天
+  result1, sum = proccess_result_for_ShowPanel(result1, 1)  # current day 
+  result2, _ = proccess_result_for_ShowPanel(result2, 0)  # pre-day
+  result3, _ = proccess_result_for_ShowPanel(result3, 2)  # next-day
   
   hours = sum // 60
   mins = sum % 60
@@ -215,6 +215,7 @@ def ShowPanel():
   return jsonify({"appointments": total_result, "description": stat}), 200
 
 
+# return user's patient
 @app.route('/ShowPatientList', methods=['POST'])
 def ShowPatientList():
   data = request.get_json()
@@ -229,12 +230,12 @@ def ShowPatientList():
 
 
 # ShowPatientRecord
+# return patient record
 @app.route('/ShowPatientRecord', methods=['POST'])
 def ShowPatientRecord():
   data = request.get_json()
   userid = str(data.get('userid'))
   patientID = str(data.get('patientid'))
-  # print(userid, patientID)
   base_query = '''
   SELECT table1.appointmentID, table1.duration as duration, 
   to_char(table1.startTime, 'YYYY-MM-DD HH24:MI') as startTime, table4.appointmentTypeName as appointmentType, 
@@ -273,12 +274,12 @@ def ShowPatientRecord():
 
 
 # getAllPatient
+# return all patient
 @app.route('/GetAllPatient', methods=['POST'])
 def getAllPatient():
   data = request.get_json()
   userid = str(data.get('userid').get('current').get('token'))
 
-  # 查询userid的所有病人
   query = f'''
   SELECT DISTINCT table2.firstName as firstName, table2.surname as surname, 
   table2.patientID as patientID, table2.sexCode
@@ -293,7 +294,7 @@ def getAllPatient():
 
 
 # GetAllAppointmentTypes
-# 返回所有appointmentTypes类型
+# return all appointmentTypes
 @app.route('/GetAllAppointmentTypes', methods=['POST'])
 def getAllAppointmentTypes():
   data = request.get_json()
@@ -303,7 +304,7 @@ def getAllAppointmentTypes():
 
 
 # CreatePatient
-# 往patients表中增加数据
+# insert new patient to patients table
 @app.route('/CreatePatient', methods=['POST'])
 def createPatient():
   data = request.get_json()
@@ -321,87 +322,73 @@ def createPatient():
   '''
   records = operate_database(query, SEARCH)
 
-  # 判断病人是否已经存在。
+  # check if patient exist
   if records:
-    # 说明账户已经存在，报错
     return jsonify({"message": "Patient Already Exist!", "status": False}), 400
 
-  # 将病人插入到数据库中
+  # insert to patients table
   query = f'''
   INSERT INTO patients (firstName, surname, medicareNo, email, phoneNumber, sexCode) VALUES
   ('{firstname}', '{surname}', '{medicareno}', '{email}', '{phonenumber}', {sexcode});
   '''
   try:
-    # 尝试插入新用户
+    # try insert
     operate_database(query, ADD_DELETE_UPDATE)
   except Exception as _:
     return jsonify({"message": f"Insert Error, Wrong Input", "status": False}), 400 
-  # 插入成功
+  # insert success
   return jsonify({"message": f"New Patient {firstname} {surname} Added!", "status": True}), 200
 
 
 # CreateAppointment
-# 往appointments表中增加数据
+# insert data to appointments table
 @app.route('/CreateAppointment', methods=['POST'])
 def createAppointment():
   data = request.get_json()
-  appointmentdate = datetime.now().strftime('%Y-%m-%d %H:%M:%S')  # 获得当前的时间
-  # print(appointmentdate)
+  appointmentdate = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
   duration  = int(data.get('duration'))
-  # print(duration)
   starttime = str(data.get('starttime'))
-  # print(starttime)
   userid = str(data.get('userid'))
-  # print(userid)
-  # 根据病人的firstname和surname来获取patientid
   patientfirstname = str(data.get('patientfirstname')).strip()
-  # print(patientfirstname)
   patientsurname = str(data.get('patientsurname')).strip()
-  # print(patientsurname)
   appointmenttypeid = int(data.get('appointmenttypeid'))
-  # print(appointmenttypeid)
   locationid = int(data.get('locationid'))
-  # print(locationid)
-  appointmentstatusid = int(data.get('appointmentstatusid')) # 默认应该是booked，其id为2
-  # print(appointmentstatusid)
+  appointmentstatusid = int(data.get('appointmentstatusid'))
   note = str(data.get('note'))
-  # print(note)
 
-  # 查询病人是否存在
+  # check if patient exist
   query = f'''
   SELECT patientid FROM patients
   WHERE LOWER(firstname) = LOWER('{patientfirstname}') AND LOWER(surname) = LOWER('{patientsurname}');
   '''
   records = operate_database(query, SEARCH)
-  # 判断病人是否已经存在。
   if not records:
-    # 说明账户不存在，报错
+    # if patient not exist
     return jsonify({"message": "Patient Does Not Exist, Please Create One!", "status": False}), 400
 
-  patientid = int(records[0]['patientid'])  # 获取病人ID
+  patientid = int(records[0]['patientid'])
   
-  # 插入到 appointments中
+  # insert to appointments
   query = f'''
   INSERT INTO appointments (appointmentDate, duration, startTime, userID, patientID, appointmentTypeID, locationID, appointmentStatusID, note) VALUES
   ('{appointmentdate}', {duration}, '{starttime}', {userid}, {patientid}, {appointmenttypeid}, {locationid}, {appointmentstatusid}, '{note}');
   '''
 
   try:
-    # 尝试插入新appointments
+    # try to insert appointments
     operate_database(query, ADD_DELETE_UPDATE)
   except Exception as _:
     return jsonify({"message": f"Insert Error, Wrong Input", "status": False}), 400 
-  # 插入成功
+  # insert success
   return jsonify({"message": f"New Appointment Created!", "status": True}), 200
 
 
 # EditAppointment
-# 往appointment表中修改数据
+# edit appointment table
 @app.route('/EditAppointment', methods=['POST'])
 def editAppointment():
   data = request.get_json()
-  appointmentid = int(data.get('appointmentid'))  # 用来确认appointments
-  # 可变的数据
+  appointmentid = int(data.get('appointmentid')) 
   duration  = int(data.get('duration'))
   appointmenttypeid = int(data.get('appointmenttypeid'))
   locationid = int(data.get('locationid'))
@@ -421,20 +408,20 @@ def editAppointment():
   '''
 
   try:
-    # 尝试修改appointments
+    # try edit appointments
     operate_database(query, ADD_DELETE_UPDATE)
   except Exception as _:
     return jsonify({"message": f"Insert Error, Wrong Input", "status": False}), 400 
-  # 修改成功
+  # success
   return jsonify({"message": f"Appointment Updated!", "status": True}), 200
 
 
 # DeleteAppointment
-# 往appointment表中删除数据
+# delete data from appointment
 @app.route('/DeleteAppointment', methods=['POST'])
 def deleteAppointment():
   data = request.get_json()
-  appointmentid = int(data.get('appointmentid'))  # 用来确认appointments
+  appointmentid = int(data.get('appointmentid')) 
 
   query = f'''
   DELETE FROM appointments
@@ -442,75 +429,73 @@ def deleteAppointment():
   '''
 
   try:
-    # 尝试删除appointments
+    # try delete appointments
     operate_database(query, ADD_DELETE_UPDATE)
   except Exception as _:
     return jsonify({"message": f"Delete Error, No Such Apointment", "status": False}), 400 
-  # 删除成功
+  # delete success
   return jsonify({"message": f"Appointment Deleted!", "status": True}), 200
 
 
 # DeletePatient
-# 往patient表中删除数据
+# delete data from patient table
 @app.route('/DeletePatient', methods=['POST'])
 def deletePatient():
   data = request.get_json()
-  # patientid  = int(data.get('patientid '))
   patientfirstname = str(data.get('patientfirstname'))
   patientsurname = str(data.get('patientsurname'))
 
-  # 查询病人是否存在
+  # check patient existence
   query = f'''
   SELECT patientid FROM patients
   WHERE LOWER(firstname) = LOWER('{patientfirstname}') AND LOWER(surname) = LOWER('{patientsurname}');
   '''
   records = operate_database(query, SEARCH)
-  # 判断病人是否已经存在。
   if not records:
-    # 说明账户不存在，报错
+    # patient not exist
     return jsonify({"message": "Patient Does Not Exist!", "status": False}), 400
 
-  patientid = int(records[0]['patientid'])  # 获取病人ID
+  patientid = int(records[0]['patientid'])  # get patient id
 
-  # 删除改病人
+  # delete data from patient query
   query = f'''
   DELETE FROM patients
   WHERE patientid = {patientid};
   '''
 
   try:
-    # 尝试删除
+    # try delete
     operate_database(query, ADD_DELETE_UPDATE)
   except Exception as _:
     return jsonify({"message": f"Delete Error, No Such Patient", "status": False}), 400 
-  # 删除成功
+  # delete success
   return jsonify({"message": f"Patient Deleted!", "status": True}), 200
 
 
 # DeleteUser
-# 往user表中删除数据
+# delete data from users
 @app.route('/DeleteUser', methods=['POST'])
 def deleteUser():
   data = request.get_json()
   userid  = int(data.get('userid '))
 
-  # 删除改病人
+  # delete users
   query = f'''
   DELETE FROM users
   WHERE userid = {userid};
   '''
 
   try:
-    # 尝试删除
+    # try 
     operate_database(query, ADD_DELETE_UPDATE)
   except Exception as _:
     return jsonify({"message": f"Delete Error, No Such User", "status": False}), 400 
-  # 删除成功
+  # success
   return jsonify({"message": f"User Deleted!", "status": True}), 200
 
 
 # GetAppointment
-# 往appointment表中查找一个数据
+# get appointment
 @app.route('/GetAppointment', methods=['POST'])
 def getAppointment():
   data = request.get_json()
@@ -534,16 +519,16 @@ def getAppointment():
   where table1.appointmentid = {appointmentid}
   '''
   try:
-    # 尝试查询
+    # try
     records = operate_database(query, SEARCH)
   except Exception as _:
     return jsonify({"message": f"Search Error, No Such Appointment", "status": False}), 400 
-  # 查询成功
+  # success
   return jsonify({"appointment": records, "status": True}), 200
 
 
 # GetAllUsers
-# 获取所有的users
+# get all users
 @app.route('/GetAllUsers', methods=['POST'])
 def getAllUsers():
   query = '''
@@ -554,7 +539,7 @@ def getAllUsers():
 
 
 # GetAllLocation 
-# 获取所有的users
+# get all location
 @app.route('/GetAllLocation', methods=['POST'])
 def getAllLocation():
   query = '''
@@ -565,26 +550,26 @@ def getAllLocation():
 
 
 # GetSpecRangeStatusStatistics
-# 返回[predate, lastdate]时间内，当前userid的所有appointments的不同status的数量。就是，status1的appointments的数量，status2的appointments的数量，status3的数量等等。 
+# return [predate, lastdate] time range, current userid's all appointments different status num. 
 @app.route('/GetSpecRangeStatusStatistics', methods=['POST'])
 def getSpecRangeStatusStatistics():
   data = request.get_json()
 
-  predate = str(data.get('predate'))  # 前一个日期
-  lastdate = str(data.get('lastdate'))  # 后一个日期
+  predate = str(data.get('predate'))  
+  lastdate = str(data.get('lastdate')) 
   userids = data.get('userid')  # userid
 
-  query = '''select appointmentstatusname from appointmentstatus'''  # 获取所有的status
+  query = '''select appointmentstatusname from appointmentstatus'''  # get all status
   records = operate_database(query, SEARCH)
   
   return_records = []
-  # 遍历每个status
+  # got through all status
   for record in records:
     value = 0
     appointmentstatusname = ''
+    # get sum
     for userid in userids:
       appointmentstatusname = record['appointmentstatusname']
-      # print(record['appointmentstatusname'])
       query = f'''
       SELECT COUNT(*) AS val
       FROM appointments as table1
@@ -601,28 +586,28 @@ def getSpecRangeStatusStatistics():
 
 
 # GetSpecRangeAppNumStatistics
-# 返回一段时间内，当前user在当前location的，每一天的appointments的数量
+# during time range, current userid, num of appointments for each day
 @app.route('/GetSpecRangeAppNumStatistics', methods=['POST'])
 def getSpecRangeAppNumStatistics():
   data = request.get_json()
-  predate = str(data.get('predate'))  # 前一个日期
-  lastdate = str(data.get('lastdate'))  # 后一个日期
+  predate = str(data.get('predate')) 
+  lastdate = str(data.get('lastdate'))
   userids = data.get('userid')  # userid
 
-  # 将日期字符串转换成datetime对象
   predate = datetime.strptime(predate, "%Y-%m-%d")
   lastdate = datetime.strptime(lastdate, "%Y-%m-%d")
 
-  # 初始化一个空列表来存储结果
+  # used to store date of each days
   date_strings = []
 
-  # 逐一增加日期并将其转换为所需格式的字符串
+  # get dates
   current_date = predate
   while current_date <= lastdate:
       date_strings.append(current_date.strftime("%Y-%m-%d"))
       current_date += timedelta(days=1)
 
-  records = []  # 用来存最终结果
+  records = []  # used to store result
+  # go through each date
   for date in date_strings:
     value = 0
     for userid in userids:
@@ -638,30 +623,30 @@ def getSpecRangeAppNumStatistics():
 
 
 # JudgePatient
-# 判断病人是否存在
+# check if patient exist
 @app.route('/JudgePatient', methods=['POST'])
 def judgePatient():
   data = request.get_json()
   patientfirstname = str(data.get('patientfirstname'))
   patientsurname = str(data.get('patientsurname'))
 
-  # 查询病人是否存在
+  # check patient
   query = f'''
   SELECT patientid FROM patients
   WHERE LOWER(firstname) = LOWER('{patientfirstname}') AND LOWER(surname) = LOWER('{patientsurname}');
   '''
   records = operate_database(query, SEARCH)
-  # 判断病人是否已经存在。
+
   if records:
     return jsonify({"message": "Patient Exist!", "status": True}), 200  # 存在
   else:
     return jsonify({"message": "Patient Does Not Exist!", "status": False }), 200  # 不存在
 
 
+# EditSettings
 @app.route('/EditSettings', methods=['POST'])
 def editSettings ():
   data = request.get_json()
-  print(data)
   userid = int(data.get('userid'))
   timerange = str(data.get('timerange'))
   breaktimerange = str(data.get('breaktimerange'))
@@ -675,13 +660,16 @@ def editSettings ():
     userID = {userid};
   '''
   try:
+    # try
     operate_database(query, ADD_DELETE_UPDATE)
   except Exception as _:
     return jsonify({"message": f"Edit Error, Please check userid", "status": False}), 400 
-  # 成功
+  # OK
   return jsonify({"message": f"Setting Changed!", "status": True}), 200
 
 
+# GetSettings
+# get settings of userid
 @app.route('/GetSettings', methods=['POST'])
 def getSettings ():
   data = request.get_json()
@@ -691,7 +679,6 @@ def getSettings ():
   '''
 
   records = operate_database(query, SEARCH)
-
   return jsonify({"settings": records, "status": True}), 200
 
 

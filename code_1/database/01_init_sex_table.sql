@@ -1,4 +1,3 @@
--- 初始化sex表
 CREATE TABLE sex (
     sexCode INT PRIMARY KEY,
     sex VARCHAR(15) NOT NULL

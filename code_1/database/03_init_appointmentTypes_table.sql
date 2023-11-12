@@ -1,11 +1,8 @@
--- 初始化 appointmentTypes 表
--- 这个表主要存储了 病人的预约类型
 CREATE TABLE appointmentTypes (
     appointmentTypeID SERIAL PRIMARY KEY,
     appointmentTypeName VARCHAR(255)
 );
 
--- （这是根据客户的数据库，不要修改）
 INSERT INTO appointmentTypes (appointmentTypeName)
 VALUES
     ('Standard appt.'),

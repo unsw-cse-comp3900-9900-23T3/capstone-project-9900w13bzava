@@ -14,3 +14,15 @@ This week, we communicated with the client. I write the function of showing pati
 
 week 6
 This week, we communicated with the client. I write the function of showing record for the frontend.
+
+week 7
+This week, we communicated with the client. I write the function of frontend.
+
+week 8
+This week, we communicated with the client. I write the function of frontend.
+
+week 9
+This week, we communicated with the client. I write the function of frontend.
+
+week 10
+This week, we communicated with the client. I write the function of frontend and prepare for the final demo.

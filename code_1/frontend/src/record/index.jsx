@@ -210,6 +210,7 @@ function App ({ token }) {
         const data = await response.json();
         const temp = data.patients.map(item => ({
           label: `${item.firstname} ${item.surname}`,
+          value: item.patientid,
         }));
         setOptionData(temp);
       } catch (error) {

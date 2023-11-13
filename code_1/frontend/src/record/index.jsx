@@ -2,6 +2,8 @@ import React, { useEffect, useState, useRef } from 'react';
 import { Table, Space, Select, Modal, Button } from 'antd';
 import "./index.css"
 
+// record/index.jsx is for the page of showing patients' history and future records.
+
 const hColumns = [
   {
     title: <div className='recordFillCellTitle' style={{backgroundColor: 'lightgray'}}>History</div>,
@@ -87,7 +89,6 @@ function App ({ token }) {
   const tokenRef = useRef(token);
   const [dataH, setDataH] = useState(hData)
   const [dataF, setDataF] = useState(fData)
-  // const [isRecordLoaded, setIsRecordLoaded] = useState(false);
   const [optionData, setOptionData] = useState([])
   const [selectedRow, setSelectedRow] = useState(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -187,7 +188,6 @@ function App ({ token }) {
   const rowClickHandler = (record) => {
     return {
       onClick: () => {
-        // Only open modal if fTime is not empty
         if (record.fTime !== '' && record.hTime !== '') {
           showModal(record);
         }
@@ -209,8 +209,7 @@ function App ({ token }) {
         });
         const data = await response.json();
         const temp = data.patients.map(item => ({
-          label: `${item.firstname} ${item.surname}`, // Specify label for Select option
-          value: item.patientid,
+          label: `${item.firstname} ${item.surname}`,
         }));
         setOptionData(temp);
       } catch (error) {

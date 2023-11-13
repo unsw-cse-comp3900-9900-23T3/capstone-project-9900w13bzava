@@ -5,6 +5,8 @@ import {
   useParams
 } from 'react-router-dom';
 
+// create/index/jsx is for the page of creating new appointment and creating new patient case.
+
 const getIndex = ['Unavailable', 'Booked', 'Waiting', 'Urgent', 'With doctor', 'At billing', 'Completed']
 const dataState = []
 for (let i=0; i<getIndex.length; i++) {
@@ -15,7 +17,6 @@ for (let i=0; i<getIndex.length; i++) {
 }
 
 const { TextArea } = Input
-// const widthComponent = "200"
 const sWidthComponent = 195
 
 const onFinish = (values) => {
@@ -43,18 +44,14 @@ dataType.sort(function(a, b) {
 
 function App ({token, recordID, onDefaultDate}) {
   const tokenRef = useRef(token);
-  // const recordIDRef = useRef(recordID);
   const [appointmentType, setAppointmentType] = useState([]);
-  // const [date, setDate] = useState('');
   const [stateID, setStateID] = useState(null);
-  // const [startTime, setStartTime] = useState('');
   const [duration, setDuration] = useState('');
-  const [type, setType] = useState(''); // 这个是typeID
+  const [type, setType] = useState(''); // This is the ID for the appointment type
   const [note, setNote] = useState(null);
   const [patientFirstName, setPatientFirstName] = useState('')
   const [patientSurname, setPatientSurname] = useState('')
   const [location, setLocation] = useState(-1)
-  // const [loaded, setLoaded] = useState(false)
   const [allLocation, setAllLocation] = useState(null);
   const [cPatientFirstName, setCPatientFirstName] = useState('');
   const [cPatientSurname, setCPatientSurname] = useState('');
@@ -97,7 +94,6 @@ function App ({token, recordID, onDefaultDate}) {
           message: 'Error',
           type: 'error',
           description:
-          // error message
             `${data.message}`,
           onClick: () => {
             console.log('Notification Clicked!');
@@ -109,7 +105,6 @@ function App ({token, recordID, onDefaultDate}) {
         message: 'Error',
         type: 'error',
         description:
-        // error message
           `Please input the first name and the surname of the patient`,
         onClick: () => {
           console.log('Notification Clicked!');
@@ -156,8 +151,7 @@ function App ({token, recordID, onDefaultDate}) {
           message: 'Error',
           type: 'error',
           description:
-          // error message
-              `${data.message}`,
+            `${data.message}`,
           onClick: () => {
             console.log('Notification Clicked!');
           },
@@ -168,7 +162,6 @@ function App ({token, recordID, onDefaultDate}) {
         message: 'Error',
         type: 'error',
         description:
-        // error message
           `Please input all information`,
         onClick: () => {
           console.log('Notification Clicked!');
@@ -176,10 +169,6 @@ function App ({token, recordID, onDefaultDate}) {
       });
     }
   }
-
-  // const disabledDateTime = () => ({
-  //   disabledHours: () => [0, 1, 2, 3, 4, 5, 18, 19, 20, 21, 22, 23],
-  // });
 
   function spaceSplit(string, signal) {
     const [e, m] = string.split(' ')
@@ -226,7 +215,6 @@ function App ({token, recordID, onDefaultDate}) {
         message: 'Error',
         type: 'error',
         description:
-        // error message
           `The format of the email is incorrect!`,
         onClick: () => {
           console.log('Notification Clicked!');
@@ -237,7 +225,6 @@ function App ({token, recordID, onDefaultDate}) {
         message: 'Error',
         type: 'error',
         description:
-        // error message
           `The format of the phone number!`,
         onClick: () => {
           console.log('Notification Clicked!');
@@ -248,7 +235,6 @@ function App ({token, recordID, onDefaultDate}) {
         message: 'Error',
         type: 'error',
         description:
-        // error message
           `The format of the phone number or medicare number is incorrect!`,
         onClick: () => {
           console.log('Notification Clicked!');
@@ -294,8 +280,7 @@ function App ({token, recordID, onDefaultDate}) {
           message: 'Error',
           type: 'error',
           description:
-          // error message
-              `${data.message}`,
+            `${data.message}`,
           onClick: () => {
             console.log('Notification Clicked!');
           },
@@ -306,7 +291,6 @@ function App ({token, recordID, onDefaultDate}) {
         message: 'Error',
         type: 'error',
         description:
-        // error message
           `Please input all information`,
         onClick: () => {
           console.log('Notification Clicked!');

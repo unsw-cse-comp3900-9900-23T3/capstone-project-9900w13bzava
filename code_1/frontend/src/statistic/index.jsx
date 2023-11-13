@@ -5,6 +5,8 @@ import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 import './index.css'
 
+// statistic/index.jsx is for the page of showing bar charts of statistics about appointments
+
 dayjs.extend(customParseFormat);
 const { RangePicker } = DatePicker;
 const columWidth = 570;
@@ -77,8 +79,6 @@ function App({ token }) {
       console.log('temp: ', temp, temp.length)
       setChartData1(temp)
     }
-    
-    
   }
 
   async function fGetSpecRangeAppNumStatistics() {

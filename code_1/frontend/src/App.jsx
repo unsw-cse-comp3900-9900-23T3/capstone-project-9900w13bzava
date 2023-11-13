@@ -15,6 +15,8 @@ import Record from './record';
 import Statistic from './statistic';
 import Settings from './settings';
 
+//App.jsx is for route configuration. We use 'react-route-dom' for linking various page.
+
 function App() {
   const dayjs = require('dayjs');
   const today = dayjs().format('YYYY-MM-DD');
@@ -30,13 +32,11 @@ function App() {
   function manageRecordSet (recordID) {
     setRecordID(recordID);
     localStorage.setItem('recordID', recordID)
-
   }
 
   function manageDefaultDateSet (defaultDate) {
     setDefaultDate(defaultDate);
     localStorage.setItem('defaultDate', defaultDate)
-
   }
 
   React.useEffect(function () {
@@ -73,5 +73,4 @@ function App() {
     </>
   );
 }
-
 export default App;

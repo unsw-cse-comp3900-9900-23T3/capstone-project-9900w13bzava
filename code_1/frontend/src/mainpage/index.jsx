@@ -11,6 +11,9 @@ import {
 } from 'react-router-dom';
 import { Layout, Menu } from 'antd';
 import "./index.css";
+
+// mainpage/index.jsx is the parent component for many other page. We set the menu in this component.
+
 const { Header, Content } = Layout;
 const heightContent = 550
 

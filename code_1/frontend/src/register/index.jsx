@@ -5,6 +5,8 @@ import {
   useNavigate
 } from 'react-router-dom';
 
+// register/index.jsx is the page for registering a new account.
+
 const sWidthComponent = 195
 const iWidthComponent = 200
 
@@ -42,7 +44,6 @@ function App ({ onSuccess }) {
         message: 'Error',
         type: 'error',
         description:
-        // error message
           `The format of the email is incorrect!`,
         onClick: () => {
           console.log('Notification Clicked!');
@@ -53,7 +54,6 @@ function App ({ onSuccess }) {
         message: 'Error',
         type: 'error',
         description:
-        // error message
           `The format of the telephone is incorrect!`,
         onClick: () => {
           console.log('Notification Clicked!');
@@ -65,8 +65,7 @@ function App ({ onSuccess }) {
         message: 'Error',
         type: 'error',
         description:
-        // error message
-            `Please input all information`,
+          `Please input all information`,
         onClick: () => {
           console.log('Notification Clicked!');
         },
@@ -96,8 +95,7 @@ function App ({ onSuccess }) {
           message: 'Success',
           type: 'success',
           description:
-          // error message
-              `${data.message} Hello ${firstName} ${surname}`,
+            `${data.message} Hello ${firstName} ${surname}`,
           onClick: () => {
             console.log('Notification Clicked!');
           },
@@ -108,8 +106,7 @@ function App ({ onSuccess }) {
           message: 'Error',
           type: 'error',
           description:
-          // error message
-              `${data.message}`,
+            `${data.message}`,
           onClick: () => {
             console.log('Notification Clicked!');
           },

@@ -6,21 +6,20 @@ import dayjs from 'dayjs';
 import {
   useNavigate
 } from 'react-router-dom';
-// import moment from "moment"
+
+// appointments/index.jsx is for the page of showing appointments.
 
 const allState = ['gray', 'yellow', 'magenta', 'gold', 'lightgreen', 'lightgray', 'lightblue']
 const getIndex = ['Unavailable', 'Booked', 'Waiting', 'Urgent', 'With doctor', 'At billing', 'Completed']
-// const defaultDate = "2023-11-01"
 
 let dataA = [];
+// transform time into required format
 function formatTime(time) {
   const hours = Math.floor(time / 100);
   const minutes = time % 100;
   const period = hours >= 12 ? 'pm' : 'am';
-  // 处理小时和分钟的零填充
   const formattedHours = String(hours).padStart(2, '0');
   const formattedMinutes = String(minutes).padStart(2, '0');
-
   return `${formattedHours}:${formattedMinutes} ${period}`;
 }
 const time_ = [545, 600, 615, 630, 645, 700, 715, 730, 745, 800, 815, 830, 845, 900, 915, 930, 945, 1000, 1015, 1030, 1045, 1100, 1115, 1130, 1145, 1200,
@@ -60,7 +59,6 @@ for (let i=0; i<time_.length; i++) {
 
 function transformTime(timeString) {
   const [hours, minutes] = timeString.split(":").map(Number);
-  // 将小时和分钟合并为一个数字
   const timeInNumber = hours * 100 + minutes;
   return timeInNumber
 }
@@ -82,7 +80,6 @@ function App ({ token, onRecord, defaultDate }) {
   const [breakStartTime, setBreakStartTime] = useState('')
   const [breakEndTime, setBreakEndTime] = useState('')
   const prevDataQRef = useRef(dataQ);
-  // const [locationName, setLocationName] = useState("");
   const navigate = useNavigate();
 
   const columns = [
@@ -140,17 +137,14 @@ function App ({ token, onRecord, defaultDate }) {
     },
   ];
 
+  // get today's information
   function getDate(day, e) {
     const startDateString = day;
-    // 将字符串转换为日期对象
     const startDate = new Date(startDateString);
-    // 增加e天
     startDate.setDate(startDate.getDate() + e);
-    // 将结果转换回字符串
     const endDateString = startDate.toISOString().split('T')[0];
     const dateObject = new Date(endDateString);
     const dayOfWeek = dateObject.getDay();
-    // 将数字转换为星期几的文字
     const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
     const dayName = daysOfWeek[dayOfWeek];
     return `${endDateString} ${dayName}`
@@ -168,13 +162,11 @@ function App ({ token, onRecord, defaultDate }) {
   );
   
   const handleCellClick = (record) => {
-    // 设置选中的记录，打开对话框
     setSelectedRecord(record);
     setModalVisible(true);
   };
 
   const handleModalClose = () => {
-    // 清空选中的记录，关闭对话框
     setSelectedRecord(null);
     setModalVisible(false);
   };
@@ -225,7 +217,6 @@ function App ({ token, onRecord, defaultDate }) {
         message: 'Error',
         type: 'error',
         description:
-        // error message
           `${data.message}`,
         onClick: () => {
           console.log('Notification Clicked!');
@@ -234,6 +225,7 @@ function App ({ token, onRecord, defaultDate }) {
     }
   }
 
+  // set the data in the table of appointments
   useEffect(() => {
     const temp = dataA.map(item => ({ ...item }));
     for (let i=0; i < appointments.length; i++ ) {
@@ -387,7 +379,6 @@ function App ({ token, onRecord, defaultDate }) {
         const valueB = b.label.toLowerCase();
         return valueA.localeCompare(valueB);
       });
-      console.log(temp)
       setAllUsersName(temp)
     }
     fGetAllUsers()
@@ -439,7 +430,6 @@ function App ({ token, onRecord, defaultDate }) {
   }, [token])
 
   useEffect(() => {
-    // 判断当前 dataQ 和前一个 dataQ 是否相同，如果相同则不执行
     if (prevDataQRef.current !== dataQ) {
       const temp = dataQ.map(item => {
         const itemTime = transformTime(item.time.split(' ')[0]);
@@ -455,13 +445,10 @@ function App ({ token, onRecord, defaultDate }) {
         const itemTime = transformTime(item.time.split(' ')[0]);
         return itemTime >= rangeStartTime && itemTime < rangeEndTime;
       });
-      console.log("temp", dataA, temp);
       setDataQ(temp);
-      
-      // 更新 prevDataQRef 的值
       prevDataQRef.current = temp;
     }
-  }, [rangeStartTime, rangeEndTime, breakEndTime, breakStartTime, dataQ]); // 添加 dataQ 到依赖数组
+  }, [rangeStartTime, rangeEndTime, breakEndTime, breakStartTime, dataQ]);
 
   return (
     <div>

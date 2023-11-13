@@ -4,6 +4,9 @@ import { Button, Form, Input, Space, notification, Typography, Select } from 'an
 import {
   useNavigate
 } from 'react-router-dom';
+
+// login/index/jsx is for the page of logging in.
+
 const sWidthComponent = 195
 const onFinish = (values) => {
   console.log('Success:', values);
@@ -48,8 +51,7 @@ function App ({ onSuccess }) {
           message: 'Success',
           type: 'success',
           description:
-          // error message
-              `${data.message} Hello ${firstName} ${surname}`,
+            `${data.message} Hello ${firstName} ${surname}`,
           onClick: () => {
             console.log('Notification Clicked!');
           },
@@ -60,8 +62,7 @@ function App ({ onSuccess }) {
           message: 'Error',
           type: 'error',
           description:
-          // error message
-              `${data.message}`,
+            `${data.message}`,
           onClick: () => {
             console.log('Notification Clicked!');
           },
@@ -72,8 +73,7 @@ function App ({ onSuccess }) {
         message: 'Error',
         type: 'error',
         description:
-        // error message
-            `Please input all information`,
+          `Please input all information`,
         onClick: () => {
           console.log('Notification Clicked!');
         },
@@ -219,21 +219,19 @@ function App ({ onSuccess }) {
                 options={allLocation}
               />
             </Form.Item>
-
-            
-              <Space direction='vertical' style={{display:"flex", justifyContent: "center", alignItems: "center"}}>
-                <Button onClick={fLogin} style={{backgroundColor: "#C3F3EE", fontWeight:'bold', width: 200}}>
-                  Log in
-                </Button>
-                <Space style={{display: "flex"}}>
-                  <Typography>
-                    Do not have a account? 
-                  </Typography>
-                  <Typography className="hover-text" onClick={goRegister}>
-                    Register now!
-                  </Typography>
-                </Space>
+            <Space direction='vertical' style={{display:"flex", justifyContent: "center", alignItems: "center"}}>
+              <Button onClick={fLogin} style={{backgroundColor: "#C3F3EE", fontWeight:'bold', width: 200}}>
+                Log in
+              </Button>
+              <Space style={{display: "flex"}}>
+                <Typography>
+                  Do not have a account? 
+                </Typography>
+                <Typography className="hover-text" onClick={goRegister}>
+                  Register now!
+                </Typography>
               </Space>
+            </Space>
           </Form>
         </div>
         

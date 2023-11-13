@@ -4,6 +4,8 @@ import {
   useNavigate
 } from 'react-router-dom';
 
+// edit/index.jsx is for the page of editing existing appointment.
+
 const getIndex = ['Unavailable', 'Booked', 'Waiting', 'Urgent', 'With doctor', 'At billing', 'Completed']
 const dataState = []
 for (let i=0; i<getIndex.length; i++) {
@@ -14,7 +16,6 @@ for (let i=0; i<getIndex.length; i++) {
 }
 
 const { TextArea } = Input
-// const widthComponent = "200"
 const sWidthComponent = 195
 
 const onFinish = (values) => {
@@ -48,7 +49,7 @@ function App ({token, recordID, onDefaultDate}) {
   const [stateID, setStateID] = useState(null);
   const [startTime, setStartTime] = useState('');
   const [duration, setDuration] = useState('');
-  const [type, setType] = useState(''); // 这个是typeID
+  const [type, setType] = useState(''); // This the ID of the appointment type
   const [note, setNote] = useState(null);
   const [patientFirstName, setPatientFirstName] = useState('')
   const [patientSurname, setPatientSurname] = useState('')
@@ -94,7 +95,6 @@ function App ({token, recordID, onDefaultDate}) {
           message: 'Error',
           type: 'error',
           description:
-          // error message
               `${data.message}`,
           onClick: () => {
             console.log('Notification Clicked!');
@@ -106,7 +106,6 @@ function App ({token, recordID, onDefaultDate}) {
         message: 'Error',
         type: 'error',
         description:
-        // error message
           `Please input all information`,
         onClick: () => {
           console.log('Notification Clicked!');
@@ -114,10 +113,6 @@ function App ({token, recordID, onDefaultDate}) {
       });
     }
   }
-
-  // const disabledDateTime = () => ({
-  //   disabledHours: () => [0, 1, 2, 3, 4, 5, 18, 19, 20, 21, 22, 23],
-  // });
 
   function clearAll() {
     form.setFieldsValue({
@@ -206,10 +201,10 @@ function App ({token, recordID, onDefaultDate}) {
           location: item.locationid, 
           note: item.note
         }));
-        const [datePart, timePart] = temp[0].startTime.split(' '); // 分割日期和时间
-        setDate(datePart); // 设置日期
-        const [hours, minutes] = timePart.split(':').slice(0, 2); // 仅取小时和分钟
-        setStartTime(`${hours}:${minutes}`); // 格式化时间为 "09:45"
+        const [datePart, timePart] = temp[0].startTime.split(' ');
+        setDate(datePart);
+        const [hours, minutes] = timePart.split(':').slice(0, 2);
+        setStartTime(`${hours}:${minutes}`);
         setPatientFirstName(temp[0].patientFirstName)
         setPatientSurname(temp[0].patientSurname)
         setNote(temp[0].note)
@@ -223,8 +218,7 @@ function App ({token, recordID, onDefaultDate}) {
           message: 'Error',
           type: 'error',
           description:
-          // error message
-              `${data.message}`,
+            `${data.message}`,
           onClick: () => {
             console.log('Notification Clicked!');
           },
@@ -237,7 +231,6 @@ function App ({token, recordID, onDefaultDate}) {
 
   return (
     <div>
-
       <Form
         form={form}
         name="basic"
@@ -393,9 +386,6 @@ function App ({token, recordID, onDefaultDate}) {
               )}
             </Form.Item>
 
-          
-          
-          
             <Form.Item
               label="Note"
               name="note"

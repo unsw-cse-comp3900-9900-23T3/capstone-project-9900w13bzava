@@ -1,19 +1,17 @@
 .rowGrid {
-  height: 5px; /* 设置行高为50像素，你可以根据需要调整这个值 */
+  height: 5px;
   overflow: hidden;
 }
 
-/* table */
 .ant-table {
   font-size: 9px;
 }
 
-/* row data */
 .ant-table-tbody > tr > td {
   height: 5px;
   padding: 0;
 }
-/* row tags */
+
 .my-tag {
   font-size: 12px;
 }
@@ -23,7 +21,7 @@
 }
 
 .highlight-row {
-  background-color: yellow; /* 设置背景颜色为黄色，你可以根据需要调整这个值 */
+  background-color: yellow;
 }
 
 .cell {
@@ -72,5 +70,5 @@
 
 .disabled-row {
   pointer-events: none;
-  background-color: gray; /* 或者其他你想要的禁用行的样式 */
+  background-color: gray;
 }

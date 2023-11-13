@@ -7,33 +7,30 @@
   background-size: cover;
 }
 
+
+/* This css for gradient color is for this website: https://developer.mozilla.org/zh-CN/docs/Web/CSS/CSS_Images/Using_CSS_gradients */
 .hover-text {
-  color: #15E1FF; /* 初始文字颜色 */
+  color: #15E1FF;
   white-space: nowrap;
-  transition: color 0.3s ease; /* 添加颜色过渡效果 */
+  transition: color 0.3s ease;
 }
 
 .hover-text:hover {
-  color: rgb(76, 0, 255); /* 鼠标悬停时的文字颜色 */
+  color: rgb(76, 0, 255);
 }
 
 .changeColor {
   display: flex;
   align-items: center;
   justify-content: center;
-  /* 设置容器尺寸 - 原理1 */
   width: 420px;
   height: 430px;
-  /* 背景渐变色 - 原理2 */
   background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
-  /* 背景尺寸 - 原理3 */
   background-size: 600% 600%;
-  /* 循环动画 - 原理4 */
   animation: changeColorBG 5s ease infinite;
   border-radius: 35px
 }
 
-/* 动画，控制背景 background-position */
 @keyframes changeColorBG {
   0% {
       background-position: 0% 50%;

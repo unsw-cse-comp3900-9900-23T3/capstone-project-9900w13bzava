@@ -4,6 +4,8 @@ import './index.css'
 import dayjs from 'dayjs';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 
+// settings/index.jsx is for the page of changing settings
+
 const format = "HH:mm"
 const defaultStartTime = '6:00'
 const defaultEndTime = '18:00'
@@ -11,8 +13,6 @@ const dBreakStartTime = '12:00'
 const dBreakEndTime = '12:00'
 
 function App({ token }) {
-  // const [isCheckBox, setIsCheckBox] = useState('none');
-  // const [allUsersName, setAllUsersName] = useState([])
   const tokenRef = useRef(token);
   const [rangeStartTime, setRangeStartTime] = useState(defaultStartTime);
   const [rangeEndTime, setRangeEndTime] = useState(defaultEndTime);
@@ -52,7 +52,6 @@ function App({ token }) {
     console.log(breakStartTime, breakEndTime)
   }
 
-  // default setting
   function clearRangeTime() {
     setRangeStartTime(defaultStartTime)
     setRangeEndTime(defaultEndTime)
@@ -135,7 +134,6 @@ function App({ token }) {
       onFinish={onFinish}
       onFinishFailed={onFinishFailed}
     >
-      
       <Form.Item
         label={
           <div style={{display: "flex"}}>
@@ -165,8 +163,6 @@ function App({ token }) {
         </Space>
         
       </Form.Item>
-      
-      
       {
         isAdmin && (
           <Form.Item
@@ -192,7 +188,6 @@ function App({ token }) {
                 disabledTime={() => ({disabledHours:() => [0,1,2,3,4,5,20,21,22,23]})}
                 onChange={(e, timeString) => onBreakChange(timeString)}
                 value={[dayjs(breakStartTime, format), dayjs(breakEndTime, format)]}
-                // onChange={onRange}
               />
               <Button style={{marginLeft: 10, backgroundColor: "#C3F3EE", fontWeight:'bold', width: 130}} onClick={clearBreakTime}>Default setting</Button>
             </Space>

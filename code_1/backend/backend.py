@@ -9,34 +9,6 @@ CORS(app)
 # Login
 @app.route('/login', methods=['POST'])
 def login():
-  """
-  This is the login endpoint
-  Call this endpoint to login a existed user
-  ---
-  tags:
-    - Login API
-  parameters:
-    - name: username
-      in: formData
-      type: string
-      required: true
-    - name: password
-      in: formData
-      type: string
-      required: true
-    - name: location
-      in: formData
-      type: string
-      required: true
-  responses:
-    200:
-      description: Login successful
-    401:
-      description: Wrong password
-    404:
-      description: User does not exist
-  """
-      
   data = request.get_json()
   firstname = str(data.get('firstname')).strip()
   surname = str(data.get('surname')).strip()
@@ -159,24 +131,6 @@ def proccess_result_for_ShowPanel(result, dayType):
 # get user's specific date appointments
 @app.route('/ShowPanel', methods=['POST'])
 def ShowPanel():
-  """
-  This is the ShowPane endpoint
-  Call this endpoint to show the panel
-  ---
-  tags:
-    - ShowPanel API
-  parameters:
-    - name: userid
-      in: formData
-      type: string
-      required: true
-    - name: cur_date
-      in: formData
-      type: string
-  responses:
-    200:
-      description: Found the total result
-  """
   data = request.get_json()
   userid = str(data.get('userid'))
   cur_date = str(data.get('date')) 
@@ -682,6 +636,3 @@ def getSettings ():
 
 if __name__ == '__main__':
     app.run()
-
-# http://127.0.0.1:5000/
-# http://127.0.0.1:5000/apidocs

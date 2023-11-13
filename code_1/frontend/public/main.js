@@ -6,20 +6,16 @@ const {BrowserWindow} = electron;
 
 let userWindow;
 
-// 启动 Python 后端
 // const backendProcess = spawn('python', [path.join(__dirname, 'python', 'backend.py')]);
 
-// // 捕获 Python 后端的输出
 // backendProcess.stdout.on('data', (data) => {
 //   console.log(`Python Backend Output: ${data}`);
 // });
 
-// // 捕获 Python 后端的错误
 // backendProcess.stderr.on('data', (data) => {
 //   console.error(`Python Backend Error: ${data}`);
 // });
 
-// // 在 Electron 应用关闭时终止 Python 后端
 // app.on('will-quit', () => {
 //   backendProcess.kill();
 // });

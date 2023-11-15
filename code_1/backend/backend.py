@@ -83,10 +83,25 @@ def get_spec_appointments(userid, date):
   table5.appointmentStatusName as status, table2.firstName as firstName, table2.surname as surname, 
   table3.firstName as patientFirstName, table3.surname as patientSurname, table3.patientID as patientID,
   CASE
-    WHEN table1.appointmentTypeID=29 and table3.patientID in (
-    SELECT patientID FROM appointments
-    WHERE locationID=1 and ('{date}' - starttime) >= interval '365 days'
-  ) THEN 1
+    WHEN table1.appointmentTypeID = 29 AND 
+      EXISTS (
+        SELECT 1 
+        FROM appointments 
+        WHERE 
+          locationID = 1 AND 
+          (table1.starttime - starttime) >= INTERVAL '365 days' AND 
+          table3.patientID = patientID
+      ) AND 
+      NOT EXISTS (
+        SELECT 1 
+        FROM appointments 
+        WHERE 
+          locationID = 1 AND 
+          (table1.starttime - starttime) < INTERVAL '365 days' AND 
+          table3.patientID = patientID AND
+          table1.appointmentID <> appointmentID
+      )
+    THEN 1
     ELSE 0
   END AS isPhone,
   CASE
@@ -193,17 +208,32 @@ def ShowPatientRecord():
   to_char(table1.startTime, 'YYYY-MM-DD HH24:MI') as startTime, table4.appointmentTypeName as appointmentType, 
   table5.appointmentStatusName as status, table2.firstName as userFirstName, table2.surname as userSurname, 
   table3.firstName as patientFirstName, table3.surname as patientSurname, table3.patientID as patientID,
-    CASE
-      WHEN table1.appointmentTypeID=29 and table3.patientID in (
-    SELECT patientID FROM appointments
-    WHERE locationID=1 and (CURRENT_DATE - appointmentDate) >= interval '365 days'
-  ) THEN 1
-      ELSE 0
-    END AS isPhone,
-    CASE
-      WHEN table3.medicareNo IS NULL THEN 0
-      ELSE 1
-    END AS hasMedicare,
+  CASE
+    WHEN table1.appointmentTypeID = 29 AND 
+      EXISTS (
+        SELECT 1 
+        FROM appointments 
+        WHERE 
+          locationID = 1 AND 
+          (table1.starttime - starttime) >= INTERVAL '365 days' AND 
+          table3.patientID = patientID
+      ) AND 
+      NOT EXISTS (
+        SELECT 1 
+        FROM appointments 
+        WHERE 
+          locationID = 1 AND 
+          (table1.starttime - starttime) < INTERVAL '365 days' AND 
+          table3.patientID = patientID AND
+          table1.appointmentID <> appointmentID
+      )
+    THEN 1
+    ELSE 0
+  END AS isPhone,
+  CASE
+    WHEN table3.medicareNo IS NULL THEN 0
+    ELSE 1
+  END AS hasMedicare,
   table1.note AS note
   FROM appointments as table1
   inner join users as table2

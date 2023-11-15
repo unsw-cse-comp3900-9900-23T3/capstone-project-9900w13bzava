@@ -105,7 +105,7 @@ def get_spec_appointments(userid, date):
     ELSE 0
   END AS isPhone,
   CASE
-    WHEN table3.medicareNo IS NULL THEN 0
+    WHEN table3.medicareNo IS NULL OR medicareno = '' THEN 0
     ELSE 1
   END AS hasMedicare,
 	table1.note AS note,
@@ -231,7 +231,7 @@ def ShowPatientRecord():
     ELSE 0
   END AS isPhone,
   CASE
-    WHEN table3.medicareNo IS NULL THEN 0
+    WHEN table3.medicareNo IS NULL OR medicareno = '' THEN 0
     ELSE 1
   END AS hasMedicare,
   table1.note AS note

@@ -160,6 +160,12 @@ function App ({ token, onRecord, defaultDate }) {
       <p>Plan your work reasonably and enjoy a happy life!</p>
     </div>
   );
+  const content3 = (
+    <div>
+      <p>Highlight on the patient's name indicates that the patient does not have medical insurance.</p>
+      <p>Highlight on the appointment type signifies that the patient has not had any in-person visits within the past year.</p>
+    </div>
+  );
   
   const handleCellClick = (record) => {
     setSelectedRecord(record);
@@ -474,7 +480,12 @@ function App ({ token, onRecord, defaultDate }) {
               <div className='appointmentsBox'style={{backgroundColor:'lightgreen'}}>With doctor</div>
               <div className='appointmentsBox'style={{backgroundColor:'lightgray'}}>At billing</div>
               <div className='appointmentsBox'style={{backgroundColor:'lightblue'}}>Completed</div>
-              
+              <Popover placement="bottomLeft" content={content3} title="Details">
+                <div style={{marginLeft: 90, display: 'flex'}}>
+                  <div style={{fontWeight: 'bold'}} nowrap>Highlight:</div>
+                  <div style={{backgroundColor: "orange", marginLeft:10}}>happen at the patient name or appointment type</div>
+                </div>
+              </Popover>
             </Space>
           </Space>
         </Space>

@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { Table, Space, Select, Modal, Button } from 'antd';
+import { Table, Space, Select, Modal, Button, Popover } from 'antd';
 import "./index.css"
 
 // record/index.jsx is for the page of showing patients' history and future records.
@@ -96,6 +96,13 @@ function App ({ token }) {
   const [doctorID, setDoctorID] = useState(0);
   const [allUsersName, setAllUsersName] = useState([])
   const [patientID, setPatientID] = useState(null)
+
+  const content1 = (
+    <div>
+      <p>Highlight on the patient's name or time indicates that the patient does not have medical insurance.</p>
+      <p>Highlight on the appointment type signifies that the patient has not had any in-person visits within the past year.</p>
+    </div>
+  );
 
   const onChange = (value) => {
     setPatientID(value)
@@ -262,6 +269,7 @@ function App ({ token }) {
           <div style={{fontWeight: 'bold', marginLeft: 30}}>
             Choose a patient:
           </div>
+          
           <Select
             showSearch
             placeholder="Select a patient"
@@ -273,6 +281,12 @@ function App ({ token }) {
             value={patientID}
             style={{width: 195}} 
           />
+          <Popover placement="bottomLeft" content={content1} title="Details">
+            <div style={{marginLeft: 90, display: 'flex'}}>
+              <div style={{fontWeight: 'bold'}} nowrap>Highlight:</div>
+              <div style={{backgroundColor: "orange", marginLeft:10}}>happen at the patient name, time or appointment type</div>
+            </div>
+          </Popover>
            
         </Space>
         

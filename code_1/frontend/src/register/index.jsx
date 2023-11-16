@@ -89,13 +89,12 @@ function App ({ onSuccess }) {
         })
       });
       const data = await response.json();
-      console.log("backend: ", data);
       if (data.status) {
         notification.open({
           message: 'Success',
           type: 'success',
           description:
-            `${data.message} Hello ${firstName} ${surname}`,
+            `${data.message}`,
           onClick: () => {
             console.log('Notification Clicked!');
           },

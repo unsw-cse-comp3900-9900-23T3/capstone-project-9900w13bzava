@@ -282,7 +282,7 @@ function App ({ token }) {
             style={{width: 195}} 
           />
           <Popover placement="bottomLeft" content={content1} title="Details">
-            <div style={{marginLeft: 90, display: 'flex'}}>
+            <div style={{marginLeft: 30, display: 'flex'}}>
               <div style={{fontWeight: 'bold'}} nowrap>Highlight:</div>
               <div style={{backgroundColor: "orange", marginLeft:10}}>happen at the patient name, time or appointment type</div>
             </div>

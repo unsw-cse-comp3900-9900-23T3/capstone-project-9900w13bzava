@@ -373,8 +373,8 @@ function App ({token, recordID, onDefaultDate}) {
       <Modal title="Create New Patient" 
         open={isModalOpen} onCancel={handleCancel}
         footer={[
-          <Button onClick={fCreatePatient}>Create new patient</Button>,
-          <Button onClick={handleCancel}>Cancel</Button>
+          <Button onClick={fCreatePatient} style={{backgroundColor: "#C3F3EE", fontWeight:'bold', width: 150}}>Create new patient</Button>,
+          <Button onClick={handleCancel} style={{backgroundColor: "#C3F3EE", fontWeight:'bold', width: 115}}>Cancel</Button>
         ]}>
           <Form
             form={pForm}

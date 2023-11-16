@@ -626,28 +626,28 @@ function App ({token, recordID, onDefaultDate}) {
               label="Note"
               name="note"
             >
-              <TextArea onChange={(e) => setNote(e.target.value)} placeholder={"Input the note"} rows={3}/>
+              <TextArea onChange={(e) => setNote(e.target.value)} placeholder={"Input the note"} rows={5}/>
             </Form.Item>
           </div>
         </Space>
         <div style={{display: "flex", justifyContent:"center"}}>
           <Space direction='vertical'>
             <Space style={{display: "flex", justifyContent:"center"}}>
-              <Button onClick={fCreate}>
+              <Button onClick={fCreate} style={{backgroundColor: "#C3F3EE", fontWeight:'bold', width: 115}}>
                 Create
               </Button>
-              <Button onClick={clearAll}>
+              <Button onClick={clearAll} style={{backgroundColor: "#C3F3EE", fontWeight:'bold', width: 115}}>
                 Clear
               </Button>
-              <Button onClick={onCancel}>
+              <Button onClick={onCancel} style={{backgroundColor: "#C3F3EE", fontWeight:'bold', width: 115}}>
                 Cancel
               </Button>
             </Space>
             <Space style={{display: "flex", justifyContent:"center"}}>
-              <Button onClick={fJudgePatient}>
+              <Button onClick={fJudgePatient} style={{backgroundColor: "#C3F3EE", fontWeight:'bold', width: 200}}>
                 Check patient existence
               </Button>
-              <Button onClick={showModal}>
+              <Button onClick={showModal} style={{backgroundColor: "#C3F3EE", fontWeight:'bold', width: 150}}>
                 Create new patient
               </Button>
             </Space>

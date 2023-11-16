@@ -397,13 +397,13 @@ function App ({token, recordID, onDefaultDate}) {
           </div>
         </Space>
           <Space style={{display: "flex", justifyContent:"center"}}>
-            <Button onClick={fEdit}>
+            <Button onClick={fEdit} style={{backgroundColor: "#C3F3EE", fontWeight:'bold', width: 115}}>
               Edit
             </Button>
-            <Button onClick={clearAll}>
+            <Button onClick={clearAll} style={{backgroundColor: "#C3F3EE", fontWeight:'bold', width: 115}}>
               Clear
             </Button>
-            <Button onClick={onCancel}>
+            <Button onClick={onCancel} style={{backgroundColor: "#C3F3EE", fontWeight:'bold', width: 115}}>
               Cancel
             </Button>
           </Space>

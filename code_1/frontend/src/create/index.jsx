@@ -225,7 +225,7 @@ function App ({token, recordID, onDefaultDate}) {
         message: 'Error',
         type: 'error',
         description:
-          `The format of the phone number!`,
+          `The format of the phone number is incorrect!`,
         onClick: () => {
           console.log('Notification Clicked!');
         },
@@ -235,7 +235,7 @@ function App ({token, recordID, onDefaultDate}) {
         message: 'Error',
         type: 'error',
         description:
-          `The format of the phone number or medicare number is incorrect!`,
+          `The format of the medicare number is incorrect!`,
         onClick: () => {
           console.log('Notification Clicked!');
         },

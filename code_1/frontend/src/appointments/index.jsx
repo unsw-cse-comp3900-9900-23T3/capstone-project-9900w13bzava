@@ -82,6 +82,7 @@ function App ({ token, onRecord, defaultDate }) {
   const prevDataQRef = useRef(dataQ);
   const navigate = useNavigate();
 
+  // The columns of the table for appointments 
   const columns = [
     {
       title: <div className='fillCellTitle'>Time</div>,
@@ -150,6 +151,7 @@ function App ({ token, onRecord, defaultDate }) {
     return `${endDateString} ${dayName}`
   }
 
+  // Contents are shown in the <Popover> component
   const content1 = (
     <div>
       <p>There are seven types of appointments' state.</p>
@@ -183,17 +185,20 @@ function App ({ token, onRecord, defaultDate }) {
     }
   };
 
+  // navigate into Edit page
   function onEdit (e) {
     navigate('/mainpage/edit');
     console.log("edit route: ", e);
     onRecord(e)
   }
+  // navigate into Create page
   function onCreate (e, rSD, rST) {
     navigate(`/mainpage/create/${rSD}/${rST}`);
     console.log("edit route: ", e);
     onRecord(e)
   }
 
+  // delete an appointments
   async function fDelete (e) {
     const response = await fetch('http://127.0.0.1:5000/DeleteAppointment', {
       method: 'POST',
@@ -360,7 +365,6 @@ function App ({ token, onRecord, defaultDate }) {
       fDate(token)
     }
   }, [date, token, upDelete, doctorID]);
-
 
   useEffect(() => {
     if (token === '0') {

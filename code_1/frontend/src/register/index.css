@@ -7,7 +7,7 @@
   background-size: cover;
 }
 
-/* This css for gradient color is for this website: https://developer.mozilla.org/zh-CN/docs/Web/CSS/CSS_Images/Using_CSS_gradients */
+/* This css for gradient color is from this website: https://developer.mozilla.org/zh-CN/docs/Web/CSS/CSS_Images/Using_CSS_gradients */
 .rChangeColor {
   display: flex;
   align-items: center;
@@ -20,7 +20,6 @@
   border-radius: 35px
 }
 
-/* 动画，控制背景 background-position */
 @keyframes rChangeColorBG {
   0% {
       background-position: 0% 50%;

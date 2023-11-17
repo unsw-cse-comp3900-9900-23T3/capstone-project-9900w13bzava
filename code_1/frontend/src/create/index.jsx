@@ -179,6 +179,7 @@ function App ({token, recordID, onDefaultDate}) {
     }
   }
 
+  // clear all value
   function clearAll() {
     form.setFieldsValue({
       duration: null,
@@ -191,6 +192,7 @@ function App ({token, recordID, onDefaultDate}) {
     });
   }
 
+  // navigate to Appointments page
   function onCancel() {
     onDefaultDate(spaceSplit(rStartDate, 1));
     navigate('/mainpage/appointments')

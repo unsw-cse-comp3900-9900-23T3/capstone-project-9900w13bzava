@@ -12,26 +12,24 @@
 
  
 
+#### Run backend server 
+
+1. Enter a python virtual environment. 
+
+2. Open a terminal under /code_1/back-end/ folder. 
+
+3. Install all required packages: pip3 install -r requirement.txt 
+
+4. Run: Python3 app.py 
+
+
+
 #### Run frontend websites 
 
-1. Go to /code_1/frontend 
+1. Open a terminal under /code_1/frontend/ folder 
 
 2. Run: npm install 
 
 3. Run: npm start. The website will open automatically. 
 
 4. Run: npm run build. This command will establish a new file called “bulid”. And you can open the index.html in this new file rather than Run: npm start. 
-
- 
-
-#### Run backend server 
-
-1. Go to /back-end/ (先创建虚拟环境，然后进入到文件夹，执行脚本文件。脚本文件会自动检测环境是否匹配，如果不匹配，就会安装对应的包。环境OK后就会执行后端。) 
-
-2. Install all required packages: pip3 install -r requirement.txt 
-
-3. Run: Python3 app.py 
-
-4. After start backend server successfully, you can run frontend part. 
-
- 

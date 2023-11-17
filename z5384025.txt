@@ -42,3 +42,6 @@ as well as the total number of appointments at different days.
 An admin user account has been created, who can access records of all doctors and patients, 
 and view summary data charts.
 Deployed postgresql cloud database using Google Cloud.
+
+Week10:
+Complete APIs, fix some bugs, prepare for the final demo and report.

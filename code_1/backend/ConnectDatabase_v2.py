@@ -4,7 +4,6 @@ import os
 
 # Database Connection Parameters
 DATABASE_HOST = '34.151.110.251'
-# DATABASE_HOST = 'localhost'
 DATABASE_NAME = '9900_database'
 DATABASE_USER = 'postgres'
 DATABASE_PASSWORD = 'password'
